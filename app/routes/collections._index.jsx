@@ -50,8 +50,11 @@ export default function Collections() {
   const {collections} = useLoaderData();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
+    <div className="collections-container">
+      <div className="collections-header">
+        <h1 className="collections-title">Our Collections</h1>
+        <div className="collections-subtitle">Discover our carefully curated collections</div>
+      </div>
       <PaginatedResourceSection
         connection={collections}
         resourcesClassName="collections-grid"
@@ -82,16 +85,34 @@ function CollectionItem({collection, index}) {
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
+      <div className="collection-image-container">
+        {collection?.image ? (
+          <Image
+            alt={collection.image.altText || collection.title}
+            aspectRatio="1/1"
+            data={collection.image}
+            loading={index < 3 ? 'eager' : undefined}
+            sizes="(min-width: 45em) 400px, 100vw"
+            className="collection-image"
+          />
+        ) : (
+          <div className="collection-image-placeholder">
+            <span className="collection-image-placeholder-icon">📦</span>
+          </div>
+        )}
+        <div className="collection-overlay">
+          <div className="collection-button">View Collection</div>
+        </div>
+      </div>
+      <div className="collection-info">
+        <h3 className="collection-title">{collection.title}</h3>
+        <div className="collection-arrow">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </div>
     </Link>
   );
 }
