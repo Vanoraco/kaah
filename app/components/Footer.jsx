@@ -1,5 +1,6 @@
 import {Suspense} from 'react';
 import {Await, NavLink} from '@remix-run/react';
+import {CustomFooter} from './CustomFooter';
 
 /**
  * @param {FooterProps}
@@ -9,15 +10,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
+          <CustomFooter />
         )}
       </Await>
     </Suspense>

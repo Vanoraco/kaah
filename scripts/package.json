@@ -1,0 +1,21 @@
+{
+  "name": "shopify-promotion-cards-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for managing promotion card metaobjects in Shopify",
+  "main": "create-promotion-metaobjects.js",
+  "scripts": {
+    "create": "node create-promotion-metaobjects.js",
+    "test": "node test-promotion-metaobjects.js"
+  },
+  "keywords": [
+    "shopify",
+    "metaobjects",
+    "promotion",
+    "cards"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}

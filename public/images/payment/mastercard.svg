@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="24px" viewBox="0 0 40 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Mastercard</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="mastercard" fill-rule="nonzero">
+            <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="40" height="24" rx="4"></rect>
+            <g id="Group" transform="translate(7.000000, 5.000000)">
+                <circle id="Oval" fill="#EB001B" cx="7.2" cy="7.2" r="7.2"></circle>
+                <circle id="Oval" fill="#F79E1B" cx="18.8" cy="7.2" r="7.2"></circle>
+                <path d="M13,12.1 C15.5,10.2 15.5,4.2 13,2.3 C10.5,4.2 10.5,10.2 13,12.1 Z" id="Path" fill="#FF5F00"></path>
+            </g>
+        </g>
+    </g>
+</svg>

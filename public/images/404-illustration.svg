@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500px" height="500px" viewBox="0 0 500 500" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>404 Illustration</title>
+    <g id="404-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Plant" transform="translate(50.000000, 50.000000)" fill-rule="nonzero">
+            <path d="M200,400 C200,400 300,350 300,250 C300,150 250,100 200,100 C150,100 100,150 100,250 C100,350 200,400 200,400 Z" id="Leaf" fill="#1A237E" opacity="0.2"></path>
+            <path d="M200,400 C200,400 250,300 200,200 C150,100 100,100 50,150 C0,200 50,300 150,350 C200,375 200,400 200,400 Z" id="Leaf" fill="#1A237E" opacity="0.3"></path>
+            <path d="M200,400 C200,400 150,300 200,200 C250,100 300,100 350,150 C400,200 350,300 250,350 C200,375 200,400 200,400 Z" id="Leaf" fill="#1A237E" opacity="0.3"></path>
+            <rect id="Pot" fill="#FFC107" opacity="0.5" x="150" y="380" width="100" height="70" rx="10"></rect>
+            <path d="M150,380 L250,380 L250,400 C250,400 225,410 200,410 C175,410 150,400 150,400 L150,380 Z" id="Soil" fill="#795548" opacity="0.5"></path>
+        </g>
+        <g id="Magnifying-Glass" transform="translate(250.000000, 200.000000) rotate(-30.000000) translate(-250.000000, -200.000000) translate(150.000000, 100.000000)" stroke="#1A237E" stroke-width="10">
+            <circle id="Glass" cx="70" cy="70" r="70"></circle>
+            <line x1="120" y1="120" x2="200" y2="200" id="Handle" stroke-linecap="round"></line>
+        </g>
+    </g>
+</svg>

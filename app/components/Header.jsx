@@ -1,26 +1,181 @@
-import {Suspense} from 'react';
-import {Await, NavLink, useAsyncValue} from '@remix-run/react';
+import {Suspense, useState, useEffect, useRef} from 'react';
+import {Await, NavLink, useAsyncValue, useLoaderData} from '@remix-run/react';
 import {useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import {useAside} from '~/components/Aside';
 
 /**
  * @param {HeaderProps}
  */
-export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
-  const {shop, menu} = header;
+export function Header({header, isLoggedIn, cart, collections}) {
+  const {shop} = header;
+  const [showCategories, setShowCategories] = useState(false);
+  const categoriesRef = useRef(null);
+
+  // Debug collections data
+  console.log('Collections data:', collections);
+
+  const toggleCategories = () => {
+    setShowCategories(!showCategories);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target)) {
+        setShowCategories(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [categoriesRef]);
+
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+    <>
+      {/* Top Header */}
+      <div className="header-top">
+        <div className="container">
+          <div className="header-top-content">
+            <div className="header-location">
+              <i className="fas fa-map-marker-alt location-icon"></i>
+              <span>Store Location: SouthAfrica</span>
+            </div>
+            <div className="header-top-right">
+              <div className="language-currency">
+                <div className="select-wrapper">
+                  <select className="language-select">
+                    <option value="eng">Eng</option>
+                    <option value="fr">Fr</option>
+                  </select>
+                </div>
+                <div className="select-wrapper">
+                  <select className="currency-select">
+                    <option value="usd">USD</option>
+                    <option value="eur">EUR</option>
+                  </select>
+                </div>
+              </div>
+              <div className="auth-links">
+                <NavLink to="/account/login">Sign In</NavLink>
+                <span>/</span>
+                <NavLink to="/account/register">Sign Up</NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header */}
+      <header className="header">
+        <div className="container">
+          <div className="header-main">
+            {/* Logo */}
+            <NavLink prefetch="intent" to="/" className="logo">
+              <img src="../../public/logo.svg" alt="KAAH" className="logo-image" />
+              <div className="logo-text-container">
+                <span className="logo-text">KAAH</span>
+                <span className="logo-subtext">SUPER MARKET</span>
+              </div>
+            </NavLink>
+
+            {/* Search Bar */}
+            <form className="search-bar">
+              <div className="search-input-wrapper">
+                <i className="fas fa-search search-icon"></i>
+                <input
+                  type="search"
+                  placeholder="Search"
+                  className="search-input"
+                />
+                <button type="submit" className="search-button">
+                  Search
+                </button>
+              </div>
+            </form>
+
+            {/* Header Actions */}
+            <div className="header-actions">
+              <div className="cart-wrapper">
+                <NavLink to="tel:2195550114" className="header-action-item cart-link">
+                  <i className="fas fa-phone-alt"></i>
+                  <div className="cart-info">
+                    <span className="cart-label">Customer Services</span>
+                    <span className="cart-amount">(219) 555-0114</span>
+                  </div>
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation Menu */}
+      <nav className="main-nav">
+        <div className="container">
+          <div className="nav-content">
+            <div className="categories-dropdown" ref={categoriesRef}>
+              <button className={`categories-button ${showCategories ? 'active' : ''}`} onClick={toggleCategories}>
+                <span className="menu-icon"><i className="fas fa-bars"></i></span>
+                All Categories
+                <span className="dropdown-icon"><i className="fas fa-chevron-down"></i></span>
+              </button>
+              {showCategories && (
+                <div className="categories-menu">
+                  <ul>
+                    {collections && collections.nodes ? (
+                      collections.nodes.map((collection) => {
+                        // Map collection titles to appropriate icons
+                       //S let iconClass = 'fas fa-tag'; // Default icon
+
+
+                        // Map collection titles to appropriate icons
+                        let iconClass = 'fas fa-tag'; // Default icon
+
+
+
+                        return (
+                          <li key={collection.id}>
+                            <NavLink to={`/collections/${collection.handle}`}>
+                              <span className="category-icon"><i className={iconClass}></i></span>
+                              <span className="category-text">{collection.title}</span>
+                            </NavLink>
+                          </li>
+                        );
+                      })
+                    ) : (
+                      <li>
+                        <div className="loading-categories">Loading categories...</div>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <ul className="main-menu">
+              <li><NavLink to="/">Home</NavLink></li>
+              <li><NavLink to="/shop">Shop</NavLink></li>
+              <li><NavLink to="/pages">Pages</NavLink></li>
+              <li><NavLink to="/blog">Blog</NavLink></li>
+              <li><NavLink to="/about">About Us</NavLink></li>
+              <li><NavLink to="/contact">Contact Us</NavLink></li>
+            </ul>
+            <div className="nav-icons">
+              <NavLink to="/wishlist" className="nav-icon-link">
+                <i className="far fa-heart"></i>
+              </NavLink>
+              <NavLink to="/cart" className="nav-icon-link cart-icon-link">
+                <i className="fas fa-shopping-cart"></i>
+                <span className="nav-cart-count">2</span>
+              </NavLink>
+              <NavLink to="/account" className="nav-icon-link">
+                <i className="far fa-user"></i>
+              </NavLink>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
   );
 }
 
@@ -131,8 +286,8 @@ function CartBadge({count}) {
   const {publish, shop, cart, prevCart} = useAnalytics();
 
   return (
-    <a
-      href="/cart"
+    <button
+      className="header-action-item"
       onClick={(e) => {
         e.preventDefault();
         open('cart');
@@ -144,8 +299,11 @@ function CartBadge({count}) {
         });
       }}
     >
-      Cart {count === null ? <span>&nbsp;</span> : count}
-    </a>
+      <span className="action-icon">🛒</span>
+      <span className="action-text">
+        Cart {count === null ? '' : `(${count})`}
+      </span>
+    </button>
   );
 }
 

@@ -11,9 +11,14 @@ import {
 } from '@remix-run/react';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {COLLECTIONS_QUERY} from '~/lib/queries';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
+import homeStyles from '~/styles/home.css?url';
+import customFooterStyles from '~/styles/custom-footer.css?url';
+import notFoundStyles from '~/styles/not-found.css?url';
 import {PageLayout} from './components/PageLayout';
+import {NotFound} from './components/NotFound';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -26,12 +31,10 @@ export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
   // revalidate when manually revalidating via useRevalidator
   if (currentUrl.toString() === nextUrl.toString()) return true;
 
-  // Defaulting to no revalidation for root loader data to improve performance.
-  // When using this feature, you risk your UI getting out of sync with your server.
-  // Use with caution. If you are uncomfortable with this optimization, update the
-  // line below to `return defaultShouldRevalidate` instead.
+  // We're enabling revalidation to ensure we get the latest data from Shopify
+  // This ensures collections and other data stay in sync with the Shopify store
   // For more details see: https://remix.run/docs/en/main/route/should-revalidate
-  return false;
+  return true;
 };
 
 /**
@@ -97,17 +100,20 @@ export async function loader(args) {
 async function loadCriticalData({context}) {
   const {storefront} = context;
 
-  const [header] = await Promise.all([
+  const [header, collectionsData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
         headerMenuHandle: 'main-menu', // Adjust to your header menu handle
       },
     }),
+    storefront.query(COLLECTIONS_QUERY, {
+      cache: storefront.CacheNone(),
+    }),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header};
+  return {header, collections: collectionsData.collections};
 }
 
 /**
@@ -154,6 +160,11 @@ export function Layout({children}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
+        <link rel="stylesheet" href={homeStyles}></link>
+        <link rel="stylesheet" href={customFooterStyles}></link>
+        <link rel="stylesheet" href={notFoundStyles}></link>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />
         <Links />
       </head>
@@ -188,6 +199,33 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error)) {
     errorMessage = error?.data?.message ?? error.data;
     errorStatus = error.status;
+
+    // Return custom 404 page for not found errors
+    if (errorStatus === 404) {
+      return (
+        <html lang="en">
+          <head>
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="width=device-width,initial-scale=1" />
+            <link rel="stylesheet" href={resetStyles}></link>
+            <link rel="stylesheet" href={appStyles}></link>
+            <link rel="stylesheet" href={homeStyles}></link>
+            <link rel="stylesheet" href={customFooterStyles}></link>
+            <link rel="stylesheet" href={notFoundStyles}></link>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+            <title>Page Not Found - Ecobazar</title>
+            <Meta />
+            <Links />
+          </head>
+          <body>
+            <NotFound />
+            <ScrollRestoration />
+            <Scripts />
+          </body>
+        </html>
+      );
+    }
   } else if (error instanceof Error) {
     errorMessage = error.message;
   }
