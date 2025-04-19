@@ -72,7 +72,7 @@ export function Header({header, isLoggedIn, cart, collections}) {
           <div className="header-main">
             {/* Logo */}
             <NavLink prefetch="intent" to="/" className="logo">
-              <img src="../../public/logo.svg" alt="KAAH" className="logo-image" />
+              <img src="https://cdn.shopify.com/s/files/1/0616/6446/0862/files/logo.svg?v=1745081485" alt="KAAH" className="logo-image" />
               <div className="logo-text-container">
                 <span className="logo-text">KAAH</span>
                 <span className="logo-subtext">SUPER MARKET</span>
