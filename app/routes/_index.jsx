@@ -1,8 +1,9 @@
-import {Await, useLoaderData, Link, useRouteLoaderData} from '@remix-run/react';
+import {Await, useLoaderData, useRouteLoaderData} from '@remix-run/react';
 import {Suspense} from 'react';
-import {Image, Money} from '@shopify/hydrogen';
 import {SlideshowBanner} from '~/components/SlideshowBanner';
 import {PromotionCards} from '~/components/PromotionCards';
+import {ShopByCategories} from '~/components/ShopByCategories';
+import {FeaturedProducts} from '~/components/FeaturedProducts';
 import {
   BANNER_COLLECTIONS_QUERY,
   BANNER_METAOBJECTS_QUERY,
@@ -131,70 +132,14 @@ export default function Homepage() {
 
 
 
-      {/* Categories */}
-      <div className="category-section">
-        <h2 className="section-title">Shop by Top Categories</h2>
-        <div className="category-grid">
-          {collections && collections.nodes ? (
-            collections.nodes.slice(0, 6).map((collection) => {
-              // Determine which image to use based on collection title
-              let imagePath = '/images/categories/default.png';
-              const title = collection.title.toLowerCase();
-
-              if (title.includes('fruit')) imagePath = '/images/categories/fruits.png';
-              else if (title.includes('vegetable')) imagePath = '/images/categories/vegetables.png';
-              else if (title.includes('meat') || title.includes('fish')) imagePath = '/images/categories/meat.png';
-              else if (title.includes('snack')) imagePath = '/images/categories/snacks.png';
-              else if (title.includes('beverage') || title.includes('drink')) imagePath = '/images/categories/beverages.png';
-              else if (title.includes('beauty') || title.includes('health')) imagePath = '/images/categories/beauty.png';
-
-              return (
-                <Link key={collection.id} to={`/collections/${collection.handle}`} className="category-item">
-                  <img src={imagePath} alt={collection.title} />
-                  <p>{collection.title}</p>
-                </Link>
-              );
-            })
-          ) : (
-            <div className="loading-categories">Loading categories...</div>
-          )}
-        </div>
-      </div>
+      {/* Shop by Categories */}
+      <ShopByCategories collections={collections} />
 
       {/* Featured Products */}
-      <div className="featured-products">
-        <h2 className="section-title">Our Featured Products</h2>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Await resolve={data.recommendedProducts}>
-            {(products) => (
-              <div className="products-grid">
-                {products?.products?.nodes?.map((product) => (
-                  <div key={product.id} className="product-card">
-                    <div className="product-image">
-                      <Image
-                        data={product.images.nodes[0]}
-                        aspectRatio="1/1"
-                        sizes="(min-width: 45em) 20vw, 50vw"
-                      />
-                      <button className="wishlist-button">❤️</button>
-                    </div>
-                    <div className="product-info">
-                      <h3>{product.title}</h3>
-                      <div className="product-price">
-                        <Money data={product.priceRange.minVariantPrice} />
-                      </div>
-                      <button className="add-to-cart">Add to Cart</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Await>
-        </Suspense>
-      </div>
+      <FeaturedProducts products={data.recommendedProducts} />
 
       {/* Professional Members */}
-      <div className="members-section">
+      {/* <div className="members-section">
         <h2 className="section-title">Our Professional Members</h2>
         <div className="members-grid">
           <div className="member-card">
@@ -218,7 +163,7 @@ export default function Homepage() {
             <p>Farmer</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Testimonials */}
       <div className="testimonials">
@@ -228,7 +173,7 @@ export default function Homepage() {
             <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
             <p>"Great quality products and fast delivery. I'm very satisfied with their service."</p>
             <div className="testimonial-author">
-              <img src="/images/testimonials/user1.jpg" alt="Robert Fox" />
+              <img src="https://ecofishresearch.com/wp-content/uploads/2022/03/690-6904538_men-profile-icon-png-image-free-download-searchpng.png" alt="Robert Fox" />
               <div>
                 <h4>Robert Fox</h4>
                 <p>Customer</p>
@@ -239,7 +184,7 @@ export default function Homepage() {
             <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
             <p>"The freshness of their organic products is unmatched. Highly recommended!"</p>
             <div className="testimonial-author">
-              <img src="/images/testimonials/user2.jpg" alt="Leslie Alexander" />
+              <img src="https://ecofishresearch.com/wp-content/uploads/2022/03/690-6904538_men-profile-icon-png-image-free-download-searchpng.png" alt="Leslie Alexander" />
               <div>
                 <h4>Leslie Alexander</h4>
                 <p>Customer</p>
@@ -250,7 +195,7 @@ export default function Homepage() {
             <div className="testimonial-rating">⭐⭐⭐⭐⭐</div>
             <p>"Best organic food store in the area. Love their variety and quality."</p>
             <div className="testimonial-author">
-              <img src="/images/testimonials/user3.jpg" alt="Dianne Russell" />
+              <img src="https://ecofishresearch.com/wp-content/uploads/2022/03/690-6904538_men-profile-icon-png-image-free-download-searchpng.png" alt="Dianne Russell" />
               <div>
                 <h4>Dianne Russell</h4>
                 <p>Customer</p>
@@ -260,7 +205,7 @@ export default function Homepage() {
         </div>
       </div>
 
-      
+
     </div>
   );
 }
@@ -293,13 +238,15 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     id
     title
     handle
+    vendor
+    description
     priceRange {
       minVariantPrice {
         amount
         currencyCode
       }
     }
-    images(first: 1) {
+    images(first: 2) {
       nodes {
         id
         url
@@ -308,6 +255,8 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         height
       }
     }
+    tags
+    availableForSale
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {

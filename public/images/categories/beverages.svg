@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Beverages</title>
+    <g id="Beverages" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#E1F5FE" cx="40" cy="40" r="40"></circle>
+        <g id="Beverages" transform="translate(15.000000, 10.000000)" fill-rule="nonzero">
+            <path d="M15,0 L25,0 L25,5 L15,5 L15,0 Z" id="Bottle-Cap" fill="#1A237E"></path>
+            <path d="M15,5 L25,5 L30,15 L10,15 L15,5 Z" id="Bottle-Neck" fill="#90CAF9"></path>
+            <path d="M10,15 L30,15 L30,55 L10,55 L10,15 Z" id="Bottle-Body" fill="#2196F3"></path>
+            <path d="M15,20 L25,20 L25,50 L15,50 L15,20 Z" id="Bottle-Label" fill="#FFFFFF"></path>
+            <path d="M17.5,25 L22.5,25 L22.5,30 L17.5,30 L17.5,25 Z" id="Label-Text1" fill="#1A237E"></path>
+            <path d="M17.5,35 L22.5,35 L22.5,40 L17.5,40 L17.5,35 Z" id="Label-Text2" fill="#1A237E"></path>
+            <path d="M40,10 C35,10 30,15 30,20 L30,25 L50,25 L50,20 C50,15 45,10 40,10 Z" id="Cup-Top" fill="#FFFFFF"></path>
+            <path d="M30,25 L50,25 L47.5,55 L32.5,55 L30,25 Z" id="Cup-Body" fill="#FFECB3"></path>
+            <path d="M35,30 L45,30 L45,35 L35,35 L35,30 Z" id="Cup-Design1" fill="#FFC107"></path>
+            <path d="M35,40 L45,40 L45,45 L35,45 L35,40 Z" id="Cup-Design2" fill="#FFC107"></path>
+            <path d="M40,0 C37.5,0 35,2.5 35,5 L35,10 L45,10 L45,5 C45,2.5 42.5,0 40,0 Z" id="Cup-Handle" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

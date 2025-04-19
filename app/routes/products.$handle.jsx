@@ -10,6 +10,7 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {AddToCartButton} from '~/components/AddToCartButton';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -99,31 +100,174 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const {title, descriptionHtml, vendor, tags} = product;
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+    <div className="product-detail-container">
+      <div className="product-detail">
+        {/* Product Images Section */}
+        <div className="product-image-container">
+          <div className="product-image">
+            {selectedVariant?.image && (
+              <>
+                <div className="product-image-badge">Featured</div>
+                <img
+                  src={selectedVariant.image.url}
+                  alt={selectedVariant.image.altText || title}
+                />
+              </>
+            )}
+          </div>
+
+          <div className="product-thumbnails">
+            {product.images?.nodes?.map((image, index) => (
+              <div
+                key={image.id}
+                className={`product-thumbnail ${selectedVariant?.image?.id === image.id ? 'active' : ''}`}
+              >
+                <img src={image.url} alt={`${title} - Image ${index + 1}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Info Section */}
+        <div className="product-info-container">
+          <div className="product-breadcrumbs">
+            <a href="/">Home</a>
+            <span className="separator">/</span>
+            <a href="/collections/all">Products</a>
+            <span className="separator">/</span>
+            <span>{title}</span>
+          </div>
+
+          <h1 className="product-title">{title}</h1>
+
+          {vendor && <div className="product-vendor">{vendor}</div>}
+
+          <div className="product-rating">
+            <div className="product-stars">
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star"></i>
+              <i className="fas fa-star-half-alt"></i>
+            </div>
+            
+          </div>
+
+          <div className="product-price-container">
+            <div className="product-price">
+              <ProductPrice
+                price={selectedVariant?.price}
+                compareAtPrice={selectedVariant?.compareAtPrice}
+              />
+            </div>
+            {selectedVariant?.compareAtPrice && (
+              <div className="product-discount-badge">
+                Save {Math.round((1 - parseFloat(selectedVariant.price.amount) / parseFloat(selectedVariant.compareAtPrice.amount)) * 100)}%
+              </div>
+            )}
+          </div>
+
+          <div className={`product-availability ${selectedVariant?.availableForSale ? 'in-stock' : 'out-of-stock'}`}>
+            <i className={`fas ${selectedVariant?.availableForSale ? 'fa-check-circle' : 'fa-times-circle'}`}></i>
+            {selectedVariant?.availableForSale ? 'In Stock' : 'Out of Stock'}
+          </div>
+
+          <div className="product-description" dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+
+          <div className="product-form">
+            <div className="product-options">
+              <ProductForm
+                productOptions={productOptions}
+                selectedVariant={selectedVariant}
+              />
+            </div>
+
+            <div className="add-to-cart-container">
+              <div className="quantity-selector">
+                <button className="quantity-btn" aria-label="Decrease quantity">-</button>
+                <input type="number" className="quantity-input" value="1" min="1" readOnly />
+                <button className="quantity-btn" aria-label="Increase quantity">+</button>
+              </div>
+
+              
+
+             
+            </div>
+
+            
+          </div>
+
+          <div className="product-guarantees">
+            <div className="guarantee-item">
+              <div className="guarantee-icon">
+                <i className="fas fa-truck"></i>
+              </div>
+              <div className="guarantee-text">Free shipping on orders over $50</div>
+            </div>
+            <div className="guarantee-item">
+              <div className="guarantee-icon">
+                <i className="fas fa-undo"></i>
+              </div>
+              <div className="guarantee-text">30-day money-back guarantee</div>
+            </div>
+            <div className="guarantee-item">
+              <div className="guarantee-icon">
+                <i className="fas fa-shield-alt"></i>
+              </div>
+              <div className="guarantee-text">Secure payment</div>
+            </div>
+          </div>
+
+          <div className="product-meta">
+            <div className="product-meta-item">
+              <div className="product-meta-label">SKU</div>
+              <div className="product-meta-value">{selectedVariant?.sku || 'N/A'}</div>
+            </div>
+            {tags && tags.length > 0 && (
+              <div className="product-meta-item">
+                <div className="product-meta-label">Tags</div>
+                <div className="product-meta-value">
+                  <div className="product-tags">
+                    {tags.map((tag, index) => (
+                      <span key={index} className="product-tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Product Tabs */}
+      <div className="product-tabs">
+        <div className="tabs-header">
+          <button className="tab-button active">
+            <i className="fas fa-info-circle"></i> Description
+          </button>
+          <button className="tab-button">
+            <i className="fas fa-list"></i> Specifications
+          </button>
+          <button className="tab-button">
+            <i className="fas fa-star"></i> Reviews
+          </button>
+        </div>
+        <div className="tab-content active">
+          <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
+        </div>
+      </div>
+
+      {/* Related Products */}
+      <div className="related-products">
+        <h3 className="related-products-title">You May Also Like</h3>
+        <div className="related-products-grid">
+          {/* Related products would go here */}
+        </div>
+      </div>
+
       <Analytics.ProductView
         data={{
           products: [

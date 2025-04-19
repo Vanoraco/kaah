@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Beauty</title>
+    <g id="Beauty" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#FCE4EC" cx="40" cy="40" r="40"></circle>
+        <g id="Beauty-Products" transform="translate(15.000000, 10.000000)" fill-rule="nonzero">
+            <path d="M15,0 L25,0 L25,10 L15,10 L15,0 Z" id="Perfume-Top" fill="#9C27B0"></path>
+            <path d="M10,10 L30,10 L30,40 L10,40 L10,10 Z" id="Perfume-Bottle" fill="#E1BEE7"></path>
+            <path d="M15,15 L25,15 L25,35 L15,35 L15,15 Z" id="Perfume-Label" fill="#9C27B0"></path>
+            <path d="M40,0 C37.5,0 35,2.5 35,5 L35,10 L45,10 L45,5 C45,2.5 42.5,0 40,0 Z" id="Cream-Lid" fill="#F48FB1"></path>
+            <path d="M35,10 L45,10 L45,25 L35,25 L35,10 Z" id="Cream-Jar" fill="#F8BBD0"></path>
+            <path d="M37.5,15 L42.5,15 L42.5,20 L37.5,20 L37.5,15 Z" id="Cream-Label" fill="#EC407A"></path>
+            <path d="M20,45 L40,45 L40,55 L20,55 L20,45 Z" id="Lipstick-Base" fill="#EC407A"></path>
+            <path d="M25,40 L35,40 L35,45 L25,45 L25,40 Z" id="Lipstick-Tube" fill="#F06292"></path>
+            <path d="M27.5,35 L32.5,35 L32.5,40 L27.5,40 L27.5,35 Z" id="Lipstick" fill="#E91E63"></path>
+            <path d="M45,30 C42.5,30 40,32.5 40,35 L40,55 L50,55 L50,35 C50,32.5 47.5,30 45,30 Z" id="Brush-Handle" fill="#9C27B0"></path>
+            <path d="M45,25 C42.5,25 40,27.5 40,30 L40,35 L50,35 L50,30 C50,27.5 47.5,25 45,25 Z" id="Brush-Ferrule" fill="#F8BBD0"></path>
+            <path d="M45,20 C42.5,20 40,22.5 40,25 L40,30 L50,30 L50,25 C50,22.5 47.5,20 45,20 Z" id="Brush-Head" fill="#F48FB1"></path>
+        </g>
+    </g>
+</svg>

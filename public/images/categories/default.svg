@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Default Category</title>
+    <g id="Default-Category" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#E3F2FD" cx="40" cy="40" r="40"></circle>
+        <g id="Shopping-Bag" transform="translate(20.000000, 15.000000)" fill-rule="nonzero">
+            <path d="M40,15 L40,50 L0,50 L0,15 L40,15 Z" id="Bag" fill="#1A237E" opacity="0.8"></path>
+            <path d="M30,0 L30,20 L10,20 L10,0 L30,0 Z" id="Top" fill="#FFC107" opacity="0.9"></path>
+            <path d="M30,15 L30,20 L10,20 L10,15 L30,15 Z" id="Overlap" fill="#1A237E" opacity="0.8"></path>
+            <path d="M15,0 C12.2386,0 10,2.2386 10,5 L10,20 L15,20 L15,5 C15,5 15,0 15,0 Z" id="Handle-Left" fill="#1A237E" opacity="0.6"></path>
+            <path d="M25,0 C27.7614,0 30,2.2386 30,5 L30,20 L25,20 L25,5 C25,5 25,0 25,0 Z" id="Handle-Right" fill="#1A237E" opacity="0.6"></path>
+        </g>
+    </g>
+</svg>

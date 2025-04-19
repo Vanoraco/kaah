@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Meat</title>
+    <g id="Meat" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#FFEBEE" cx="40" cy="40" r="40"></circle>
+        <g id="Meat-Products" transform="translate(15.000000, 15.000000)" fill-rule="nonzero">
+            <path d="M40,25 C40,38.8071 31.0457,50 20,50 C8.9543,50 0,38.8071 0,25 C0,11.1929 8.9543,0 20,0 C31.0457,0 40,11.1929 40,25 Z" id="Steak" fill="#D32F2F"></path>
+            <path d="M35,25 C35,36.0457 28.2843,45 20,45 C11.7157,45 5,36.0457 5,25 C5,13.9543 11.7157,5 20,5 C28.2843,5 35,13.9543 35,25 Z" id="Inner-Meat" fill="#F44336"></path>
+            <path d="M30,25 C30,33.2843 25.5228,40 20,40 C14.4772,40 10,33.2843 10,25 C10,16.7157 14.4772,10 20,10 C25.5228,10 30,16.7157 30,25 Z" id="Fat-Marbling" fill="#FFCDD2"></path>
+            <path d="M45,15 C42.5,15 40,17.5 40,20 C40,22.5 42.5,25 45,25 C47.5,25 50,22.5 50,20 C50,17.5 47.5,15 45,15 Z" id="Spice1" fill="#8D6E63"></path>
+            <path d="M47.5,30 C45,30 42.5,32.5 42.5,35 C42.5,37.5 45,40 47.5,40 C50,40 52.5,37.5 52.5,35 C52.5,32.5 50,30 47.5,30 Z" id="Spice2" fill="#8D6E63"></path>
+        </g>
+    </g>
+</svg>

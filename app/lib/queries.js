@@ -10,6 +10,12 @@ export const COLLECTIONS_QUERY = `#graphql
       width
       height
     }
+    products(first: 10) {
+      nodes {
+        id
+        title
+      }
+    }
   }
   query StoreCollections(
     $country: CountryCode

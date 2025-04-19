@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Snacks</title>
+    <g id="Snacks" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#FFF8E1" cx="40" cy="40" r="40"></circle>
+        <g id="Snacks" transform="translate(15.000000, 15.000000)" fill-rule="nonzero">
+            <path d="M10,0 L40,0 L40,10 C40,15.5228 35.5228,20 30,20 L20,20 C14.4772,20 10,15.5228 10,10 L10,0 Z" id="Chips-Bag-Top" fill="#FFC107"></path>
+            <path d="M10,0 L40,0 L40,40 L10,40 L10,0 Z" id="Chips-Bag" fill="#FFEB3B"></path>
+            <path d="M15,5 L35,5 L35,35 L15,35 L15,5 Z" id="Chips-Label" fill="#F44336"></path>
+            <path d="M20,10 L30,10 L30,15 L20,15 L20,10 Z" id="Chips-Text1" fill="#FFFFFF"></path>
+            <path d="M20,20 L30,20 L30,25 L20,25 L20,20 Z" id="Chips-Text2" fill="#FFFFFF"></path>
+            <path d="M45,25 C42.5,25 40,27.5 40,30 C40,32.5 42.5,35 45,35 C47.5,35 50,32.5 50,30 C50,27.5 47.5,25 45,25 Z" id="Cookie1" fill="#8D6E63"></path>
+            <path d="M47.5,25 C46.5,25 45.5,26 45.5,27 C45.5,28 46.5,29 47.5,29 C48.5,29 49.5,28 49.5,27 C49.5,26 48.5,25 47.5,25 Z" id="Chocolate-Chip1" fill="#3E2723"></path>
+            <path d="M42.5,30 C41.5,30 40.5,31 40.5,32 C40.5,33 41.5,34 42.5,34 C43.5,34 44.5,33 44.5,32 C44.5,31 43.5,30 42.5,30 Z" id="Chocolate-Chip2" fill="#3E2723"></path>
+            <path d="M47.5,40 C45,40 42.5,42.5 42.5,45 C42.5,47.5 45,50 47.5,50 C50,50 52.5,47.5 52.5,45 C52.5,42.5 50,40 47.5,40 Z" id="Cookie2" fill="#8D6E63"></path>
+            <path d="M50,40 C49,40 48,41 48,42 C48,43 49,44 50,44 C51,44 52,43 52,42 C52,41 51,40 50,40 Z" id="Chocolate-Chip3" fill="#3E2723"></path>
+            <path d="M45,45 C44,45 43,46 43,47 C43,48 44,49 45,49 C46,49 47,48 47,47 C47,46 46,45 45,45 Z" id="Chocolate-Chip4" fill="#3E2723"></path>
+        </g>
+    </g>
+</svg>

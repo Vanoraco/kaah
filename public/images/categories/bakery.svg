@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Bakery</title>
+    <g id="Bakery" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Background" fill="#EFEBE9" cx="40" cy="40" r="40"></circle>
+        <g id="Bakery-Products" transform="translate(15.000000, 15.000000)" fill-rule="nonzero">
+            <path d="M25,0 C12.5,0 0,7.5 0,15 L0,20 L50,20 L50,15 C50,7.5 37.5,0 25,0 Z" id="Bread-Top" fill="#D7CCC8"></path>
+            <path d="M0,20 L50,20 L50,35 L0,35 L0,20 Z" id="Bread-Body" fill="#BCAAA4"></path>
+            <path d="M10,25 C7.5,25 5,27.5 5,30 C5,32.5 7.5,35 10,35 C12.5,35 15,32.5 15,30 C15,27.5 12.5,25 10,25 Z" id="Bread-Hole1" fill="#8D6E63"></path>
+            <path d="M25,25 C22.5,25 20,27.5 20,30 C20,32.5 22.5,35 25,35 C27.5,35 30,32.5 30,30 C30,27.5 27.5,25 25,25 Z" id="Bread-Hole2" fill="#8D6E63"></path>
+            <path d="M40,25 C37.5,25 35,27.5 35,30 C35,32.5 37.5,35 40,35 C42.5,35 45,32.5 45,30 C45,27.5 42.5,25 40,25 Z" id="Bread-Hole3" fill="#8D6E63"></path>
+            <path d="M15,40 L35,40 C40,40 45,45 45,50 C45,55 40,60 35,60 L15,60 C10,60 5,55 5,50 C5,45 10,40 15,40 Z" id="Croissant" fill="#FFE0B2"></path>
+            <path d="M15,40 C12.5,40 10,42.5 10,45 C10,47.5 12.5,50 15,50 C17.5,50 20,47.5 20,45 C20,42.5 17.5,40 15,40 Z" id="Croissant-Layer1" fill="#FFCC80"></path>
+            <path d="M25,45 C22.5,45 20,47.5 20,50 C20,52.5 22.5,55 25,55 C27.5,55 30,52.5 30,50 C30,47.5 27.5,45 25,45 Z" id="Croissant-Layer2" fill="#FFCC80"></path>
+            <path d="M35,50 C32.5,50 30,52.5 30,55 C30,57.5 32.5,60 35,60 C37.5,60 40,57.5 40,55 C40,52.5 37.5,50 35,50 Z" id="Croissant-Layer3" fill="#FFCC80"></path>
+        </g>
+    </g>
+</svg>
