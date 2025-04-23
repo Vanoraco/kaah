@@ -23,13 +23,42 @@ export function FeaturedProducts({products}) {
       <div className="featured-products-container">
         <Suspense fallback={<FeaturedProductsSkeleton />}>
           <Await resolve={products}>
-            {(products) => (
-              <div className="products-grid">
-                {products?.products?.nodes?.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+            {(data) => {
+              // Handle both data structures - collection-based and direct products
+              const products = data?.collection?.products?.nodes || data?.products?.nodes || [];
+              const collectionTitle = data?.collection?.title;
+
+              return (
+                <>
+                  {collectionTitle && (
+                    <div className="collection-title-container">
+                      <span className="collection-from">From Collection:</span>
+                      <h3 className="collection-title">{collectionTitle}</h3>
+                    </div>
+                  )}
+                  <div className="products-grid">
+                    {products.length > 0 ? (
+                      products.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))
+                    ) : (
+                      <div className="no-featured-products">
+                        <p>No featured products found. Please add products to the "featured-products" collection.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="view-all-products-container">
+                    <Link to="/products" className="view-all-products-button">
+                      <span className="view-all-text">View All Products</span>
+                      <span className="view-all-icon">
+                        <i className="fas fa-arrow-right"></i>
+                      </span>
+                    </Link>
+                  </div>
+                </>
+              );
+            }}
           </Await>
         </Suspense>
       </div>

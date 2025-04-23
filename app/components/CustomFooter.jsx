@@ -69,7 +69,7 @@ export function CustomFooter() {
           {/* Logo and Info */}
           <div className="footer-column footer-logo-column">
             <Link to="/" className="footer-logo">
-              <img src="../../public/logo.svg" alt="Ecobazar" />
+              <img src="../../public/logo.svg" alt="Kaah" />
               <span>Kaah</span>
             </Link>
             <p>Morbi cursus porttitor enim lobortis molestie. Duis gravida turpis dui, eget bibendum magna congue nec.</p>

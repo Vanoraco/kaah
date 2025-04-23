@@ -1,0 +1,30 @@
+:root {
+    --primary-color: #1A237E; /* Navy blue from logo */
+    --secondary-color: #333;
+    --text-color: #555;
+    --background-color: #fff;
+    --border-color: #eee;
+    --accent-color: #FFC107; /* Yellow/gold from logo */
+    --highlight-color: #2A3990; /* Lighter navy for hover states */
+  
+    /* Product Detail Variables */
+    --product-primary: var(--primary-color);
+    --product-secondary: var(--secondary-color);
+    --product-accent: var(--accent-color);
+    --product-bg: #f9f9f9;
+    --product-text: #333;
+    --product-light-text: #777;
+    --product-border: #e0e0e0;
+    --product-shadow: rgba(0, 0, 0, 0.08);
+    --product-radius: 12px;
+    --product-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--highlight-color) 100%);
+    --product-gradient-hover: linear-gradient(135deg, var(--highlight-color) 0%, var(--primary-color) 100%);
+    --product-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --product-glow: 0 0 25px rgba(26, 35, 126, 0.2);
+    --product-card-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    --product-glass-bg: rgba(255, 255, 255, 0.85);
+    --product-glass-border: rgba(255, 255, 255, 0.2);
+    --product-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --product-neuro-shadow: 8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.8);
+    --product-neuro-shadow-inset: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+  }

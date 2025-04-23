@@ -64,15 +64,22 @@ async function loadCriticalData({context}) {
 }
 
 function loadDeferredData({context}) {
-  const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
+  // Fetch products from the "featured-products" collection
+  // If the collection doesn't exist, fall back to recommended products
+  const featuredProducts = context.storefront
+    .query(FEATURED_PRODUCTS_QUERY, {
+      variables: {
+        collectionHandle: 'featured-products', // This should match your collection handle in Shopify
+      },
+    })
     .catch((error) => {
-      console.error(error);
-      return null;
+      console.error('Error fetching featured products collection:', error);
+      // Fall back to recommended products if the featured collection doesn't exist
+      return context.storefront.query(RECOMMENDED_PRODUCTS_QUERY);
     });
 
   return {
-    recommendedProducts,
+    featuredProducts,
   };
 }
 
@@ -136,7 +143,7 @@ export default function Homepage() {
       <ShopByCategories collections={collections} />
 
       {/* Featured Products */}
-      <FeaturedProducts products={data.recommendedProducts} />
+      <FeaturedProducts products={data.featuredProducts} />
 
       {/* Professional Members */}
       {/* <div className="members-section">
@@ -228,6 +235,46 @@ const FEATURED_COLLECTION_QUERY = `#graphql
     collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...FeaturedCollection
+      }
+    }
+  }
+`;
+
+const FEATURED_PRODUCTS_QUERY = `#graphql
+  fragment FeaturedProductDetails on Product {
+    id
+    title
+    handle
+    vendor
+    description
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 2) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+    tags
+    availableForSale
+  }
+  query FeaturedProducts($country: CountryCode, $language: LanguageCode, $collectionHandle: String!)
+    @inContext(country: $country, language: $language) {
+    collection(handle: $collectionHandle) {
+      id
+      title
+      handle
+      products(first: 10) {
+        nodes {
+          ...FeaturedProductDetails
+        }
       }
     }
   }

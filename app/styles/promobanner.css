@@ -1,0 +1,367 @@
+/* Promotion Cards */
+.promotion-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+  
+  .promo-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 380px;
+    display: flex;
+    padding: 30px;
+    box-shadow:
+      10px 10px 30px rgba(0, 0, 0, 0.1),
+      -10px -10px 30px rgba(255, 255, 255, 0.05),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.1),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+    transition: none; /* Remove transition to prevent flickering */
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    /* Add a subtle pattern overlay */
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
+  }
+  
+  .promo-card:hover {
+    /* Remove transform to prevent flickering */
+    box-shadow:
+      15px 15px 40px rgba(0, 0, 0, 0.15),
+      -15px -15px 40px rgba(255, 255, 255, 0.07),
+      inset 3px 3px 6px rgba(255, 255, 255, 0.15),
+      inset -3px -3px 6px rgba(0, 0, 0, 0.1);
+    /* Add a subtle glow effect on hover */
+    outline: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Promotion card content */
+  .promo-card .promo-content {
+    position: relative;
+    z-index: 2;
+    width: 60%; /* Reduce width to make room for images */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Add a subtle text shadow for better readability over images */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Ensure content doesn't interfere with button */
+    min-height: 250px;
+  }
+  
+  .promo-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    opacity: 0.9;
+  }
+  
+  .promo-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .countdown {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 5px;
+  }
+  
+  .countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    padding: 8px 12px;
+    border-radius: 8px;
+    min-width: 50px;
+  }
+  
+  .countdown-value {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .countdown-label {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+  
+  .countdown-separator {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: -10px;
+  }
+  
+  .promo-price, .promo-discount {
+    margin-bottom: 25px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .promo-discount {
+    margin-top: 5px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 5;
+    min-height: 40px; /* Ensure container has minimum height */
+    display: flex;
+    align-items: center;
+  }
+  
+  .promo-price strong {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f39c12;
+  }
+  
+  .discount-badge {
+    display: inline-block !important; /* Force display */
+    background: rgba(0, 0, 0, 0.403);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-left: 8px;
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative; /* Ensure proper stacking context */
+    z-index: 5; /* Higher z-index to ensure visibility */
+    visibility: visible !important; /* Force visibility */
+    opacity: 1 !important; /* Force opacity */
+    transition: none !important; /* Disable transitions */
+  }
+  
+  /* Shop Now Button - Completely simplified to prevent flickering */
+  .shop-now-btn.promo-btn {
+    /* Basic styling */
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    align-self: flex-start;
+    margin-top: 25px;
+  
+    /* Appearance */
+    background-color: white;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-align: center;
+  
+    /* Layout */
+    position: relative;
+    z-index: 20; /* Very high z-index to ensure visibility */
+  
+    /* Border and shadow */
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  
+    /* Disable all animations and transitions */
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  /* Icon in button */
+  .shop-now-btn.promo-btn i {
+    font-size: 14px;
+    margin-left: 8px;
+    display: inline-block;
+  }
+  
+  /* Simple hover state without animations */
+  .shop-now-btn.promo-btn:hover {
+    background-color: #f8f8f8;
+    color: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Simple active state without animations */
+  .shop-now-btn.promo-btn:active {
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .promo-image {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end; /* Align to bottom */
+    justify-content: flex-end; /* Align to right */
+  }
+  
+  .promo-actual-image {
+    position: relative;
+    max-width: 55%;
+    max-height: 75%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(0) translateX(0) rotate(2deg);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2; /* Ensure image is above other elements */
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+    backdrop-filter: blur(5px);
+    margin-right: 5%;
+    margin-bottom: 10%;
+  }
+  
+  /* Image container for better positioning and effects */
+  .promo-image-container {
+    position: relative;
+    display: inline-block;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    align-self: flex-end; /* Align to bottom */
+    margin-bottom: 0; /* Remove any bottom margin */
+    margin-right: 0; /* Remove any right margin */
+  }
+  
+  /* Add a subtle glow effect to the images */
+  .promo-actual-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+  
+  /* Image loading animation */
+  .promo-actual-image {
+    opacity: 0;
+    transform: translateY(20px) translateX(0) rotate(5deg);
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+  
+  .promo-actual-image.image-loaded {
+    opacity: 1;
+    transform: translateY(0) translateX(0) rotate(2deg);
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px) translateX(0) rotate(5deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) translateX(0) rotate(2deg);
+    }
+  }
+  
+  .promo-card:hover .promo-actual-image {
+    transform: translateY(-5%) translateX(0) rotate(0deg) scale(1.05);
+    box-shadow:
+      0 15px 40px rgba(0, 0, 0, 0.3),
+      0 0 0 2px rgba(255, 255, 255, 0.2);
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.25));
+  }
+  
+  .food-emoji {
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+    transition: all 0.3s ease;
+  }
+  
+  .promo-card:hover .food-emoji {
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+    transform: scale(1.1);
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(5deg);
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+  }
+  
+  /* Add different animation delays to each food item */
+  .food-emoji:nth-child(1) { animation-delay: 0s; }
+  .food-emoji:nth-child(2) { animation-delay: 0.5s; }
+  .food-emoji:nth-child(3) { animation-delay: 1s; }
+  .food-emoji:nth-child(4) { animation-delay: 1.5s; }
+  .food-emoji:nth-child(5) { animation-delay: 2s; }
+  
+  @media (max-width: 992px) {
+    .promotion-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .promotion-cards {
+      grid-template-columns: 1fr;
+    }
+  
+    .promo-card {
+      min-height: 300px;
+    }
+  
+    .promo-card .promo-content {
+      width: 100%; /* Full width on mobile */
+    }
+  
+    .promo-image-container {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: flex-end; /* Align to right */
+      align-items: flex-end; /* Align to bottom */
+      z-index: 1;
+      opacity: 0.5; /* Make image slightly more visible on mobile */
+    }
+  
+    .promo-actual-image {
+      max-width: 60%;
+      max-height: 60%;
+      margin-right: 5%;
+      margin-bottom: 5%;
+    }
+  
+    /* Responsive button styling - simplified for stability */
+    .shop-now-btn.promo-btn {
+      padding: 10px 20px !important;
+      font-size: 14px !important;
+      width: 100% !important;
+      text-align: center !important;
+      margin-top: 15px !important;
+      display: block !important;
+    }
+  }

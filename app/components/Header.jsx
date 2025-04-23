@@ -42,25 +42,8 @@ export function Header({header, isLoggedIn, cart, collections}) {
               <span>Store Location: SouthAfrica</span>
             </div>
             <div className="header-top-right">
-              <div className="language-currency">
-                <div className="select-wrapper">
-                  <select className="language-select">
-                    <option value="eng">Eng</option>
-                    <option value="fr">Fr</option>
-                  </select>
-                </div>
-                <div className="select-wrapper">
-                  <select className="currency-select">
-                    <option value="usd">USD</option>
-                    <option value="eur">EUR</option>
-                  </select>
-                </div>
-              </div>
-              <div className="auth-links">
-                <NavLink to="/account/login">Sign In</NavLink>
-                <span>/</span>
-                <NavLink to="/account/register">Sign Up</NavLink>
-              </div>
+              
+              
             </div>
           </div>
         </div>
@@ -166,9 +149,9 @@ export function Header({header, isLoggedIn, cart, collections}) {
               </NavLink>
               <NavLink to="/cart" className="nav-icon-link cart-icon-link">
                 <i className="fas fa-shopping-cart"></i>
-                <span className="nav-cart-count">2</span>
+                {/* Cart count will be dynamically populated when cart functionality is implemented */}
               </NavLink>
-              <NavLink to="/account" className="nav-icon-link">
+              <NavLink to="/account_/login" className="nav-icon-link">
                 <i className="far fa-user"></i>
               </NavLink>
             </div>
@@ -244,7 +227,7 @@ function HeaderCtas({isLoggedIn, cart}) {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+      <NavLink prefetch="intent" to="/account_/login" style={activeLinkStyle}>
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
