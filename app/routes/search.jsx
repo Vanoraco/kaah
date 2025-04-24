@@ -38,37 +38,58 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
-        {({inputRef}) => (
-          <>
-            <input
-              defaultValue={term}
-              name="q"
-              placeholder="Search…"
-              ref={inputRef}
-              type="search"
-            />
-            &nbsp;
-            <button type="submit">Search</button>
-          </>
-        )}
-      </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      {!term || !result?.total ? (
-        <SearchResults.Empty />
-      ) : (
-        <SearchResults result={result} term={term}>
-          {({articles, pages, products, term}) => (
-            <div>
-              <SearchResults.Products products={products} term={term} />
-              <SearchResults.Pages pages={pages} term={term} />
-              <SearchResults.Articles articles={articles} term={term} />
-            </div>
+    <div className="search-page">
+      <div className="search-page-header">
+        <div className="search-page-title-container">
+          
+          {term && (
+            <p className="search-page-subtitle">
+              <span className="search-term-label">Results for</span>
+              <span className="search-term-value">"{term}"</span>
+            </p>
           )}
-        </SearchResults>
-      )}
+        </div>
+        <div className="search-form-container">
+         {/* <SearchForm>
+            {({inputRef}) => (
+              <>
+                <div className="search-input-wrapper">
+                  <i className="fas fa-search search-icon"></i>
+                  <input
+                    defaultValue={term}
+                    name="q"
+                    placeholder="What are you looking for today?"
+                    ref={inputRef}
+                    type="search"
+                    className="search-input"
+                  />
+                  <button type="submit" className="search-button">
+                    Search
+                  </button>
+                </div>
+              </>
+            )}
+          </SearchForm> */}
+        </div>
+      </div>
+
+      {error && <div className="search-error"><p>{error}</p></div>}
+
+      <div className="search-results-container">
+        {!term || !result?.total ? (
+          <SearchResults.Empty />
+        ) : (
+          <SearchResults result={result} term={term}>
+            {({articles, pages, products, term}) => (
+              <div className="search-results-content">
+                <SearchResults.Products products={products} term={term} />
+                <SearchResults.Pages pages={pages} term={term} />
+                <SearchResults.Articles articles={articles} term={term} />
+              </div>
+            )}
+          </SearchResults>
+        )}
+      </div>
       <Analytics.SearchView data={{searchTerm: term, searchResults: result}} />
     </div>
   );

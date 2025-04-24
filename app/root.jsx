@@ -26,6 +26,8 @@ import emptyCollectionStyles from '~/styles/empty-collection.css?url';
 import customFooterStyles from '~/styles/custom-footer.css?url';
 import notFoundStyles from '~/styles/not-found.css?url';
 import productsStyles from '~/styles/products.css?url';
+import searchDropdownStyles from '~/styles/search-dropdown.css?url';
+import searchResultsStyles from '~/styles/search-results.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
@@ -182,6 +184,8 @@ export function Layout({children}) {
         <link rel="stylesheet" href={customFooterStyles}></link>
         <link rel="stylesheet" href={notFoundStyles}></link>
         <link rel="stylesheet" href={productsStyles}></link>
+        <link rel="stylesheet" href={searchDropdownStyles}></link>
+        <link rel="stylesheet" href={searchResultsStyles}></link>
         <link rel="stylesheet" href={variablesStyles}></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -233,6 +237,7 @@ export function ErrorBoundary() {
             <link rel="stylesheet" href={customFooterStyles}></link>
             <link rel="stylesheet" href={notFoundStyles}></link>
             <link rel="stylesheet" href={productsStyles}></link>
+            <link rel="stylesheet" href={searchResultsStyles}></link>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
             <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
             <title>Page Not Found - Ecobazar</title>

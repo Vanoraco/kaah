@@ -77,7 +77,7 @@ export function CustomFooter() {
               <div className="contact-item">
                 <span>(27) 555-0114</span>
                 <span className="divider">or</span>
-                <a href="mailto:kaah@gmail.com">kaah@gmail.com</a>
+                <a href="support@kaah.co.za">support@kaah.co.za </a>
               </div>
             </div>
           </div>

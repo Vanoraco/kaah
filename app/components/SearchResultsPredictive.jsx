@@ -231,14 +231,22 @@ function SearchResultsPredictiveQueries({queries, queriesDatalistId}) {
  * }}
  */
 function SearchResultsPredictiveEmpty({term}) {
-  if (!term.current) {
-    return null;
-  }
-
   return (
-    <p>
-      No results found for <q>{term.current}</q>
-    </p>
+    <div className="predictive-search-empty">
+      <h5>Search Results</h5>
+      <div className="predictive-search-empty-content">
+        {term.current ? (
+          <>
+            <p>
+              No results found for <q>{term.current}</q>
+            </p>
+            <p className="predictive-search-suggestion">Try a different search term</p>
+          </>
+        ) : (
+          <p>Enter a search term to see results</p>
+        )}
+      </div>
+    </div>
   );
 }
 

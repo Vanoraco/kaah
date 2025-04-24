@@ -148,7 +148,18 @@ function SearchResultsProducts({term, products}) {
 }
 
 function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+  return (
+    <div className="no-search-results">
+      <div className="no-search-results-content">
+        <div className="no-search-results-icon">
+          <i className="fas fa-search"></i>
+        </div>
+        <h2>No results found</h2>
+        <p>Sorry, we couldn't find any matches for your search.</p>
+        <p className="search-suggestion">Try a different search term or browse our categories.</p>
+      </div>
+    </div>
+  );
 }
 
 /** @typedef {RegularSearchReturn['result']['items']} SearchItems */

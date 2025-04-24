@@ -2,6 +2,7 @@ import {Suspense, useState, useEffect, useRef} from 'react';
 import {Await, NavLink, useAsyncValue, useLoaderData} from '@remix-run/react';
 import {useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
 import {useAside} from '~/components/Aside';
+import {SearchDropdown} from '~/components/SearchDropdown';
 
 /**
  * @param {HeaderProps}
@@ -9,6 +10,7 @@ import {useAside} from '~/components/Aside';
 export function Header({header, isLoggedIn, cart, collections}) {
   const {shop} = header;
   const [showCategories, setShowCategories] = useState(false);
+  const [showSearchOverlay, setShowSearchOverlay] = useState(false);
   const categoriesRef = useRef(null);
 
   // Debug collections data
@@ -16,6 +18,15 @@ export function Header({header, isLoggedIn, cart, collections}) {
 
   const toggleCategories = () => {
     setShowCategories(!showCategories);
+  };
+
+  const toggleSearchOverlay = (e) => {
+    // Prevent event from propagating to document which would trigger handleClickOutside
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setShowSearchOverlay(prevState => !prevState);
   };
 
   useEffect(() => {
@@ -42,8 +53,8 @@ export function Header({header, isLoggedIn, cart, collections}) {
               <span>Store Location: SouthAfrica</span>
             </div>
             <div className="header-top-right">
-              
-              
+
+
             </div>
           </div>
         </div>
@@ -63,6 +74,7 @@ export function Header({header, isLoggedIn, cart, collections}) {
             </NavLink>
 
             {/* Search Bar */}
+            {/*
             <form className="search-bar">
               <div className="search-input-wrapper">
                 <i className="fas fa-search search-icon"></i>
@@ -76,6 +88,7 @@ export function Header({header, isLoggedIn, cart, collections}) {
                 </button>
               </div>
             </form>
+            */}
 
             {/* Header Actions */}
             <div className="header-actions">
@@ -144,15 +157,29 @@ export function Header({header, isLoggedIn, cart, collections}) {
               <li><NavLink to="/contact">Contact Us</NavLink></li>
             </ul>
             <div className="nav-icons">
-              <NavLink to="/wishlist" className="nav-icon-link">
-                <i className="far fa-heart"></i>
+              <div className="nav-icon-link search-icon-link">
+                <button
+                  className={`search-icon-button ${showSearchOverlay ? 'active' : ''}`}
+                  onClick={toggleSearchOverlay}
+                  aria-label="Search"
+                >
+                  <i className="fas fa-search"></i>
+                </button>
+                <SearchDropdown isOpen={showSearchOverlay} onClose={() => setShowSearchOverlay(false)} />
+              </div>
+              <NavLink to="/account_/login" className="nav-icon-link user-icon-link">
+                <i className="far fa-user"></i>
               </NavLink>
               <NavLink to="/cart" className="nav-icon-link cart-icon-link">
-                <i className="fas fa-shopping-cart"></i>
-                {/* Cart count will be dynamically populated when cart functionality is implemented */}
-              </NavLink>
-              <NavLink to="/account_/login" className="nav-icon-link">
-                <i className="far fa-user"></i>
+                <i className="fas fa-shopping-bag"></i>
+                <Suspense fallback={<span className="cart-badge">0</span>}>
+                  <Await resolve={cart}>
+                    {(cart) => {
+                      const count = cart?.totalQuantity || 0;
+                      return count > 0 ? <span className="cart-badge">{count}</span> : null;
+                    }}
+                  </Await>
+                </Suspense>
               </NavLink>
             </div>
           </div>
