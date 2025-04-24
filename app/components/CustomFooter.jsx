@@ -69,7 +69,7 @@ export function CustomFooter() {
           {/* Logo and Info */}
           <div className="footer-column footer-logo-column">
             <Link to="/" className="footer-logo">
-              <img src="../../public/logo.svg" alt="Kaah" />
+              <img src="https://cdn.shopify.com/s/files/1/0616/6446/0862/files/logo.svg?v=1745081485" alt="Kaah" />
               <span>Kaah</span>
             </Link>
             <p>Morbi cursus porttitor enim lobortis molestie. Duis gravida turpis dui, eget bibendum magna congue nec.</p>
