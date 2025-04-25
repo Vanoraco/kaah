@@ -205,7 +205,7 @@ export default function Product() {
               <div className="guarantee-icon">
                 <i className="fas fa-truck"></i>
               </div>
-              <div className="guarantee-text">Free shipping on orders over $50</div>
+              <div className="guarantee-text">Free shipping on orders over ZAR 100</div>
             </div>
             <div className="guarantee-item">
               <div className="guarantee-icon">

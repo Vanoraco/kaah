@@ -8,6 +8,11 @@
   --color-light: #fff;
 }
 
+/* Global box-sizing to prevent overflow issues */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 img {
   border-radius: 4px;
 }

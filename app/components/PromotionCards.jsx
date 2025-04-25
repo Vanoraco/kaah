@@ -359,7 +359,7 @@ export function PromotionCards({ promotionMetaobjects, promotionCollections, pro
 
             {promo.price && (
               <div className="promo-price">
-                <span>Started at</span> <strong>{promo.price}</strong>
+                <span>Started at </span> <strong>&nbsp; {promo.price}</strong>
               </div>
             )}
 

@@ -111,7 +111,7 @@ export default function Homepage() {
           <div className="info-badge-icon">🚚</div>
           <div>
             <h4>Free Shipping</h4>
-            <p>From all orders over $100</p>
+            <p>From all orders over ZAR 100</p>
           </div>
         </div>
         <div className="info-badge">

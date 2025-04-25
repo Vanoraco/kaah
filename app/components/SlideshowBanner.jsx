@@ -8,7 +8,7 @@ const DEFAULT_BG_COLORS = ["#1A237E", "#0a5f38", "#5d4037"];
 const DEFAULT_DISCOUNTS = [
   "EXCLUSIVE OFFERS UP TO 40% OFF",
   "BUY ONE GET ONE FREE",
-  "FREE SHIPPING ON ORDERS OVER $50"
+  "FREE SHIPPING ON ORDERS OVER ZAR 100"
 ];
 
 export function SlideshowBanner({ bannerCollections, bannerMetaobjects, bannerArticles, bannerProducts }) {
