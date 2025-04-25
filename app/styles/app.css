@@ -8,9 +8,18 @@
   --color-light: #fff;
 }
 
-/* Global box-sizing to prevent overflow issues */
+/* Global box-sizing and overflow control to prevent white space issues */
 *, *::before, *::after {
   box-sizing: border-box;
+}
+
+/* Additional fixes for mobile white space */
+html, body, #root, main {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 img {

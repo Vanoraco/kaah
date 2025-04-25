@@ -1,62 +1,62 @@
-  
+
 /* Header Styles */
 .header-top {
     background-color: var(--primary-color);
     padding: 10px 0;
     font-size: 14px;
   }
-  
+
   .container {
     max-width: 1320px;
     margin: 0 auto;
     padding: 0 15px;
     position: relative;
   }
-  
+
   /* Add padding to all containers except in the navigation */
   .header-top .container,
   .header .container {
     padding: 0 15px;
   }
-  
+
   .main-nav .container {
     padding-left: 0;
   }
-  
+
   .header-top-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .header-location {
     display: flex;
     align-items: center;
     gap: 8px;
     color: #999999;
   }
-  
+
   .location-icon {
     font-size: 16px;
     color: #999999;
   }
-  
+
   .header-top-right {
     display: flex;
     align-items: center;
     gap: 24px;
   }
-  
+
   .language-currency {
     display: flex;
     align-items: center;
     gap: 16px;
   }
-  
+
   .select-wrapper {
     position: relative;
   }
-  
+
   .select-wrapper::after {
     content: '';
     position: absolute;
@@ -70,7 +70,7 @@
     background-position: center;
     pointer-events: none;
   }
-  
+
   .language-select,
   .currency-select {
     appearance: none;
@@ -81,24 +81,24 @@
     padding-right: 16px;
     cursor: pointer;
   }
-  
+
   .auth-links {
     display: flex;
     align-items: center;
     gap: 8px;
     color: #999999;
   }
-  
+
   .auth-links a {
     color: #999999;
     text-decoration: none;
     transition: color 0.3s ease;
   }
-  
+
   .auth-links a:hover {
     color: #ffffff;
   }
-  
+
   /* Main Header */
   .header {
     padding: 10px 0;
@@ -108,31 +108,31 @@
     z-index: 10;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
   }
-  
+
   .header-main {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 40px;
+    gap: 20px;
     position: relative;
   }
-  
+
   .logo {
     flex-shrink: 0;
     display: flex;
     align-items: flex-end;
     flex-direction: row;
     text-decoration: none;
-    margin-right: 45px;
+    margin-right: 0;
     padding: 5px 0;
     transition: all 0.4s ease;
     position: relative;
   }
-  
+
   .logo:hover {
     filter: brightness(1.1);
   }
-  
+
   .logo:hover .logo-text {
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     background-size: 200% auto;
@@ -142,18 +142,18 @@
     color: transparent;
     animation: shine 2s linear infinite;
   }
-  
+
   .logo:hover .logo-subtext {
     color: var(--accent-color);
     animation: fadeInOut 2s infinite;
   }
-  
+
   @keyframes shine {
     to {
       background-position: 200% center;
     }
   }
-  
+
   @keyframes fadeInOut {
     0%, 100% {
       opacity: 0.8;
@@ -162,18 +162,18 @@
       opacity: 1;
     }
   }
-  
+
   .logo-image {
     height: 80px;
     margin-right: 15px;
     transition: all 0.4s ease;
     position: relative;
   }
-  
+
   .logo:hover .logo-image {
     animation: pulse 1.5s infinite;
   }
-  
+
   @keyframes pulse {
     0% {
       transform: scale(1);
@@ -185,7 +185,7 @@
       transform: scale(1);
     }
   }
-  
+
   .logo-text-container {
     display: flex;
     flex-direction: column;
@@ -193,7 +193,7 @@
     padding-bottom: 12px;
     margin-bottom: -2px;
   }
-  
+
   .logo-text {
     font-size: 20px;
     font-weight: 700;
@@ -204,7 +204,7 @@
     margin-bottom: 0;
     transition: color 0.3s ease;
   }
-  
+
   .logo-subtext {
     font-size: 8px;
     font-weight: 600;
@@ -214,12 +214,12 @@
     text-transform: uppercase;
     transition: color 0.3s ease;
   }
-  
+
   .search-bar {
     flex: 1;
     max-width: 600px;
   }
-  
+
   .search-input-wrapper {
     display: flex;
     position: relative;
@@ -228,7 +228,7 @@
     border-radius: 4px;
     overflow: hidden;
   }
-  
+
   .search-icon {
     position: absolute;
     left: 15px;
@@ -238,7 +238,7 @@
     font-size: 14px;
     z-index: 1;
   }
-  
+
   .search-input {
     flex: 1;
     height: 44px;
@@ -250,11 +250,11 @@
     margin: 0;
     font-family: 'Poppins', sans-serif;
   }
-  
+
   .search-input:focus {
     outline: none;
   }
-  
+
   .search-button {
     height: 44px;
     padding: 0 24px;
@@ -272,45 +272,45 @@
     white-space: nowrap;
     font-family: 'Poppins', sans-serif;
   }
-  
+
   .search-button i {
     margin-right: 6px;
     font-size: 14px;
   }
-  
+
   .search-button:hover {
     background: #FFD54F; /* Lighter yellow */
   }
-  
+
   .header-actions {
     display: flex;
     align-items: center;
     gap: 24px;
-    margin-left: 20px;
+    margin-left: auto;
   }
-  
+
   .header-action-item {
     display: flex;
     align-items: center;
     text-decoration: none;
     color: #1A1A1A;
   }
-  
+
   .header-action-item i {
     font-size: 22px;
     color: #1A1A1A;
   }
-  
+
   .cart-wrapper {
     position: relative;
   }
-  
+
   .cart-link {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-  
+
   .cart-count {
     position: absolute;
     top: -8px;
@@ -327,25 +327,117 @@
     justify-content: center;
     font-family: 'Poppins', sans-serif;
   }
-  
+
   .cart-info {
     display: flex;
     flex-direction: column;
   }
-  
+
   .cart-label {
     font-size: 13px;
     color: #666666;
   }
-  
+
   .cart-amount {
     font-size: 14px;
     font-weight: 500;
     color: #1A1A1A;
   }
-  
-  
-  
+
+  /* Customer service specific styles */
+  .customer-service-wrapper {
+    margin-left: 0;
+  }
+
+  .customer-service-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-service-link i {
+    color: #FFD54F;
+    font-size: 20px;
+  }
+
+  .customer-service-info {
+    display: flex !important;
+  }
+
+  /* Ensure customer service section is always visible */
+  @media (max-width: 1024px) {
+    /* Override the display: none from navigation.css */
+    .cart-info {
+      display: flex !important;
+    }
+
+    /* Adjust header layout for better spacing */
+    .header-main {
+      justify-content: space-between;
+      flex-wrap: nowrap;
+    }
+
+    /* Ensure logo and customer service are side by side */
+    .logo {
+      flex: 0 0 auto;
+    }
+
+    .header-actions {
+      flex: 0 0 auto;
+      margin-left: 0;
+    }
+  }
+
+  /* Responsive styles for customer service section */
+  @media (max-width: 768px) {
+    .header-action-item.cart-link {
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-action-item.cart-link i {
+      font-size: 18px;
+    }
+
+    .cart-info {
+      display: flex !important;
+    }
+
+    .cart-label, .cart-amount {
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    /* Adjust logo size for smaller screens */
+    .logo-image {
+      height: 60px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+    }
+  }
+
+  /* Even smaller screens */
+  @media (max-width: 576px) {
+    .header-main {
+      padding: 5px 0;
+    }
+
+    .logo-image {
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    .cart-label, .cart-amount {
+      font-size: 11px;
+    }
+  }
+
+
+
   .phone-icon-wrapper {
     width: 40px;
     height: 40px;
@@ -355,22 +447,22 @@
     align-items: center;
     justify-content: center;
   }
-  
+
   .phone-icon-wrapper i {
     font-size: 18px;
     color: #333;
   }
-  
+
   .service-info {
     display: flex;
     flex-direction: column;
   }
-  
+
   .service-label {
     font-size: 13px;
     color: #666666;
   }
-  
+
   .service-phone {
     font-size: 16px;
     font-weight: 500;

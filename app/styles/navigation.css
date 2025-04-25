@@ -407,12 +407,10 @@
       max-width: none;
     }
 
-    .cart-info {
-      display: none;
-    }
-
-
+    /* Removed the cart-info display: none to keep customer service visible */
   }
+
+  /* Remove the specific mobile styles for customer service that hide the text */
 
   @media (max-width: 768px) {
     .header-top-content {

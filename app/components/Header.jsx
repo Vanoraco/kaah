@@ -92,10 +92,10 @@ export function Header({header, isLoggedIn, cart, collections}) {
 
             {/* Header Actions */}
             <div className="header-actions">
-              <div className="cart-wrapper">
-                <NavLink to="tel:2195550114" className="header-action-item cart-link">
+              <div className="cart-wrapper customer-service-wrapper">
+                <NavLink to="tel:2195550114" className="header-action-item cart-link customer-service-link" aria-label="Call Customer Services at (219) 555-0114">
                   <i className="fas fa-phone-alt"></i>
-                  <div className="cart-info">
+                  <div className="cart-info customer-service-info">
                     <span className="cart-label">Customer Services</span>
                     <span className="cart-amount">(219) 555-0114</span>
                   </div>
