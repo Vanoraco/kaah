@@ -22,7 +22,30 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "https://cdnjs.cloudflare.com",
+      "https://fonts.googleapis.com",
+    ],
+    fontSrc: [
+      "'self'",
+      "https://cdnjs.cloudflare.com",
+      "https://fonts.gstatic.com",
+    ],
+    imgSrc: [
+      "'self'",
+      "data:",
+      "https:",
+      "http:",
+    ],
+    connectSrc: [
+      "'self'",
+      "https://cdnjs.cloudflare.com",
+    ],
   });
+
+  responseHeaders.set('Content-Security-Policy', header);
 
   const body = await renderToReadableStream(
     <NonceProvider>
