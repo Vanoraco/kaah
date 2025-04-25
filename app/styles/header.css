@@ -122,10 +122,18 @@
     flex-wrap: nowrap;
   }
 
+  /* Container for logo and customer service */
+  .logo-service-container {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: nowrap;
+  }
+
   .logo {
     flex-shrink: 0;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     flex-direction: row;
     text-decoration: none;
     margin-right: 0;
@@ -169,7 +177,7 @@
   }
 
   .logo-image {
-    height: 80px;
+    height: 70px;
     margin-right: 15px;
     transition: all 0.4s ease;
     position: relative;
@@ -194,9 +202,10 @@
   .logo-text-container {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 12px;
-    margin-bottom: -2px;
+    justify-content: center;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 2px;
   }
 
   .logo-text {
@@ -352,21 +361,41 @@
   /* Customer service specific styles */
   .customer-service-wrapper {
     margin-left: 0;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 
   .customer-service-link {
     display: flex;
     align-items: center;
     gap: 10px;
+    height: 100%;
+    text-decoration: none;
   }
 
   .customer-service-link i {
     color: #FFD54F;
     font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 213, 79, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow:
+      4px 4px 8px rgba(0, 0, 0, 0.05),
+      -4px -4px 8px rgba(255, 255, 255, 0.8),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.3);
   }
 
   .customer-service-info {
     display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 2px;
   }
 
   /* Ensure customer service section is always visible */

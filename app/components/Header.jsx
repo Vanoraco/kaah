@@ -64,14 +64,27 @@ export function Header({header, isLoggedIn, cart, collections}) {
       <header className="header">
         <div className="container">
           <div className="header-main">
-            {/* Logo */}
-            <NavLink prefetch="intent" to="/" className="logo">
-              <img src="https://cdn.shopify.com/s/files/1/0616/6446/0862/files/logo.svg?v=1745081485" alt="KAAH" className="logo-image" />
-              <div className="logo-text-container">
-                <span className="logo-text">KAAH</span>
-                <span className="logo-subtext">SUPER MARKET</span>
+            <div className="logo-service-container">
+              {/* Logo */}
+              <NavLink prefetch="intent" to="/" className="logo">
+                <img src="https://cdn.shopify.com/s/files/1/0616/6446/0862/files/logo.svg?v=1745081485" alt="KAAH" className="logo-image" />
+                <div className="logo-text-container">
+                  <span className="logo-text">KAAH</span>
+                  <span className="logo-subtext">SUPER MARKET</span>
+                </div>
+              </NavLink>
+
+              {/* Customer Service */}
+              <div className="customer-service-wrapper">
+                <NavLink to="tel:2195550114" className="header-action-item customer-service-link" aria-label="Call Customer Services at (219) 555-0114">
+                  <i className="fas fa-phone-alt"></i>
+                  <div className="customer-service-info">
+                    <span className="cart-label">Customer Services</span>
+                    <span className="cart-amount">(219) 555-0114</span>
+                  </div>
+                </NavLink>
               </div>
-            </NavLink>
+            </div>
 
             {/* Search Bar */}
             {/*
@@ -92,15 +105,7 @@ export function Header({header, isLoggedIn, cart, collections}) {
 
             {/* Header Actions */}
             <div className="header-actions">
-              <div className="cart-wrapper customer-service-wrapper">
-                <NavLink to="tel:2195550114" className="header-action-item cart-link customer-service-link" aria-label="Call Customer Services at (219) 555-0114">
-                  <i className="fas fa-phone-alt"></i>
-                  <div className="cart-info customer-service-info">
-                    <span className="cart-label">Customer Services</span>
-                    <span className="cart-amount">(219) 555-0114</span>
-                  </div>
-                </NavLink>
-              </div>
+              {/* Empty for now, but can be used for other header actions */}
             </div>
           </div>
         </div>
