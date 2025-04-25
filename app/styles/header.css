@@ -4,13 +4,16 @@
     background-color: var(--primary-color);
     padding: 10px 0;
     font-size: 14px;
+    text-align: center;
   }
 
   .container {
-    max-width: 1320px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 15px;
     position: relative;
+    box-sizing: border-box;
+    width: 100%;
   }
 
   /* Add padding to all containers except in the navigation */
@@ -115,6 +118,8 @@
     justify-content: space-between;
     gap: 20px;
     position: relative;
+    height: 90px;
+    flex-wrap: nowrap;
   }
 
   .logo {
@@ -433,6 +438,68 @@
 
     .cart-label, .cart-amount {
       font-size: 11px;
+    }
+  }
+
+  /* Extra small devices (phones less than 400px) */
+  @media (max-width: 400px) {
+    .header-main {
+      padding: 5px 0;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .container {
+      padding: 0 5px;
+    }
+
+    .logo {
+      margin-right: 0;
+      justify-content: center;
+    }
+
+    .logo-image {
+      height: 40px;
+      margin-right: 8px;
+    }
+
+    .logo-text {
+      font-size: 16px;
+    }
+
+    .logo-subtext {
+      font-size: 10px;
+    }
+
+    .header-actions {
+      margin-left: 0;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .customer-service-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .customer-service-link {
+      justify-content: center;
+    }
+
+    .cart-label, .cart-amount {
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .header-top-content {
+      justify-content: center;
+    }
+
+    .header-location {
+      justify-content: center;
+      width: 100%;
     }
   }
 

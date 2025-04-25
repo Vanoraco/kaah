@@ -36,7 +36,7 @@ export function PageLayout({
           collections={collections}
         />
       )}
-      <main>{children}</main>
+      <main style={{width: '100%', maxWidth: '100%', margin: '0 auto', padding: '0', boxSizing: 'border-box', overflow: 'hidden'}}>{children}</main>
       <Footer
         footer={footer}
         header={header}
