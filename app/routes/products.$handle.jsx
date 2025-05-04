@@ -153,7 +153,7 @@ export default function Product() {
               <i className="fas fa-star"></i>
               <i className="fas fa-star-half-alt"></i>
             </div>
-            
+
           </div>
 
           <div className="product-price-container">
@@ -192,12 +192,39 @@ export default function Product() {
                 <button className="quantity-btn" aria-label="Increase quantity">+</button>
               </div>
 
-              
-
-             
+              <AddToCartButton
+                disabled={!selectedVariant?.availableForSale}
+                lines={
+                  selectedVariant
+                    ? [
+                        {
+                          merchandiseId: selectedVariant.id,
+                          quantity: 1,
+                        },
+                      ]
+                    : []
+                }
+                analytics={{
+                  products: [
+                    {
+                      name: product.title,
+                      productGid: product.id,
+                      variantGid: selectedVariant?.id,
+                      price: selectedVariant?.price?.amount,
+                      quantity: 1,
+                    },
+                  ],
+                  cartId: null,
+                }}
+              >
+                <span className="add-to-cart-text">
+                  {selectedVariant?.availableForSale ? 'Add to Cart' : 'Sold out'}
+                </span>
+                <i className="fas fa-shopping-cart"></i>
+              </AddToCartButton>
             </div>
 
-            
+
           </div>
 
           <div className="product-guarantees">

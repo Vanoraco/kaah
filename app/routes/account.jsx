@@ -1,12 +1,62 @@
-import {redirect} from '@shopify/remix-oxygen';
+import {Outlet, useLoaderData} from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
 
 /**
- * This route is used to handle redirects for the account routes
- * Since we're using the underscore notation for account routes (account_/login)
- * we need to redirect any requests to /account to the login page
+ * @param {LoaderFunctionArgs}
  */
-export async function loader() {
-  return redirect('/account_/login');
+export async function loader({request, context}) {
+  const {customerAccount} = context;
+  const isLoggedIn = await customerAccount.isLoggedIn();
+
+  if (!isLoggedIn) {
+    return context.customerAccount.login();
+  }
+
+  // Query for customer information
+  const {data, errors} = await customerAccount.query(
+    `#graphql
+    query CustomerDetails {
+      customer {
+        firstName
+        lastName
+        emailAddress {
+          emailAddress
+        }
+      }
+    }
+    `
+  );
+
+  // Commit the session to persist any changes
+  const headers = await context.session.commit();
+
+  return json(
+    { customer: data?.customer },
+    { headers }
+  );
 }
 
-// The rest of the file is not needed as we're just redirecting to the login page
+export default function AccountLayout() {
+  const {customer} = useLoaderData();
+
+  return (
+    <div className="account-container">
+      <div className="account-header">
+        <h1>My Account</h1>
+        {customer && (
+          <div className="account-welcome">
+            <p>Welcome, {customer.firstName || 'Valued Customer'}!</p>
+            <p className="account-email">{customer.emailAddress?.emailAddress}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="account-content">
+        <Outlet />
+      </div>
+    </div>
+  );
+}
+
+/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
+/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

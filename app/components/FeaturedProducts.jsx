@@ -1,6 +1,7 @@
 import {Suspense} from 'react';
 import {Await, Link} from '@remix-run/react';
 import {Image, Money} from '@shopify/hydrogen';
+import {AddToCartButton} from '~/components/AddToCartButton';
 
 export function FeaturedProducts({products}) {
   return (
@@ -107,15 +108,13 @@ function ProductCard({product}) {
         <div className="product-price">
           <Money data={product.priceRange.minVariantPrice} />
         </div>
-        <button
+        <Link
+          to={`/products/${product.handle}`}
           className="add-to-cart"
-          onClick={() => {
-            // Add to cart functionality here
-          }}
         >
-          <i className="fas fa-shopping-cart cart-icon"></i>
-          <span>Add</span>
-        </button>
+          <i className="fas fa-eye cart-icon"></i>
+          <span>View Details</span>
+        </Link>
       </div>
     </div>
   );

@@ -264,6 +264,24 @@ const FEATURED_PRODUCTS_QUERY = `#graphql
     }
     tags
     availableForSale
+    variants(first: 1) {
+      nodes {
+        id
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
   }
   query FeaturedProducts($country: CountryCode, $language: LanguageCode, $collectionHandle: String!)
     @inContext(country: $country, language: $language) {
@@ -304,6 +322,24 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     }
     tags
     availableForSale
+    variants(first: 1) {
+      nodes {
+        id
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {

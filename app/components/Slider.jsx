@@ -169,7 +169,7 @@ export function Slider({min, max, step, value, onChange}) {
         onMouseDown={(e) => handleStart(e, minThumbRef)}
         onTouchStart={(e) => handleStart(e, minThumbRef)}
       >
-        <div className="thumb-value">${sliderValues[0]}</div>
+        <div className="thumb-value">R {sliderValues[0]}</div>
         <div className="thumb thumb-min" ref={minThumbRef}></div>
       </div>
 
@@ -179,7 +179,7 @@ export function Slider({min, max, step, value, onChange}) {
         onMouseDown={(e) => handleStart(e, maxThumbRef)}
         onTouchStart={(e) => handleStart(e, maxThumbRef)}
       >
-        <div className="thumb-value">${sliderValues[1]}</div>
+        <div className="thumb-value">R {sliderValues[1]}</div>
         <div className="thumb thumb-max" ref={maxThumbRef}></div>
       </div>
 

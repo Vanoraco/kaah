@@ -41,17 +41,37 @@ export function PaginatedResourceSection({
 
         return (
           <div>
-            <PreviousLink>
-              {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-            </PreviousLink>
             {resourcesClassName ? (
               <div className={resourcesClassName}>{resourcesMarkup}</div>
             ) : (
               resourcesMarkup
             )}
-            <NextLink>
-              {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-            </NextLink>
+
+            <div className="pagination-controls">
+              <PreviousLink className="pagination-link">
+                {isLoading ? (
+                  <span className="loading">
+                    <i className="fas fa-spinner fa-spin"></i> Loading...
+                  </span>
+                ) : (
+                  <span>
+                    <i className="fas fa-chevron-left"></i> Previous
+                  </span>
+                )}
+              </PreviousLink>
+
+              <NextLink className="pagination-link">
+                {isLoading ? (
+                  <span className="loading">
+                    <i className="fas fa-spinner fa-spin"></i> Loading...
+                  </span>
+                ) : (
+                  <span>
+                    Next <i className="fas fa-chevron-right"></i>
+                  </span>
+                )}
+              </NextLink>
+            </div>
           </div>
         );
       }}

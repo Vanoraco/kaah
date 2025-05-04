@@ -44,19 +44,78 @@ export function CartMain({layout, cart: originalCart}) {
  *   layout?: CartMainProps['layout'];
  * }}
  */
-function CartEmpty({hidden = false}) {
+function CartEmpty({hidden = false, layout}) {
   const {close} = useAside();
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
+    <div className="cart-empty" hidden={hidden}>
+      <div className="cart-empty-illustration">
+        <div className="empty-cart-image">
+          <i className="fas fa-shopping-cart"></i>
+          <div className="empty-cart-sparkle sparkle-1"></div>
+          <div className="empty-cart-sparkle sparkle-2"></div>
+          <div className="empty-cart-sparkle sparkle-3"></div>
+        </div>
+      </div>
+
+      <h2 className="cart-empty-title">Your Cart is Empty</h2>
+
+      <p className="cart-empty-message">
+        Looks like you haven&rsquo;t added anything yet. Explore our collections and discover amazing products that match your style!
       </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
-      </Link>
+
+      <div className="cart-empty-actions">
+        <Link
+          to="/collections"
+          onClick={layout === 'aside' ? close : undefined}
+          prefetch="viewport"
+          className="cart-empty-button"
+        >
+          <i className="fas fa-shopping-bag"></i>
+          Browse Collections
+        </Link>
+
+        <Link
+          to="/products"
+          onClick={layout === 'aside' ? close : undefined}
+          prefetch="viewport"
+          className="cart-empty-button secondary"
+        >
+          <i className="fas fa-th-large"></i>
+          View All Products
+        </Link>
+      </div>
+
+      <div className="cart-empty-features">
+        <div className="cart-feature">
+          <div className="cart-feature-icon">
+            <i className="fas fa-truck"></i>
+          </div>
+          <div className="cart-feature-text">
+            <h3>Free Shipping</h3>
+            <p>On all orders over R500</p>
+          </div>
+        </div>
+
+        <div className="cart-feature">
+          <div className="cart-feature-icon">
+            <i className="fas fa-undo"></i>
+          </div>
+          <div className="cart-feature-text">
+            <h3>Easy Returns</h3>
+            <p>30-day return policy</p>
+          </div>
+        </div>
+
+        <div className="cart-feature">
+          <div className="cart-feature-icon">
+            <i className="fas fa-lock"></i>
+          </div>
+          <div className="cart-feature-text">
+            <h3>Secure Checkout</h3>
+            <p>Safe & protected shopping</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

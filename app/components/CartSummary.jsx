@@ -35,10 +35,10 @@ function CartCheckoutActions({checkoutUrl}) {
 
   return (
     <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
+      <a href={checkoutUrl} target="_self" className="cart-checkout-button">
+        <i className="fas fa-lock"></i>
+        Proceed to Checkout
       </a>
-      <br />
     </div>
   );
 }
@@ -57,25 +57,32 @@ function CartDiscounts({discountCodes}) {
   return (
     <div>
       {/* Have existing discount, display it with a remove option */}
-      <dl hidden={!codes.length}>
-        <div>
-          <dt>Discount(s)</dt>
+      <dl className="cart-discount" hidden={!codes.length}>
+        <dt>Discount Applied</dt>
+        <dd>
           <UpdateDiscountForm>
-            <div className="cart-discount">
+            <div className="discount-code">
               <code>{codes?.join(', ')}</code>
-              &nbsp;
-              <button>Remove</button>
+              <button className="remove-discount">
+                <i className="fas fa-times"></i>
+              </button>
             </div>
           </UpdateDiscountForm>
-        </div>
+        </dd>
       </dl>
 
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
-        <div>
-          <input type="text" name="discountCode" placeholder="Discount code" />
-          &nbsp;
-          <button type="submit">Apply</button>
+        <div className="discount-form">
+          <input
+            type="text"
+            name="discountCode"
+            placeholder="Enter discount code"
+            className="discount-input"
+          />
+          <button type="submit" className="discount-button">
+            <i className="fas fa-tag"></i> Apply
+          </button>
         </div>
       </UpdateDiscountForm>
     </div>

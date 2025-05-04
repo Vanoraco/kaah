@@ -172,9 +172,25 @@ export function Header({header, isLoggedIn, cart, collections}) {
                 </button>
                 <SearchDropdown isOpen={showSearchOverlay} onClose={() => setShowSearchOverlay(false)} />
               </div>
-              <NavLink to="/account_/login" className="nav-icon-link user-icon-link">
-                <i className="far fa-user"></i>
-              </NavLink>
+              <Suspense fallback={
+                <NavLink to="/account/login" className="nav-icon-link user-icon-link">
+                  <i className="far fa-user"></i>
+                </NavLink>
+              }>
+                <Await resolve={isLoggedIn}>
+                  {(isLoggedIn) => (
+                    isLoggedIn ? (
+                      <NavLink to="/account" className="nav-icon-link user-icon-link logged-in">
+                        <i className="fas fa-user"></i>
+                      </NavLink>
+                    ) : (
+                      <NavLink to="/account/login" className="nav-icon-link user-icon-link">
+                        <i className="far fa-user"></i>
+                      </NavLink>
+                    )
+                  )}
+                </Await>
+              </Suspense>
               <NavLink to="/cart" className="nav-icon-link cart-icon-link">
                 <i className="fas fa-shopping-bag"></i>
                 <Suspense fallback={<span className="cart-badge">0</span>}>
@@ -259,7 +275,7 @@ function HeaderCtas({isLoggedIn, cart}) {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account_/login" style={activeLinkStyle}>
+      <NavLink prefetch="intent" to="/account/login" style={activeLinkStyle}>
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}

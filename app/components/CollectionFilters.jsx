@@ -3,11 +3,10 @@ import {useEffect, useState, useRef} from 'react';
 import {Slider} from '~/components/Slider';
 import {CustomSelect} from '~/components/CustomSelect';
 
-export function ProductFilters({collections, filters, searchParams, allTags}) {
+export function CollectionFilters({filters, searchParams, allTags, collectionHandle}) {
   const navigate = useNavigate();
   const [minPrice, setMinPrice] = useState(filters.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(filters.maxPrice || '');
-  const [selectedCategories, setSelectedCategories] = useState(filters.selectedCategories || []);
   const [selectedTags, setSelectedTags] = useState(filters.selectedTags || []);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(filters.showOnlyAvailable || false);
   const [sortOption, setSortOption] = useState(filters.sortOption || 'default');
@@ -42,7 +41,6 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
     // Clear existing filter params
     params.delete('minPrice');
     params.delete('maxPrice');
-    params.delete('category');
     params.delete('tag');
     params.delete('available');
     params.delete('sort');
@@ -50,10 +48,6 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
     // Add new filter params
     if (priceRange[0] > 0) params.append('minPrice', priceRange[0].toString());
     if (priceRange[1] < 1000) params.append('maxPrice', priceRange[1].toString());
-
-    selectedCategories.forEach(category => {
-      params.append('category', category);
-    });
 
     selectedTags.forEach(tag => {
       params.append('tag', tag);
@@ -80,7 +74,7 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
       });
     }, 200);
 
-    navigate(`/products?${params.toString()}`);
+    navigate(`/collections/${collectionHandle}?${params.toString()}`);
 
     // Simulate loading state (will be replaced by actual loading state in a real app)
     setTimeout(() => {
@@ -90,15 +84,6 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
         setIsLoading(false);
       }, 300);
     }, 1200);
-  };
-
-  // Handle category checkbox changes
-  const handleCategoryChange = (handle, checked) => {
-    if (checked) {
-      setSelectedCategories([...selectedCategories, handle]);
-    } else {
-      setSelectedCategories(selectedCategories.filter(cat => cat !== handle));
-    }
   };
 
   // Handle tag checkbox changes
@@ -121,12 +106,11 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
   const resetFilters = () => {
     setMinPrice('');
     setMaxPrice('');
-    setSelectedCategories([]);
     setSelectedTags([]);
     setShowOnlyAvailable(false);
     setSortOption('default');
     setPriceRange([0, 1000]);
-    navigate('/products');
+    navigate(`/collections/${collectionHandle}`);
   };
 
   // Reset individual filter sections
@@ -134,10 +118,6 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
     setMinPrice('');
     setMaxPrice('');
     setPriceRange([0, 1000]);
-  };
-
-  const resetCategoryFilter = () => {
-    setSelectedCategories([]);
   };
 
   const resetTagFilter = () => {
@@ -148,66 +128,45 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
     setShowOnlyAvailable(false);
   };
 
-  const resetSortOption = () => {
-    setSortOption('default');
-  };
-
   return (
     <>
-      {/* Mobile Filter Toggle Button */}
       <div className="mobile-filter-toggle">
         <button
           type="button"
           className="filter-toggle-button"
-          onClick={() => setIsFilterVisible(!isFilterVisible)}
-          aria-expanded={isFilterVisible}
-          aria-controls="product-filters"
+          onClick={() => setIsFilterVisible(true)}
         >
-          <i className="fas fa-filter"></i> {isFilterVisible ? 'Hide Filters' : 'Show Filters'}
+          <i className="fas fa-filter"></i> Filter Products
         </button>
-
-        {/* Sort Dropdown for Mobile */}
         <div className="mobile-sort-dropdown">
           <CustomSelect
             options={[
-              { value: 'default', label: 'Sort by' },
+              { value: 'default', label: 'Sort by: Featured' },
               { value: 'price-asc', label: 'Price: Low to High' },
               { value: 'price-desc', label: 'Price: High to Low' },
-              { value: 'newest', label: 'Newest' },
               { value: 'title-asc', label: 'Name: A-Z' },
-              { value: 'title-desc', label: 'Name: Z-A' }
+              { value: 'title-desc', label: 'Name: Z-A' },
+              { value: 'created-desc', label: 'Newest' }
             ]}
             value={sortOption}
-            onChange={setSortOption}
+            onChange={(value) => {
+              setSortOption(value);
+              const params = new URLSearchParams(searchParams);
+              params.delete('sort');
+              if (value !== 'default') {
+                params.append('sort', value);
+              }
+              navigate(`/collections/${collectionHandle}?${params.toString()}`);
+            }}
             placeholder="Sort by"
           />
         </div>
       </div>
 
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="filter-loading-overlay">
-          <div className="loading-spinner"></div>
-          <div className="loading-message">
-            <p>Applying filters...</p>
-            <div className="loading-status">
-              Finding the perfect products for you
-            </div>
-            <div className="loading-progress-container">
-              <div
-                className="loading-progress-bar"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-              <div className="loading-progress-text">{Math.round(loadingProgress)}%</div>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div
-        id="product-filters"
+        id="collection-filters"
         ref={filterRef}
-        className={`product-filters ${isFilterVisible ? 'visible' : ''}`}
+        className={`collection-filters ${isFilterVisible ? 'visible' : ''}`}
       >
         <div className="filter-header">
           <h2>Filters</h2>
@@ -229,33 +188,23 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
         </div>
 
         <Form onSubmit={applyFilters}>
-          {/* Sort Options (Desktop) */}
+          {/* Sort Options */}
           <div className="filter-section desktop-only">
             <div className="filter-section-header">
               <h3 className="filter-title">
                 <i className="fas fa-sort filter-icon"></i>
                 Sort By
               </h3>
-              {sortOption !== 'default' && (
-                <button
-                  type="button"
-                  className="clear-section-button"
-                  onClick={resetSortOption}
-                  aria-label="Clear sort options"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              )}
             </div>
             <div className="sort-options">
               <CustomSelect
                 options={[
-                  { value: 'default', label: 'Default' },
+                  { value: 'default', label: 'Featured' },
                   { value: 'price-asc', label: 'Price: Low to High' },
                   { value: 'price-desc', label: 'Price: High to Low' },
-                  { value: 'newest', label: 'Newest' },
                   { value: 'title-asc', label: 'Name: A-Z' },
-                  { value: 'title-desc', label: 'Name: Z-A' }
+                  { value: 'title-desc', label: 'Name: Z-A' },
+                  { value: 'created-desc', label: 'Newest' }
                 ]}
                 value={sortOption}
                 onChange={setSortOption}
@@ -294,10 +243,10 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
               />
             </div>
 
-            {/* Legacy Price Inputs (as fallback) */}
+            {/* Price Inputs */}
             <div className="price-range-inputs">
               <div className="price-input-group">
-                <label htmlFor="minPrice" className="price-label">Min Price (R):</label>
+                <label htmlFor="minPrice" className="price-label">Min Price:</label>
                 <input
                   type="number"
                   id="minPrice"
@@ -315,7 +264,7 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
                 />
               </div>
               <div className="price-input-group">
-                <label htmlFor="maxPrice" className="price-label">Max Price (R):</label>
+                <label htmlFor="maxPrice" className="price-label">Max Price:</label>
                 <input
                   type="number"
                   id="maxPrice"
@@ -364,43 +313,6 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
             </div>
           </div>
 
-          {/* Categories Filter */}
-          <div className="filter-section">
-            <div className="filter-section-header">
-              <h3 className="filter-title">
-                <i className="fas fa-th-large filter-icon"></i>
-                Categories
-              </h3>
-              {selectedCategories.length > 0 && (
-                <button
-                  type="button"
-                  className="clear-section-button"
-                  onClick={resetCategoryFilter}
-                  aria-label="Clear category filters"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
-              )}
-            </div>
-            <div className="categories-list">
-              {collections.nodes.map((collection) => (
-                <div className="category-checkbox" key={collection.id}>
-                  <input
-                    type="checkbox"
-                    id={`category-${collection.handle}`}
-                    name="category"
-                    value={collection.handle}
-                    checked={selectedCategories.includes(collection.handle)}
-                    onChange={(e) => handleCategoryChange(collection.handle, e.target.checked)}
-                  />
-                  <label htmlFor={`category-${collection.handle}`}>
-                    {collection.title}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Tags Filter */}
           {allTags && allTags.length > 0 && (
             <div className="filter-section">
@@ -414,7 +326,7 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
                     type="button"
                     className="clear-section-button"
                     onClick={resetTagFilter}
-                    aria-label="Clear tag filters"
+                    aria-label="Clear tag filter"
                   >
                     <i className="fas fa-times"></i>
                   </button>
@@ -449,7 +361,7 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
             {isLoading ? (
               <>
                 <span className="button-spinner"></span>
-                <span className="button-text">Processing...</span>
+                <span className="button-text">Applying Filters...</span>
               </>
             ) : (
               <span className="button-text">Apply Filters</span>
@@ -457,6 +369,24 @@ export function ProductFilters({collections, filters, searchParams, allTags}) {
           </button>
         </Form>
       </div>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="filter-loading-overlay">
+          <div className="loading-message">
+            <div className="loading-spinner"></div>
+            <p>Filtering Products</p>
+            <div className="loading-status">Finding the perfect products for you...</div>
+            <div className="loading-progress-container">
+              <div
+                className="loading-progress-bar"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+              <div className="loading-progress-text">{Math.round(loadingProgress)}%</div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

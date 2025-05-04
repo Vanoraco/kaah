@@ -492,7 +492,7 @@
 }
 
 .price-label::before {
-  content: '$';
+  content: 'R ';
   display: inline-block;
   margin-right: 4px;
   font-size: 12px;

@@ -1,0 +1,563 @@
+/* Account Pages Styling */
+.account-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.account-header {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--account-border);
+}
+
+.account-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--account-secondary);
+  margin-bottom: 15px;
+}
+
+.account-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.account-welcome p {
+  font-size: 16px;
+  color: var(--account-text);
+  margin: 0;
+}
+
+.account-email {
+  font-size: 14px;
+  color: var(--account-light-text);
+}
+
+.account-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.account-nav {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.account-nav-link {
+  padding: 10px 20px;
+  background: var(--account-card-bg);
+  border-radius: var(--account-radius);
+  text-decoration: none;
+  color: var(--account-text);
+  font-weight: 500;
+  transition: var(--account-transition);
+  box-shadow: var(--account-shadow);
+}
+
+.account-nav-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.account-nav-link.active {
+  background: var(--product-gradient);
+  color: white;
+}
+
+/* Orders Page Styling */
+.account-section-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--account-secondary);
+  margin-bottom: 25px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.account-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: var(--product-gradient);
+  border-radius: 3px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  background: var(--account-card-bg);
+  border-radius: var(--account-radius);
+  box-shadow: var(--account-shadow);
+  overflow: hidden;
+  transition: var(--account-transition);
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--account-border);
+  background: rgba(var(--product-primary-rgb), 0.05);
+}
+
+.order-number h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--account-secondary);
+  margin: 0;
+}
+
+.order-date {
+  font-size: 14px;
+  color: var(--account-light-text);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.fulfilled {
+  background: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
+}
+
+.status-badge.unfulfilled,
+.status-badge.partially_fulfilled {
+  background: rgba(241, 196, 15, 0.1);
+  color: #f1c40f;
+}
+
+.status-badge.restocked {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.order-items {
+  padding: 15px 20px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--account-border);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.order-item-title {
+  font-size: 14px;
+  color: var(--account-text);
+  margin: 0;
+}
+
+.more-items {
+  font-size: 14px;
+  color: var(--account-light-text);
+  text-align: center;
+  margin: 10px 0 0;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-top: 1px solid var(--account-border);
+  background: rgba(var(--product-primary-rgb), 0.05);
+}
+
+.order-total {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.order-price {
+  font-weight: 600;
+  color: var(--account-secondary);
+}
+
+.view-order-btn {
+  display: inline-block;
+  padding: 8px 15px;
+  background: var(--product-gradient);
+  color: white;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--account-transition);
+}
+
+.view-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.empty-orders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+  text-align: center;
+  background: var(--account-card-bg);
+  border-radius: var(--account-radius);
+  box-shadow: var(--account-shadow);
+}
+
+.empty-orders-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(var(--product-primary-rgb), 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.empty-orders-icon i {
+  font-size: 30px;
+  color: var(--account-primary);
+}
+
+.empty-orders h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--account-secondary);
+  margin: 0 0 10px;
+}
+
+.empty-orders p {
+  font-size: 16px;
+  color: var(--account-light-text);
+  margin: 0 0 20px;
+  max-width: 400px;
+}
+
+.start-shopping-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--product-gradient);
+  color: white;
+  border-radius: var(--account-radius);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--account-transition);
+}
+
+.start-shopping-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+:root {
+  --account-bg: #f9f9f9;
+  --account-card-bg: #ffffff;
+  --account-primary: var(--primary-color);
+  --account-secondary: var(--secondary-color);
+  --account-text: #333333;
+  --account-light-text: #666666;
+  --account-border: #e0e0e0;
+  --account-error: #e74c3c;
+  --account-success: #2ecc71;
+  --account-radius: 12px;
+  --account-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  --account-transition: all 0.3s ease;
+}
+
+/* Login Page Styling */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px;
+  background: var(--account-bg);
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 480px;
+  background: var(--account-card-bg);
+  border-radius: var(--account-radius);
+  box-shadow: var(--account-shadow);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-form-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--product-gradient);
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--account-secondary);
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.login-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--product-gradient);
+  border-radius: 3px;
+}
+
+.login-error {
+  background: rgba(231, 76, 60, 0.1);
+  border-left: 4px solid var(--account-error);
+  color: var(--account-error);
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--account-secondary);
+}
+
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 15px;
+  color: var(--account-light-text);
+  font-size: 16px;
+}
+
+.login-input-wrapper input {
+  width: 100%;
+  padding: 14px 15px 14px 45px;
+  border: 1px solid var(--account-border);
+  border-radius: var(--account-radius);
+  font-size: 15px;
+  color: var(--account-text);
+  background: var(--account-card-bg);
+  transition: var(--account-transition);
+}
+
+.login-input-wrapper input:focus {
+  border-color: var(--account-primary);
+  box-shadow: 0 0 0 3px rgba(var(--product-primary-rgb), 0.1);
+  outline: none;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  color: var(--account-light-text);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--account-transition);
+}
+
+.password-toggle:hover {
+  color: var(--account-primary);
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--account-primary);
+}
+
+.remember-me label {
+  font-size: 14px;
+  color: var(--account-light-text);
+  cursor: pointer;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: var(--account-primary);
+  text-decoration: none;
+  transition: var(--account-transition);
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-actions {
+  margin-top: 10px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 15px;
+  background: var(--product-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--account-radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--account-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+  transition: all 0.6s ease;
+  z-index: 1;
+}
+
+.login-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover::before {
+  left: 100%;
+}
+
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--account-border);
+}
+
+.login-footer p {
+  font-size: 14px;
+  color: var(--account-light-text);
+  margin-bottom: 10px;
+}
+
+.register-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background: rgba(var(--product-primary-rgb), 0.1);
+  color: var(--account-primary);
+  border-radius: var(--account-radius);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: var(--account-transition);
+}
+
+.register-link:hover {
+  background: rgba(var(--product-primary-rgb), 0.15);
+  transform: translateY(-2px);
+}
+
+/* Responsive Styles */
+@media (max-width: 576px) {
+  .login-form-wrapper {
+    padding: 30px 20px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .login-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .login-button {
+    padding: 12px;
+  }
+}

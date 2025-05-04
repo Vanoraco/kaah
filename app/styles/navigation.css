@@ -379,6 +379,10 @@
     color: white;
   }
 
+  .nav-icon-link.user-icon-link.logged-in i {
+    color: var(--accent-color);
+  }
+
   /* Cart badge styling */
   .cart-badge {
     position: absolute;
