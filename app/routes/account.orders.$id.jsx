@@ -1,5 +1,5 @@
-import {redirect} from '@shopify/remix-oxygen';
-import {useLoaderData} from '@remix-run/react';
+import {redirect, json} from '@shopify/remix-oxygen';
+import {Link, useLoaderData} from '@remix-run/react';
 import {Money, Image, flattenConnection} from '@shopify/hydrogen';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
 
@@ -7,53 +7,81 @@ import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuer
  * @type {MetaFunction<typeof loader>}
  */
 export const meta = ({data}) => {
-  return [{title: `Order ${data?.order?.name}`}];
+  return [{title: `Order ${data?.order?.name} - Kaah Store`}];
 };
 
 /**
  * @param {LoaderFunctionArgs}
  */
 export async function loader({params, context}) {
+  const {customerAccount, session} = context;
+
   if (!params.id) {
     return redirect('/account/orders');
   }
 
-  const orderId = atob(params.id);
-  const {data, errors} = await context.customerAccount.query(
-    CUSTOMER_ORDER_QUERY,
-    {
-      variables: {orderId},
-    },
-  );
+  // Check if the customer is logged in
+  const isLoggedIn = await customerAccount.isLoggedIn();
 
-  if (errors?.length || !data?.order) {
-    throw new Error('Order not found');
+  if (!isLoggedIn) {
+    return context.customerAccount.login();
   }
 
-  const {order} = data;
+  try {
+    const orderId = params.id;
+    const {data, errors} = await customerAccount.query(
+      CUSTOMER_ORDER_QUERY,
+      {
+        variables: {orderId},
+      },
+    );
 
-  const lineItems = flattenConnection(order.lineItems);
-  const discountApplications = flattenConnection(order.discountApplications);
+    if (errors?.length) {
+      console.error('Customer order query errors:', errors);
+    }
 
-  const fulfillmentStatus =
-    flattenConnection(order.fulfillments)[0]?.status ?? 'N/A';
+    if (!data?.order) {
+      return redirect('/account/orders');
+    }
 
-  const firstDiscount = discountApplications[0]?.value;
+    const {order} = data;
 
-  const discountValue =
-    firstDiscount?.__typename === 'MoneyV2' && firstDiscount;
+    const lineItems = flattenConnection(order.lineItems);
+    const discountApplications = flattenConnection(order.discountApplications);
 
-  const discountPercentage =
-    firstDiscount?.__typename === 'PricingPercentageValue' &&
-    firstDiscount?.percentage;
+    const fulfillmentStatus =
+      flattenConnection(order.fulfillments)[0]?.status ?? 'UNFULFILLED';
 
-  return {
-    order,
-    lineItems,
-    discountValue,
-    discountPercentage,
-    fulfillmentStatus,
-  };
+    const firstDiscount = discountApplications[0]?.value;
+
+    const discountValue =
+      firstDiscount?.__typename === 'MoneyV2' && firstDiscount;
+
+    const discountPercentage =
+      firstDiscount?.__typename === 'PricingPercentageValue' &&
+      firstDiscount?.percentage;
+
+    // Commit the session to persist any changes
+    const headers = await session.commit();
+
+    return json(
+      {
+        order,
+        lineItems,
+        discountValue,
+        discountPercentage,
+        fulfillmentStatus,
+      },
+      { headers }
+    );
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+
+    // Commit the session to persist any changes
+    const headers = await session.commit();
+
+    return redirect('/account/orders', { headers });
+  }
 }
 
 export default function OrderRoute() {
@@ -65,85 +93,126 @@ export default function OrderRoute() {
     discountPercentage,
     fulfillmentStatus,
   } = useLoaderData();
+
+  // Format the date
+  const orderDate = new Date(order.processedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // Get the status badge class based on fulfillment status
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'FULFILLED':
+        return 'fulfilled';
+      case 'IN_PROGRESS':
+        return 'in-progress';
+      case 'PARTIALLY_FULFILLED':
+        return 'partially-fulfilled';
+      case 'RESTOCKED':
+        return 'restocked';
+      case 'PENDING_FULFILLMENT':
+        return 'pending';
+      case 'UNFULFILLED':
+        return 'unfulfilled';
+      default:
+        return 'pending';
+    }
+  };
+
   return (
-    <div className="account-order">
-      <h2>Order {order.name}</h2>
-      <p>Placed on {new Date(order.processedAt).toDateString()}</p>
-      <br />
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lineItems.map((lineItem, lineItemIndex) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <OrderLineRow key={lineItemIndex} lineItem={lineItem} />
-            ))}
-          </tbody>
-          <tfoot>
-            {((discountValue && discountValue.amount) ||
-              discountPercentage) && (
-              <tr>
-                <th scope="row" colSpan={3}>
-                  <p>Discounts</p>
-                </th>
-                <th scope="row">
-                  <p>Discounts</p>
-                </th>
-                <td>
+    <div className="account-order-details">
+      <div className="account-section-header">
+        <Link to="/account/orders" className="back-link">
+          <i className="fas fa-arrow-left"></i> Back to Orders
+        </Link>
+        <h2 className="account-section-title">Order {order.name}</h2>
+      </div>
+
+      <div className="order-details-card">
+        <div className="order-details-header">
+          <div className="order-details-meta">
+            <div className="order-meta-item">
+              <span className="meta-label">Order Date:</span>
+              <span className="meta-value">{orderDate}</span>
+            </div>
+            <div className="order-meta-item">
+              <span className="meta-label">Status:</span>
+              <span className={`status-badge ${getStatusBadgeClass(fulfillmentStatus)}`}>
+                {fulfillmentStatus}
+              </span>
+            </div>
+            {order.financialStatus && (
+              <div className="order-meta-item">
+                <span className="meta-label">Payment:</span>
+                <span className="meta-value">{order.financialStatus}</span>
+              </div>
+            )}
+          </div>
+
+          {order.statusPageUrl && (
+            <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
+              <i className="fas fa-truck"></i> Track Order
+            </a>
+          )}
+        </div>
+
+        <div className="order-details-section">
+          <h3 className="section-title">Items</h3>
+          <div className="order-items-table">
+            <div className="order-items-header">
+              <div className="item-col product-col">Product</div>
+              <div className="item-col price-col">Price</div>
+              <div className="item-col quantity-col">Quantity</div>
+              <div className="item-col total-col">Total</div>
+            </div>
+
+            <div className="order-items-body">
+              {lineItems.map((lineItem, index) => (
+                <OrderLineRow key={index} lineItem={lineItem} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="order-details-section">
+          <h3 className="section-title">Order Summary</h3>
+          <div className="order-summary">
+            <div className="summary-row">
+              <span>Subtotal</span>
+              <span><Money data={order.subtotal} /></span>
+            </div>
+
+            {((discountValue && discountValue.amount) || discountPercentage) && (
+              <div className="summary-row discount">
+                <span>Discount</span>
+                <span>
                   {discountPercentage ? (
                     <span>-{discountPercentage}% OFF</span>
                   ) : (
                     discountValue && <Money data={discountValue} />
                   )}
-                </td>
-              </tr>
+                </span>
+              </div>
             )}
-            <tr>
-              <th scope="row" colSpan={3}>
-                <p>Subtotal</p>
-              </th>
-              <th scope="row">
-                <p>Subtotal</p>
-              </th>
-              <td>
-                <Money data={order.subtotal} />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
-                Tax
-              </th>
-              <th scope="row">
-                <p>Tax</p>
-              </th>
-              <td>
-                <Money data={order.totalTax} />
-              </td>
-            </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
-                Total
-              </th>
-              <th scope="row">
-                <p>Total</p>
-              </th>
-              <td>
-                <Money data={order.totalPrice} />
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-        <div>
-          <h3>Shipping Address</h3>
-          {order?.shippingAddress ? (
-            <address>
+
+            <div className="summary-row">
+              <span>Tax</span>
+              <span><Money data={order.totalTax} /></span>
+            </div>
+
+            <div className="summary-row total">
+              <span>Total</span>
+              <span><Money data={order.totalPrice} /></span>
+            </div>
+          </div>
+        </div>
+
+        {order?.shippingAddress && (
+          <div className="order-details-section">
+            <h3 className="section-title">Shipping Address</h3>
+            <div className="shipping-address">
               <p>{order.shippingAddress.name}</p>
               {order.shippingAddress.formatted ? (
                 <p>{order.shippingAddress.formatted}</p>
@@ -155,22 +224,21 @@ export default function OrderRoute() {
               ) : (
                 ''
               )}
-            </address>
-          ) : (
-            <p>No shipping address defined</p>
-          )}
-          <h3>Status</h3>
-          <div>
-            <p>{fulfillmentStatus}</p>
+            </div>
           </div>
+        )}
+
+        <div className="order-details-actions">
+          <Link to="/account/orders" className="back-to-orders-btn">
+            Back to Orders
+          </Link>
+          {order.statusPageUrl && (
+            <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn large">
+              Track Order
+            </a>
+          )}
         </div>
       </div>
-      <br />
-      <p>
-        <a target="_blank" href={order.statusPageUrl} rel="noreferrer">
-          View Order Status →
-        </a>
-      </p>
     </div>
   );
 }
@@ -180,28 +248,32 @@ export default function OrderRoute() {
  */
 function OrderLineRow({lineItem}) {
   return (
-    <tr key={lineItem.id}>
-      <td>
-        <div>
+    <div className="order-item-row">
+      <div className="item-col product-col">
+        <div className="product-info">
           {lineItem?.image && (
-            <div>
-              <Image data={lineItem.image} width={96} height={96} />
+            <div className="product-image">
+              <Image data={lineItem.image} width={70} height={70} />
             </div>
           )}
-          <div>
-            <p>{lineItem.title}</p>
-            <small>{lineItem.variantTitle}</small>
+          <div className="product-details">
+            <p className="product-title">{lineItem.title}</p>
+            {lineItem.variantTitle && lineItem.variantTitle !== 'Default Title' && (
+              <p className="product-variant">{lineItem.variantTitle}</p>
+            )}
           </div>
         </div>
-      </td>
-      <td>
+      </div>
+      <div className="item-col price-col">
         <Money data={lineItem.price} />
-      </td>
-      <td>{lineItem.quantity}</td>
-      <td>
+      </div>
+      <div className="item-col quantity-col">
+        {lineItem.quantity}
+      </div>
+      <div className="item-col total-col">
         <Money data={lineItem.totalDiscount} />
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 }
 

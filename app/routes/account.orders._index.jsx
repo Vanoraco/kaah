@@ -1,18 +1,89 @@
 import {Link, useLoaderData} from '@remix-run/react';
-import {
-  Money,
-  getPaginationVariables,
-  flattenConnection,
-} from '@shopify/hydrogen';
 import {json} from '@shopify/remix-oxygen';
-import {CUSTOMER_ORDERS_QUERY} from '~/graphql/customer-account/CustomerOrdersQuery';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {getPaginationVariables} from '@shopify/hydrogen';
+
+// Define the GraphQL query directly
+const CUSTOMER_ORDERS_QUERY = `#graphql
+  query CustomerOrders(
+    $first: Int
+    $last: Int
+    $startCursor: String
+    $endCursor: String
+  ) {
+    customer {
+      orders(
+        first: $first
+        last: $last
+        before: $startCursor
+        after: $endCursor
+        sortKey: PROCESSED_AT
+        reverse: true
+      ) {
+        nodes {
+          id
+          name
+          orderNumber
+          processedAt
+          fulfillmentStatus
+          financialStatus
+          statusUrl
+          totalPrice {
+            amount
+            currencyCode
+          }
+          subtotalPrice {
+            amount
+            currencyCode
+          }
+          totalShippingPrice {
+            amount
+            currencyCode
+          }
+          lineItems(first: 5) {
+            nodes {
+              title
+              quantity
+              originalTotalPrice {
+                amount
+                currencyCode
+              }
+              variant {
+                id
+                title
+                image {
+                  url
+                  altText
+                  width
+                  height
+                }
+                price {
+                  amount
+                  currencyCode
+                }
+                product {
+                  handle
+                  title
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasPreviousPage
+          hasNextPage
+          startCursor
+          endCursor
+        }
+      }
+    }
+  }
+`;
 
 /**
  * @type {MetaFunction}
  */
 export const meta = () => {
-  return [{title: 'Orders'}];
+  return [{title: 'Orders - Kaah Store'}];
 };
 
 /**
@@ -29,17 +100,19 @@ export async function loader({request, context}) {
   }
 
   try {
+    // Get pagination variables from the request
     const paginationVariables = getPaginationVariables(request, {
-      pageBy: 20,
+      pageBy: 10,
     });
 
+    // Query for customer orders
     const {data, errors} = await customerAccount.query(
       CUSTOMER_ORDERS_QUERY,
       {
         variables: {
           ...paginationVariables,
         },
-      },
+      }
     );
 
     if (errors?.length) {
@@ -50,7 +123,11 @@ export async function loader({request, context}) {
     const headers = await session.commit();
 
     return json(
-      { customer: data?.customer || { orders: { nodes: [] } } },
+      {
+        customer: data?.customer || null,
+        orders: data?.customer?.orders?.nodes || [],
+        pageInfo: data?.customer?.orders?.pageInfo || null
+      },
       { headers }
     );
   } catch (error) {
@@ -60,7 +137,11 @@ export async function loader({request, context}) {
     const headers = await session.commit();
 
     return json(
-      { customer: { orders: { nodes: [] } } },
+      {
+        customer: null,
+        orders: [],
+        pageInfo: null
+      },
       { headers }
     );
   }
@@ -68,68 +149,165 @@ export async function loader({request, context}) {
 
 export default function Orders() {
   /** @type {LoaderReturnData} */
-  const {customer} = useLoaderData();
-  const {orders} = customer;
-  return (
-    <div className="orders">
-      {orders.nodes.length ? <OrdersTable orders={orders} /> : <EmptyOrders />}
-    </div>
-  );
-}
+  const {customer, orders, pageInfo} = useLoaderData();
 
-/**
- * @param {Pick<CustomerOrdersFragment, 'orders'>}
- */
-function OrdersTable({orders}) {
   return (
-    <div className="acccount-orders">
-      {orders?.nodes.length ? (
-        <PaginatedResourceSection connection={orders}>
-          {({node: order}) => <OrderItem key={order.id} order={order} />}
-        </PaginatedResourceSection>
+    <div className="account-orders">
+      <h2 className="account-section-title">Your Orders</h2>
+
+      {orders && orders.length > 0 ? (
+        <div className="orders-list">
+          {orders.map((order) => (
+            <OrderCard key={order.id} order={order} />
+          ))}
+
+          {/* Pagination controls */}
+          {pageInfo && (
+            <div className="pagination-controls">
+              {pageInfo.hasPreviousPage && (
+                <Link
+                  to={`/account/orders?before=${pageInfo.startCursor}`}
+                  className="pagination-link prev"
+                >
+                  <i className="fas fa-chevron-left"></i> Previous
+                </Link>
+              )}
+
+              {pageInfo.hasNextPage && (
+                <Link
+                  to={`/account/orders?after=${pageInfo.endCursor}`}
+                  className="pagination-link next"
+                >
+                  Next <i className="fas fa-chevron-right"></i>
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
       ) : (
-        <EmptyOrders />
+        <div className="empty-orders">
+          <div className="empty-orders-icon">
+            <i className="fas fa-shopping-bag"></i>
+          </div>
+          <h3>No orders yet</h3>
+          <p>You haven't placed any orders yet. Start shopping to see your orders here.</p>
+          <Link to="/collections" className="start-shopping-btn">
+            Start Shopping
+          </Link>
+        </div>
       )}
     </div>
   );
 }
 
-function EmptyOrders() {
-  return (
-    <div>
-      <p>You haven&apos;t placed any orders yet.</p>
-      <br />
-      <p>
-        <Link to="/collections">Start Shopping →</Link>
-      </p>
-    </div>
-  );
-}
-
 /**
- * @param {{order: OrderItemFragment}}
+ * @param {{ order: any }}
  */
-function OrderItem({order}) {
-  const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
+function OrderCard({ order }) {
+  // Format the date
+  const orderDate = new Date(order.processedAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // Get the status badge class based on fulfillment status
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'FULFILLED':
+        return 'fulfilled';
+      case 'IN_PROGRESS':
+        return 'in-progress';
+      case 'PARTIALLY_FULFILLED':
+        return 'partially-fulfilled';
+      case 'RESTOCKED':
+        return 'restocked';
+      case 'PENDING_FULFILLMENT':
+        return 'pending';
+      case 'UNFULFILLED':
+        return 'unfulfilled';
+      default:
+        return 'pending';
+    }
+  };
+
   return (
-    <>
-      <fieldset>
-        <Link to={`/account/orders/${btoa(order.id)}`}>
-          <strong>#{order.number}</strong>
-        </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
-        <p>{order.financialStatus}</p>
-        {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
-      </fieldset>
-      <br />
-    </>
+    <div className="order-card">
+      <div className="order-header">
+        <div className="order-number">
+          <h3>Order #{order.orderNumber}</h3>
+          <span className="order-date">{orderDate}</span>
+        </div>
+        <div className="order-status">
+          <span className={`status-badge ${getStatusBadgeClass(order.fulfillmentStatus)}`}>
+            {order.fulfillmentStatus || 'Processing'}
+          </span>
+        </div>
+      </div>
+
+      <div className="order-items">
+        {order.lineItems.nodes.map((item, index) => (
+          <div key={index} className="order-item">
+            {item.variant?.image && (
+              <img
+                src={item.variant.image.url}
+                alt={item.variant.image.altText || item.title}
+                className="order-item-image"
+                width="60"
+                height="60"
+              />
+            )}
+            <div className="order-item-details">
+              <p className="order-item-title">{item.title}</p>
+              {item.variant && item.variant.title !== 'Default Title' && (
+                <p className="order-item-variant">{item.variant.title}</p>
+              )}
+              <p className="order-item-quantity">Qty: {item.quantity}</p>
+            </div>
+            <div className="order-item-price">
+              {item.originalTotalPrice.currencyCode} {parseFloat(item.originalTotalPrice.amount).toFixed(2)}
+            </div>
+          </div>
+        ))}
+
+        {order.lineItems.nodes.length > 5 && (
+          <p className="more-items">+ more items</p>
+        )}
+      </div>
+
+      <div className="order-footer">
+        <div className="order-total">
+          <div className="order-total-row">
+            <span>Subtotal:</span>
+            <span>{order.subtotalPrice.currencyCode} {parseFloat(order.subtotalPrice.amount).toFixed(2)}</span>
+          </div>
+          <div className="order-total-row">
+            <span>Shipping:</span>
+            <span>{order.totalShippingPrice.currencyCode} {parseFloat(order.totalShippingPrice.amount).toFixed(2)}</span>
+          </div>
+          <div className="order-total-row total">
+            <span>Total:</span>
+            <span className="order-price">
+              {order.totalPrice.currencyCode} {parseFloat(order.totalPrice.amount).toFixed(2)}
+            </span>
+          </div>
+        </div>
+
+        <div className="order-actions">
+          {order.statusUrl && (
+            <a href={order.statusUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
+              Track Order
+            </a>
+          )}
+          <Link to={`/account/orders/${order.id}`} className="view-order-btn">
+            View Details
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
 
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @typedef {import('customer-accountapi.generated').CustomerOrdersFragment} CustomerOrdersFragment */
-/** @typedef {import('customer-accountapi.generated').OrderItemFragment} OrderItemFragment */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

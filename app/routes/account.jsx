@@ -46,7 +46,9 @@ export default function AccountLayout() {
         {customer && (
           <div className="account-welcome">
             <p>Welcome, {customer.firstName || 'Valued Customer'}!</p>
-            <p className="account-email">{customer.emailAddress?.emailAddress}</p>
+            {customer.emailAddress?.emailAddress && (
+              <p className="account-email">{customer.emailAddress.emailAddress}</p>
+            )}
           </div>
         )}
       </div>
