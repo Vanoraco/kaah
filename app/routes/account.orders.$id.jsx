@@ -20,14 +20,46 @@ export async function loader({params, context}) {
   }
 
   // Check if the customer is logged in
-  const isLoggedIn = await customerAccount.isLoggedIn();
+  let isLoggedIn = false;
+  try {
+    isLoggedIn = await customerAccount.isLoggedIn();
+  } catch (loginError) {
+    console.error('Error checking login status:', loginError);
+    return redirect('/account/orders');
+  }
 
   if (!isLoggedIn) {
-    return context.customerAccount.login();
+    try {
+      return context.customerAccount.login();
+    } catch (loginRedirectError) {
+      console.error('Error redirecting to login:', loginRedirectError);
+      return redirect('/account/orders');
+    }
   }
 
   try {
     const orderId = params.id;
+
+    // First, verify the customer account is accessible
+    const customerInfoQuery = await customerAccount.query(
+      `#graphql
+      query CustomerBasicInfo {
+        customer {
+          firstName
+          lastName
+        }
+      }
+      `
+    );
+
+    if (customerInfoQuery.errors?.length) {
+      console.error('Customer basic info query errors:', customerInfoQuery.errors);
+      throw new Error(customerInfoQuery.errors[0].message || 'Error fetching customer information');
+    }
+
+    if (!customerInfoQuery.data?.customer) {
+      throw new Error('Customer information not available');
+    }
 
     // Query for the specific order
     const {data, errors} = await customerAccount.query(
@@ -126,14 +158,16 @@ export async function loader({params, context}) {
 
     if (errors?.length) {
       console.error('Customer order query errors:', errors);
+      throw new Error(errors[0].message || 'Error fetching order details');
     }
 
     if (!data?.customer?.order) {
+      console.error('Order not found:', orderId);
       return redirect('/account/orders');
     }
 
     const order = data.customer.order;
-    const lineItems = order.lineItems.nodes;
+    const lineItems = order.lineItems?.nodes || [];
     const discountApplications = order.discountApplications?.nodes || [];
     const fulfillments = order.fulfillments?.nodes || [];
 
@@ -148,7 +182,13 @@ export async function loader({params, context}) {
       firstDiscount && 'percentage' in firstDiscount ? firstDiscount.percentage : null;
 
     // Commit the session to persist any changes
-    const headers = await session.commit();
+    let headers;
+    try {
+      headers = await session.commit();
+    } catch (sessionError) {
+      console.error('Error committing session:', sessionError);
+      // Continue without headers if session commit fails
+    }
 
     return json(
       {
@@ -163,10 +203,18 @@ export async function loader({params, context}) {
   } catch (error) {
     console.error('Error fetching order details:', error);
 
-    // Commit the session to persist any changes
-    const headers = await session.commit();
+    // Try to commit the session but don't fail if it doesn't work
+    let headers;
+    try {
+      headers = await session.commit();
+    } catch (sessionError) {
+      console.error('Error committing session after error:', sessionError);
+    }
 
-    return redirect('/account/orders', { headers });
+    // Redirect to orders page with error message
+    return redirect(`/account/orders?error=${encodeURIComponent(error.message || 'Error loading order details')}`,
+      { headers }
+    );
   }
 }
 
