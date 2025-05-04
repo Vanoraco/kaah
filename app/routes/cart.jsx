@@ -1,6 +1,6 @@
 import {useLoaderData} from '@remix-run/react';
 import {CartForm} from '@shopify/hydrogen';
-import {data} from '@shopify/remix-oxygen';
+import {data, json} from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
 
 /**
@@ -21,21 +21,40 @@ export const headers = ({actionHeaders}) => actionHeaders;
 export async function action({request, context}) {
   const {cart} = context;
 
-  const formData = await request.formData();
+  try {
+    const formData = await request.formData();
+    console.log('Form data entries:', [...formData.entries()]);
 
-  const {action, inputs} = CartForm.getFormInput(formData);
+    const {action, inputs} = CartForm.getFormInput(formData);
+    console.log('CartForm action:', action);
+    console.log('CartForm inputs:', inputs);
 
-  if (!action) {
-    throw new Error('No action provided');
-  }
+    if (!action) {
+      return json({ error: 'No action provided' }, { status: 400 });
+    }
 
-  let status = 200;
-  let result;
+    let status = 200;
+    let result;
 
-  switch (action) {
-    case CartForm.ACTIONS.LinesAdd:
-      result = await cart.addLines(inputs.lines);
-      break;
+    switch (action) {
+      case CartForm.ACTIONS.LinesAdd:
+        console.log('Cart action: LinesAdd', inputs.lines);
+        if (!inputs.lines || !inputs.lines.length) {
+          return json({ error: 'No lines provided' }, { status: 400 });
+        }
+
+        // Ensure each line has a merchandiseId and quantity
+        const validLines = inputs.lines.filter(line =>
+          line && line.merchandiseId && line.quantity && line.quantity > 0
+        );
+
+        if (validLines.length === 0) {
+          return json({ error: 'Invalid line items' }, { status: 400 });
+        }
+
+        result = await cart.addLines(validLines);
+        console.log('Add lines result:', result);
+        break;
     case CartForm.ACTIONS.LinesUpdate:
       result = await cart.updateLines(inputs.lines);
       break;
@@ -97,6 +116,16 @@ export async function action({request, context}) {
     },
     {status, headers},
   );
+  } catch (error) {
+    console.error('Cart action error:', error);
+    return json(
+      {
+        error: error.message || 'An error occurred while updating the cart',
+        cart: await cart.get()
+      },
+      { status: 500 }
+    );
+  }
 }
 
 /**

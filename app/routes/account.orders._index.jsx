@@ -4,6 +4,7 @@ import {
   getPaginationVariables,
   flattenConnection,
 } from '@shopify/hydrogen';
+import {json} from '@shopify/remix-oxygen';
 import {CUSTOMER_ORDERS_QUERY} from '~/graphql/customer-account/CustomerOrdersQuery';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
@@ -18,24 +19,51 @@ export const meta = () => {
  * @param {LoaderFunctionArgs}
  */
 export async function loader({request, context}) {
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 20,
-  });
+  const {customerAccount, session} = context;
 
-  const {data, errors} = await context.customerAccount.query(
-    CUSTOMER_ORDERS_QUERY,
-    {
-      variables: {
-        ...paginationVariables,
-      },
-    },
-  );
+  // Check if the customer is logged in
+  const isLoggedIn = await customerAccount.isLoggedIn();
 
-  if (errors?.length || !data?.customer) {
-    throw Error('Customer orders not found');
+  if (!isLoggedIn) {
+    return context.customerAccount.login();
   }
 
-  return {customer: data.customer};
+  try {
+    const paginationVariables = getPaginationVariables(request, {
+      pageBy: 20,
+    });
+
+    const {data, errors} = await customerAccount.query(
+      CUSTOMER_ORDERS_QUERY,
+      {
+        variables: {
+          ...paginationVariables,
+        },
+      },
+    );
+
+    if (errors?.length) {
+      console.error('Customer orders query errors:', errors);
+    }
+
+    // Commit the session to persist any changes
+    const headers = await session.commit();
+
+    return json(
+      { customer: data?.customer || { orders: { nodes: [] } } },
+      { headers }
+    );
+  } catch (error) {
+    console.error('Error fetching customer orders:', error);
+
+    // Commit the session to persist any changes
+    const headers = await session.commit();
+
+    return json(
+      { customer: { orders: { nodes: [] } } },
+      { headers }
+    );
+  }
 }
 
 export default function Orders() {

@@ -1,4 +1,5 @@
 import {CartForm} from '@shopify/hydrogen';
+import {useState} from 'react';
 
 /**
  * @param {{
@@ -7,6 +8,7 @@ import {CartForm} from '@shopify/hydrogen';
  *   disabled?: boolean;
  *   lines: Array<OptimisticCartLineInput>;
  *   onClick?: () => void;
+ *   className?: string;
  * }}
  */
 export function AddToCartButton({
@@ -15,26 +17,51 @@ export function AddToCartButton({
   disabled,
   lines,
   onClick,
+  className,
 }) {
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  const handleAddToCart = (e) => {
+    if (onClick) onClick(e);
+
+    // Show success message
+    setAddedToCart(true);
+
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 3000);
+  };
+
   return (
-    <CartForm route="/cart" inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
-      {(fetcher) => (
-        <>
-          <input
-            name="analytics"
-            type="hidden"
-            value={JSON.stringify(analytics)}
-          />
-          <button
-            type="submit"
-            onClick={onClick}
-            disabled={disabled ?? fetcher.state !== 'idle'}
-          >
-            {children}
-          </button>
-        </>
+    <div className="add-to-cart-wrapper">
+      {addedToCart && (
+        <div className="add-to-cart-success">
+          <i className="fas fa-check-circle"></i>
+          Product added to cart!
+        </div>
       )}
-    </CartForm>
+
+      <CartForm route="/cart" inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
+        {(fetcher) => (
+          <>
+            <input
+              name="analytics"
+              type="hidden"
+              value={JSON.stringify(analytics)}
+            />
+            <button
+              type="submit"
+              onClick={handleAddToCart}
+              disabled={disabled ?? fetcher.state !== 'idle'}
+              className={className}
+            >
+              {children}
+            </button>
+          </>
+        )}
+      </CartForm>
+    </div>
   );
 }
 
