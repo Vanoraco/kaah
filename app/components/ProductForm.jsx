@@ -1,14 +1,16 @@
 import {Link, useNavigate} from '@remix-run/react';
 import {AddToCartButton} from './AddToCartButton';
+import {SimpleAddToCartButton} from './SimpleAddToCartButton';
 import {useAside} from './Aside';
 
 /**
  * @param {{
  *   productOptions: MappedProductOptions[];
  *   selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
+ *   analytics?: unknown;
  * }}
  */
-export function ProductForm({productOptions, selectedVariant}) {
+export function ProductForm({productOptions, selectedVariant, analytics}) {
   const navigate = useNavigate();
   const {open} = useAside();
   return (
@@ -95,7 +97,36 @@ export function ProductForm({productOptions, selectedVariant}) {
           </div>
         );
       })}
-      
+
+      <div className="product-form-buttons">
+        {selectedVariant && selectedVariant.availableForSale ? (
+          <>
+            <SimpleAddToCartButton
+              merchandiseId={selectedVariant.id}
+              quantity={1}
+            />
+
+            <button
+              className="buy-now-button"
+              onClick={() => {
+                // Redirect to cart page for checkout
+                window.location.href = '/cart';
+              }}
+            >
+              <span>Buy Now</span>
+              <i className="fas fa-bolt"></i>
+            </button>
+          </>
+        ) : (
+          <button
+            className="add-to-cart-button"
+            disabled={true}
+          >
+            <span className="add-to-cart-text">Sold out</span>
+            <i className="fas fa-shopping-cart"></i>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

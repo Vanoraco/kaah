@@ -3,6 +3,7 @@ import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductFilters} from '~/components/ProductFilters';
+import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -277,58 +278,79 @@ export default function AllProducts() {
  */
 function ProductItem({product, loading}) {
   const variantUrl = useVariantUrl(product.handle);
+
   return (
-    <div className="product-card">
+    <div className="product-item-wrapper">
       <Link
-        to={variantUrl}
-        className="product-link"
+        className="product-item"
+        key={product.id}
         prefetch="intent"
+        to={variantUrl}
       >
-        <div className="product-image">
+        <div className="product-image-container">
           {product.featuredImage && (
             <Image
               alt={product.featuredImage.altText || product.title}
               aspectRatio="1/1"
               data={product.featuredImage}
               loading={loading}
-              sizes="(min-width: 45em) 20vw, 50vw"
-              className="product-photo"
+              sizes="(min-width: 45em) 400px, 100vw"
             />
           )}
-          <button
-            className="wishlist-button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Add wishlist functionality here
-            }}
-            aria-label="Add to wishlist"
-          >
-            <i className="far fa-heart"></i>
-          </button>
+
+          <div className="product-actions">
+            <button
+              className="product-action-btn"
+              title="Quick view"
+              aria-label="Quick view"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Quick view logic would go here
+                console.log('Quick view:', product.title);
+              }}
+            >
+              <i className="fas fa-eye"></i>
+            </button>
+            <button
+              className="product-action-btn"
+              title="Add to wishlist"
+              aria-label="Add to wishlist"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Wishlist logic would go here
+                console.log('Add to wishlist:', product.title);
+              }}
+            >
+              <i className="fas fa-heart"></i>
+            </button>
+          </div>
+        </div>
+
+        <h4>{product.title}</h4>
+        <small>
+          <Money data={product.priceRange.minVariantPrice} />
+        </small>
+
+        <div className="product-quick-add">
+          {product.variants?.nodes?.[0] && product.variants.nodes[0].availableForSale && (
+            <SimpleAddToCartButton
+              merchandiseId={product.variants.nodes[0].id}
+              quantity={1}
+            />
+          )}
+          {(!product.variants?.nodes?.[0] || !product.variants.nodes[0].availableForSale) && (
+            <button
+              className="add-to-cart-button"
+              disabled={true}
+            >
+              <span className="add-to-cart-text">Sold out</span>
+              <i className="fas fa-shopping-cart"></i>
+            </button>
+          )}
         </div>
       </Link>
-      <div className="product-info">
-        <Link
-          to={variantUrl}
-          prefetch="intent"
-          className="product-title-link"
-        >
-          <h3>{product.title}</h3>
-        </Link>
-        <div className="product-price">
-          <Money data={product.priceRange.minVariantPrice} />
-        </div>
-        <button
-          className="add-to-cart"
-          onClick={() => {
-            // Add to cart functionality here
-          }}
-        >
-          <i className="fas fa-shopping-cart cart-icon"></i>
-          <span>Add</span>
-        </button>
-      </div>
     </div>
   );
 }
@@ -355,6 +377,18 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       }
       maxVariantPrice {
         ...MoneyProductItem
+      }
+    }
+    variants(first: 1) {
+      nodes {
+        id
+        availableForSale
+        compareAtPrice {
+          ...MoneyProductItem
+        }
+        price {
+          ...MoneyProductItem
+        }
       }
     }
     vendor

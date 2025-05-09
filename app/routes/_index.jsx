@@ -4,6 +4,9 @@ import {SlideshowBanner} from '~/components/SlideshowBanner';
 import {PromotionCards} from '~/components/PromotionCards';
 import {ShopByCategories} from '~/components/ShopByCategories';
 import {FeaturedProducts} from '~/components/FeaturedProducts';
+import {HamperCards} from '~/components/HamperCards';
+import {MegaSaverClean} from '~/components/MegaSaverClean';
+import {HAMPER_METAOBJECTS_QUERY} from '~/lib/hamper-queries';
 import {
   BANNER_COLLECTIONS_QUERY,
   BANNER_METAOBJECTS_QUERY,
@@ -11,7 +14,9 @@ import {
   BANNER_PRODUCTS_QUERY,
   PROMOTION_METAOBJECTS_QUERY,
   PROMOTION_COLLECTIONS_QUERY,
-  PROMOTION_PRODUCTS_QUERY
+  PROMOTION_PRODUCTS_QUERY,
+  MEGA_SAVER_METAOBJECTS_QUERY,
+  MEGA_SAVER_BANNER_QUERY
 } from '~/lib/banner-queries';
 
 export const meta = () => {
@@ -33,7 +38,10 @@ async function loadCriticalData({context}) {
     bannerProductsData,
     promotionMetaobjectsData,
     promotionCollectionsData,
-    promotionProductsData
+    promotionProductsData,
+    hamperMetaobjectsData,
+    megaSaverItemsData,
+    megaSaverBannerData,
   ] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
     context.storefront.query(BANNER_COLLECTIONS_QUERY),
@@ -49,6 +57,12 @@ async function loadCriticalData({context}) {
     context.storefront.query(PROMOTION_COLLECTIONS_QUERY).catch(() => ({ collections: { nodes: [] } })),
     // Try to fetch promotion products, but don't fail if there are no products with the promotion tag
     context.storefront.query(PROMOTION_PRODUCTS_QUERY).catch(() => ({ products: { nodes: [] } })),
+    // Try to fetch hamper metaobjects
+    context.storefront.query(HAMPER_METAOBJECTS_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
+    // Try to fetch mega saver item metaobjects
+    context.storefront.query(MEGA_SAVER_METAOBJECTS_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
+    // Try to fetch mega saver banner metaobject
+    context.storefront.query(MEGA_SAVER_BANNER_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
   ]);
 
   return {
@@ -60,6 +74,9 @@ async function loadCriticalData({context}) {
     promotionMetaobjects: promotionMetaobjectsData.metaobjects,
     promotionCollections: promotionCollectionsData.collections,
     promotionProducts: promotionProductsData.products,
+    hamperMetaobjects: hamperMetaobjectsData.metaobjects,
+    megaSaverItems: megaSaverItemsData.metaobjects,
+    megaSaverBanner: megaSaverBannerData.metaobjects,
   };
 }
 
@@ -98,11 +115,20 @@ export default function Homepage() {
         bannerProducts={data.bannerProducts}
       />
 
+
+
       {/* Promotion Cards */}
       <PromotionCards
         promotionMetaobjects={data.promotionMetaobjects}
         promotionCollections={data.promotionCollections}
         promotionProducts={data.promotionProducts}
+      />
+
+      {/* Mega Saver */}
+      <MegaSaverClean
+        megaSaverItems={data.megaSaverItems}
+        megaSaverBanner={data.megaSaverBanner}
+        showViewMoreButton={true}
       />
 
       {/* Info Badges */}
@@ -139,11 +165,16 @@ export default function Homepage() {
 
 
 
+
+
       {/* Shop by Categories */}
       <ShopByCategories collections={collections} />
 
       {/* Featured Products */}
       <FeaturedProducts products={data.featuredProducts} />
+
+      {/* Hamper Cards */}
+      <HamperCards hamperMetaobjects={data.hamperMetaobjects} showViewAllButton={true} />
 
       {/* Professional Members */}
       {/* <div className="members-section">

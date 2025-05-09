@@ -218,3 +218,89 @@ export const PROMOTION_PRODUCTS_QUERY = `#graphql
     }
   }
 `;
+
+/**
+ * Query to fetch mega saver items from Shopify metaobjects
+ * This assumes you have created a metaobject definition called 'mega_saver_item'
+ * with fields: title, brand, price, original_price, special_text, image, link, special_offer, quantity
+ *
+ * Note: The image field can be either 'image' or 'mega_saver_item.image_' in the response
+ */
+export const MEGA_SAVER_METAOBJECTS_QUERY = `#graphql
+  query MegaSaverItems($country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    metaobjects(type: "mega_saver_item", first: 12) {
+      nodes {
+        id
+        handle
+        type
+        fields {
+          key
+          value
+          type
+          reference {
+            ... on MediaImage {
+              id
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+            ... on Product {
+              id
+              title
+              handle
+              availableForSale
+              featuredImage {
+                url
+                altText
+              }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    quantityAvailable
+                    price {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * Query to fetch mega saver header/banner from Shopify metaobjects
+ * This assumes you have created a metaobject definition called 'mega_saver_banner'
+ * with fields: title, subtitle, background_color, text_color
+ */
+export const MEGA_SAVER_BANNER_QUERY = `#graphql
+  query MegaSaverBanner($country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    metaobjects(type: "mega_saver_banner", first: 1) {
+      nodes {
+        id
+        handle
+        fields {
+          key
+          value
+        }
+      }
+    }
+  }
+`;

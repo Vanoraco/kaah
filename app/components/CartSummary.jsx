@@ -5,25 +5,37 @@ import {useRef} from 'react';
  * @param {CartSummaryProps}
  */
 export function CartSummary({cart, layout}) {
+  // Ensure cart is not null or undefined
+  const safeCart = cart || {
+    cost: { subtotalAmount: { amount: '0', currencyCode: 'ZAR' } },
+    discountCodes: [],
+    appliedGiftCards: [],
+    checkoutUrl: '#',
+    totalQuantity: 0
+  };
+
   const className =
     layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
 
+  // Calculate total quantity
+  const totalQuantity = safeCart.totalQuantity || 0;
+
   return (
     <div aria-labelledby="cart-summary" className={className}>
-      <h4>Totals</h4>
+      <h4>Cart Summary</h4>
       <dl className="cart-subtotal">
-        <dt>Subtotal</dt>
+        <dt>Subtotal ({totalQuantity} {totalQuantity === 1 ? 'item' : 'items'})</dt>
         <dd>
-          {cart.cost?.subtotalAmount?.amount ? (
-            <Money data={cart.cost?.subtotalAmount} />
+          {safeCart.cost?.subtotalAmount?.amount ? (
+            <Money data={safeCart.cost.subtotalAmount} />
           ) : (
             '-'
           )}
         </dd>
       </dl>
-      <CartDiscounts discountCodes={cart.discountCodes} />
-      <CartGiftCard giftCardCodes={cart.appliedGiftCards} />
-      <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
+      <CartDiscounts discountCodes={safeCart.discountCodes} />
+      <CartGiftCard giftCardCodes={safeCart.appliedGiftCards} />
+      <CartCheckoutActions checkoutUrl={safeCart.checkoutUrl} />
     </div>
   );
 }

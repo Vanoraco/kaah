@@ -378,7 +378,7 @@ export type OrderQuery = {
 
 export type OrderItemFragment = Pick<
   CustomerAccountAPI.Order,
-  'financialStatus' | 'id' | 'number' | 'processedAt'
+  'financialStatus' | 'id' | 'name' | 'processedAt' | 'statusPageUrl'
 > & {
   totalPrice: Pick<CustomerAccountAPI.MoneyV2, 'amount' | 'currencyCode'>;
   fulfillments: {nodes: Array<Pick<CustomerAccountAPI.Fulfillment, 'status'>>};
@@ -389,7 +389,7 @@ export type CustomerOrdersFragment = {
     nodes: Array<
       Pick<
         CustomerAccountAPI.Order,
-        'financialStatus' | 'id' | 'number' | 'processedAt'
+        'financialStatus' | 'id' | 'name' | 'processedAt' | 'statusPageUrl'
       > & {
         totalPrice: Pick<CustomerAccountAPI.MoneyV2, 'amount' | 'currencyCode'>;
         fulfillments: {
@@ -425,7 +425,7 @@ export type CustomerOrdersQuery = {
       nodes: Array<
         Pick<
           CustomerAccountAPI.Order,
-          'financialStatus' | 'id' | 'number' | 'processedAt'
+          'financialStatus' | 'id' | 'name' | 'processedAt' | 'statusPageUrl'
         > & {
           totalPrice: Pick<
             CustomerAccountAPI.MoneyV2,

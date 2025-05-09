@@ -50,6 +50,19 @@ export function ShopByCategories({collections}) {
             <div className="loading-spinner"></div>
             <p>Loading categories...</p>
           </div>
+
+          {/* View All Collections Button (visible even during loading) */}
+          <div className="view-all-collections-container">
+            <Link to="/collections" className="view-all-products-button">
+              <span className="view-all-text">View All Collections</span>
+              <span className="view-all-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5l7 7-7 7"></path>
+                </svg>
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -106,6 +119,19 @@ export function ShopByCategories({collections}) {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* View All Collections Button */}
+        <div className="view-all-collections-container">
+          <Link to="/collections" className="view-all-products-button">
+            <span className="view-all-text">View All Collections</span>
+            <span className="view-all-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="M12 5l7 7-7 7"></path>
+              </svg>
+            </span>
+          </Link>
         </div>
       </div>
     </div>

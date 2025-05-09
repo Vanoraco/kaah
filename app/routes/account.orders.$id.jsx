@@ -69,20 +69,23 @@ export async function loader({params, context}) {
           order(id: $orderId) {
             id
             name
-            orderNumber
             processedAt
-            fulfillmentStatus
             financialStatus
-            statusUrl
+            statusPageUrl
+            fulfillments(first: 1) {
+              nodes {
+                status
+              }
+            }
             totalPrice {
               amount
               currencyCode
             }
-            subtotalPrice {
+            subtotal {
               amount
               currencyCode
             }
-            totalShippingPrice {
+            totalShipping {
               amount
               currencyCode
             }
@@ -94,27 +97,15 @@ export async function loader({params, context}) {
               nodes {
                 title
                 quantity
-                originalTotalPrice {
+                price {
                   amount
                   currencyCode
                 }
-                variant {
-                  id
-                  title
-                  image {
-                    url
-                    altText
-                    width
-                    height
-                  }
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  product {
-                    handle
-                    title
-                  }
+                image {
+                  url
+                  altText
+                  width
+                  height
                 }
               }
             }
@@ -171,7 +162,8 @@ export async function loader({params, context}) {
     const discountApplications = order.discountApplications?.nodes || [];
     const fulfillments = order.fulfillments?.nodes || [];
 
-    const fulfillmentStatus = fulfillments[0]?.status || 'UNFULFILLED';
+    // Get the fulfillment status from the first fulfillment
+    const fulfillmentStatus = fulfillments.length > 0 ? fulfillments[0].status : 'UNFULFILLED';
 
     const firstDiscount = discountApplications[0]?.value;
 
@@ -182,9 +174,15 @@ export async function loader({params, context}) {
       firstDiscount && 'percentage' in firstDiscount ? firstDiscount.percentage : null;
 
     // Commit the session to persist any changes
-    let headers;
+    let responseInit = {};
+
     try {
-      headers = await session.commit();
+      if (session.isPending) {
+        const sessionHeaders = await session.commit();
+        if (sessionHeaders) {
+          responseInit.headers = { 'Set-Cookie': sessionHeaders };
+        }
+      }
     } catch (sessionError) {
       console.error('Error committing session:', sessionError);
       // Continue without headers if session commit fails
@@ -198,22 +196,29 @@ export async function loader({params, context}) {
         discountPercentage,
         fulfillmentStatus,
       },
-      { headers }
+      responseInit
     );
   } catch (error) {
     console.error('Error fetching order details:', error);
 
     // Try to commit the session but don't fail if it doesn't work
-    let headers;
+    let redirectOptions = {};
+
     try {
-      headers = await session.commit();
+      if (session.isPending) {
+        const sessionHeaders = await session.commit();
+        if (sessionHeaders) {
+          redirectOptions.headers = { 'Set-Cookie': sessionHeaders };
+        }
+      }
     } catch (sessionError) {
       console.error('Error committing session after error:', sessionError);
     }
 
     // Redirect to orders page with error message
-    return redirect(`/account/orders?error=${encodeURIComponent(error.message || 'Error loading order details')}`,
-      { headers }
+    return redirect(
+      `/account/orders?error=${encodeURIComponent(error.message || 'Error loading order details')}`,
+      redirectOptions
     );
   }
 }
@@ -285,8 +290,8 @@ export default function OrderRoute() {
             )}
           </div>
 
-          {order.statusUrl && (
-            <a href={order.statusUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
+          {order.statusPageUrl && (
+            <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
               <i className="fas fa-truck"></i> Track Order
             </a>
           )}
@@ -315,7 +320,7 @@ export default function OrderRoute() {
           <div className="order-summary">
             <div className="summary-row">
               <span>Subtotal</span>
-              <span><Money data={order.subtotalPrice} /></span>
+              <span><Money data={order.subtotal} /></span>
             </div>
 
             {((discountValue && discountValue.amount) || discountPercentage) && (
@@ -363,8 +368,8 @@ export default function OrderRoute() {
           <Link to="/account/orders" className="back-to-orders-btn">
             Back to Orders
           </Link>
-          {order.statusUrl && (
-            <a href={order.statusUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn large">
+          {order.statusPageUrl && (
+            <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn large">
               Track Order
             </a>
           )}
@@ -382,11 +387,11 @@ function OrderLineRow({lineItem}) {
     <div className="order-item-row">
       <div className="item-col product-col">
         <div className="product-info">
-          {lineItem?.variant?.image && (
+          {lineItem?.image && (
             <div className="product-image">
               <img
-                src={lineItem.variant.image.url}
-                alt={lineItem.variant.image.altText || lineItem.title}
+                src={lineItem.image.url}
+                alt={lineItem.image.altText || lineItem.title}
                 width="70"
                 height="70"
               />
@@ -394,22 +399,19 @@ function OrderLineRow({lineItem}) {
           )}
           <div className="product-details">
             <p className="product-title">{lineItem.title}</p>
-            {lineItem.variant?.title && lineItem.variant.title !== 'Default Title' && (
-              <p className="product-variant">{lineItem.variant.title}</p>
-            )}
           </div>
         </div>
       </div>
       <div className="item-col price-col">
-        {lineItem.variant?.price && (
-          <Money data={lineItem.variant.price} />
+        {lineItem.price && (
+          <Money data={lineItem.price} />
         )}
       </div>
       <div className="item-col quantity-col">
         {lineItem.quantity}
       </div>
       <div className="item-col total-col">
-        <Money data={lineItem.originalTotalPrice} />
+        <Money data={lineItem.price} />
       </div>
     </div>
   );

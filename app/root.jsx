@@ -18,6 +18,7 @@ import homeStyles from '~/styles/home.css?url';
 import headerStyles from '~/styles/header.css?url';
 import navigationStyles from '~/styles/navigation.css?url';
 import productDetailStyles from '~/styles/product-detail.css?url';
+import productFormStyles from '~/styles/product-form.css?url';
 import responsiveStyles from '~/styles/responsive.css?url';
 import slideShowStyles from '~/styles/slide-show.css?url';
 import promotionStyles from '~/styles/promobanner.css?url';
@@ -30,6 +31,9 @@ import searchDropdownStyles from '~/styles/search-dropdown.css?url';
 import searchResultsStyles from '~/styles/search-results.css?url';
 import cartStyles from '~/styles/cart.css?url';
 import accountStyles from '~/styles/account.css?url';
+import cartAssociationStyles from '~/styles/cart-association.css?url';
+import hamperDetailStyles from '~/styles/hamper-detail.css?url';
+import hampersPageStyles from '~/styles/hampers-page.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
@@ -38,17 +42,26 @@ import {NotFound} from './components/NotFound';
  * This is important to avoid re-fetching root queries on sub-navigations
  * @type {ShouldRevalidateFunction}
  */
-export const shouldRevalidate = ({formMethod, currentUrl, nextUrl}) => {
+export const shouldRevalidate = ({formMethod, currentUrl, nextUrl, defaultShouldRevalidate, formAction, actionResult}) => {
+  // Always revalidate after cart actions for immediate feedback
+  if (formAction && formAction.includes('/cart') && actionResult) {
+    return true;
+  }
+
   // revalidate when a mutation is performed e.g add to cart, login...
   if (formMethod && formMethod !== 'GET') return true;
 
   // revalidate when manually revalidating via useRevalidator
   if (currentUrl.toString() === nextUrl.toString()) return true;
 
-  // We're enabling revalidation to ensure we get the latest data from Shopify
-  // This ensures collections and other data stay in sync with the Shopify store
-  // For more details see: https://remix.run/docs/en/main/route/should-revalidate
-  return true;
+  // Don't revalidate on cart page to prevent unnecessary refreshes
+  // unless it's a direct navigation to the cart page
+  if (nextUrl.pathname === '/cart' && currentUrl.pathname === '/cart') {
+    return false;
+  }
+
+  // For other pages, use the default behavior
+  return defaultShouldRevalidate;
 };
 
 /**
@@ -180,6 +193,7 @@ export function Layout({children}) {
         <link rel="stylesheet" href={slideShowStyles}></link>
         <link rel="stylesheet" href={promotionStyles}></link>
         <link rel="stylesheet" href={productDetailStyles}></link>
+        <link rel="stylesheet" href={productFormStyles}></link>
         <link rel="stylesheet" href={responsiveStyles}></link>
         <link rel="stylesheet" href={emptyCollectionStyles}></link>
         <link rel="stylesheet" href={collectionStyles}></link>
@@ -191,6 +205,9 @@ export function Layout({children}) {
         <link rel="stylesheet" href={variablesStyles}></link>
         <link rel="stylesheet" href={cartStyles}></link>
         <link rel="stylesheet" href={accountStyles}></link>
+        <link rel="stylesheet" href={cartAssociationStyles}></link>
+        <link rel="stylesheet" href={hamperDetailStyles}></link>
+        <link rel="stylesheet" href={hampersPageStyles}></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />

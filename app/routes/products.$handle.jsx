@@ -1,3 +1,4 @@
+import React, {useState, useEffect} from 'react';
 import {useLoaderData} from '@remix-run/react';
 import {
   getSelectedProductOptions,
@@ -101,33 +102,73 @@ export default function Product() {
   });
 
   const {title, descriptionHtml, vendor, tags} = product;
+  const [currentImage, setCurrentImage] = useState(selectedVariant?.image || null);
+
+  // Update current image when variant changes
+  useEffect(() => {
+    if (selectedVariant?.image) {
+      setCurrentImage(selectedVariant.image);
+    }
+  }, [selectedVariant]);
+
+  // Function to handle thumbnail click
+  const handleThumbnailClick = (image) => {
+    setCurrentImage(image);
+  };
+
+  // Function to handle keyboard navigation for accessibility
+  const handleThumbnailKeyDown = (e, image) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setCurrentImage(image);
+    }
+  };
 
   return (
     <div className="product-detail-container">
       <div className="product-detail">
-        {/* Product Images Section */}
-        <div className="product-image-container">
-          <div className="product-image">
-            {selectedVariant?.image && (
-              <>
+        {/* Product Images Gallery Section */}
+        <div className="product-gallery">
+          <div className="product-gallery-main">
+            {currentImage && (
+              <div className="gallery-main-image-container">
                 <div className="product-image-badge">Featured</div>
-                <img
-                  src={selectedVariant.image.url}
-                  alt={selectedVariant.image.altText || title}
-                />
-              </>
+                <div className="gallery-main-image">
+                  <img
+                    src={currentImage.url}
+                    alt={currentImage.altText || title}
+                    className="product-detail-image"
+                    loading="eager"
+                    id="main-product-image"
+                  />
+                  
+                </div>
+              </div>
             )}
           </div>
 
-          <div className="product-thumbnails">
-            {product.images?.nodes?.map((image, index) => (
-              <div
-                key={image.id}
-                className={`product-thumbnail ${selectedVariant?.image?.id === image.id ? 'active' : ''}`}
-              >
-                <img src={image.url} alt={`${title} - Image ${index + 1}`} />
-              </div>
-            ))}
+          <div className="product-thumbnails-container">
+            
+            <div className="product-thumbnails">
+              {product.images?.nodes?.map((image, index) => (
+                <div
+                  key={image.id}
+                  className={`product-thumbnail ${currentImage?.id === image.id ? 'active' : ''}`}
+                  onClick={() => handleThumbnailClick(image)}
+                  onKeyDown={(e) => handleThumbnailKeyDown(e, image)}
+                  role="button"
+                  tabIndex="0"
+                  aria-label={`View ${title} - Image ${index + 1}`}
+                >
+                  <img
+                    src={image.url}
+                    alt={`${title} - Image ${index + 1}`}
+                    loading="lazy"
+                  />
+                  {currentImage?.id === image.id && <div className="thumbnail-active-indicator"></div>}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -177,74 +218,46 @@ export default function Product() {
 
           <div className="product-description" dangerouslySetInnerHTML={{__html: descriptionHtml}} />
 
-          <div className="product-form">
-            <div className="product-options">
-              <ProductForm
-                productOptions={productOptions}
-                selectedVariant={selectedVariant}
-              />
-            </div>
-
-            <div className="add-to-cart-container">
-              <div className="quantity-selector">
-                <button className="quantity-btn" aria-label="Decrease quantity">-</button>
-                <input type="number" className="quantity-input" value="1" min="1" readOnly />
-                <button className="quantity-btn" aria-label="Increase quantity">+</button>
-              </div>
-
-              <AddToCartButton
-                disabled={!selectedVariant?.availableForSale}
-                lines={
-                  selectedVariant
-                    ? [
-                        {
-                          merchandiseId: selectedVariant.id,
-                          quantity: 1,
-                        },
-                      ]
-                    : []
-                }
-                analytics={{
-                  products: [
-                    {
-                      name: product.title,
-                      productGid: product.id,
-                      variantGid: selectedVariant?.id,
-                      price: selectedVariant?.price?.amount,
-                      quantity: 1,
-                    },
-                  ],
-                  cartId: null,
-                }}
-              >
-                <span className="add-to-cart-text">
-                  {selectedVariant?.availableForSale ? 'Add to Cart' : 'Sold out'}
-                </span>
-                <i className="fas fa-shopping-cart"></i>
-              </AddToCartButton>
-            </div>
 
 
-          </div>
+          <ProductForm
+            productOptions={productOptions}
+            selectedVariant={selectedVariant}
+            analytics={{
+              products: [
+                {
+                  name: product.title,
+                  productGid: product.id,
+                  variantGid: selectedVariant?.id,
+                  price: selectedVariant?.price?.amount,
+                  quantity: 1,
+                },
+              ],
+              cartId: null,
+            }}
+          />
 
           <div className="product-guarantees">
             <div className="guarantee-item">
               <div className="guarantee-icon">
                 <i className="fas fa-truck"></i>
               </div>
+              <div className="guarantee-title">Free Shipping</div>
               <div className="guarantee-text">Free shipping on orders over ZAR 100</div>
             </div>
             <div className="guarantee-item">
               <div className="guarantee-icon">
                 <i className="fas fa-undo"></i>
               </div>
+              <div className="guarantee-title">Money Back</div>
               <div className="guarantee-text">30-day money-back guarantee</div>
             </div>
             <div className="guarantee-item">
               <div className="guarantee-icon">
                 <i className="fas fa-shield-alt"></i>
               </div>
-              <div className="guarantee-text">Secure payment</div>
+              <div className="guarantee-title">Secure Payment</div>
+              <div className="guarantee-text">Your data is always protected</div>
             </div>
           </div>
 

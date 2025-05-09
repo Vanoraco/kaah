@@ -69,53 +69,66 @@ export function FeaturedProducts({products}) {
 
 function ProductCard({product}) {
   return (
-    <div className="product-card">
+    <div className="product-item-wrapper">
       <Link
+        className="product-item"
         to={`/products/${product.handle}`}
-        className="product-link"
         prefetch="intent"
       >
-        <div className="product-image">
+        <div className="product-image-container">
+          <div className="featured-badge">Featured</div>
           {product.images.nodes[0] && (
             <Image
-              data={product.images.nodes[0]}
+              alt={product.images.nodes[0].altText || product.title}
               aspectRatio="1/1"
-              sizes="(min-width: 45em) 20vw, 50vw"
-              className="product-photo"
+              data={product.images.nodes[0]}
+              sizes="(min-width: 45em) 400px, 100vw"
             />
           )}
-          <button
-            className="wishlist-button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Add wishlist functionality here
-            }}
-            aria-label="Add to wishlist"
+
+          <div className="product-actions">
+            <button
+              className="product-action-btn"
+              title="Quick view"
+              aria-label="Quick view"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Quick view logic would go here
+               
+              }}
+            >
+              <i className="fas fa-eye"></i>
+            </button>
+            <button
+              className="product-action-btn"
+              title="Add to wishlist"
+              aria-label="Add to wishlist"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+              }}
+            >
+              <i className="fas fa-heart"></i>
+            </button>
+          </div>
+        </div>
+
+        <h4>{product.title}</h4>
+        <small>
+          <Money data={product.priceRange.minVariantPrice} />
+        </small>
+
+        <div className="product-quick-add">
+          <Link
+            to={`/products/${product.handle}`}
+            className="quick-add-btn"
           >
-            <i className="far fa-heart"></i>
-          </button>
+            View Details
+          </Link>
         </div>
       </Link>
-      <div className="product-info">
-        <Link
-          to={`/products/${product.handle}`}
-          prefetch="intent"
-          className="product-title-link"
-        >
-          <h3>{product.title}</h3>
-        </Link>
-        <div className="product-price">
-          <Money data={product.priceRange.minVariantPrice} />
-        </div>
-        <Link
-          to={`/products/${product.handle}`}
-          className="add-to-cart"
-        >
-          <i className="fas fa-eye cart-icon"></i>
-          <span>View Details</span>
-        </Link>
-      </div>
     </div>
   );
 }
@@ -123,10 +136,10 @@ function ProductCard({product}) {
 function FeaturedProductsSkeleton() {
   return (
     <div className="products-grid">
-      {Array.from({length: 5}).map((_, index) => (
-        <div key={index} className="product-card skeleton">
-          <div className="product-image skeleton-image"></div>
-          <div className="product-info">
+      {Array.from({length: 3}).map((_, index) => (
+        <div key={index} className="product-item-wrapper">
+          <div className="product-item skeleton">
+            <div className="product-image-container skeleton-image"></div>
             <div className="skeleton-title"></div>
             <div className="skeleton-price"></div>
             <div className="skeleton-button"></div>

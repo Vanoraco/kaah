@@ -89,20 +89,23 @@ export async function loader({request, context}) {
             nodes {
               id
               name
-              orderNumber
               processedAt
-              fulfillmentStatus
               financialStatus
-              statusUrl
+              statusPageUrl
+              fulfillments(first: 1) {
+                nodes {
+                  status
+                }
+              }
               totalPrice {
                 amount
                 currencyCode
               }
-              subtotalPrice {
+              subtotal {
                 amount
                 currencyCode
               }
-              totalShippingPrice {
+              totalShipping {
                 amount
                 currencyCode
               }
@@ -110,23 +113,13 @@ export async function loader({request, context}) {
                 nodes {
                   title
                   quantity
-                  originalTotalPrice {
+                  price {
                     amount
                     currencyCode
                   }
-                  variant {
-                    image {
-                      url
-                      altText
-                    }
-                    title
-                    price {
-                      amount
-                      currencyCode
-                    }
-                    product {
-                      handle
-                    }
+                  image {
+                    url
+                    altText
                   }
                 }
               }
@@ -157,20 +150,22 @@ export async function loader({request, context}) {
         lineItems: {
           nodes: (order.lineItems?.nodes || []).map(item => ({
             ...item,
-            variant: item.variant || {
-              image: null,
-              title: 'Product Variant',
-              price: item.originalTotalPrice
-            }
+            image: item.image || null
           }))
         }
       };
     });
 
     // Commit the session to persist any changes
-    let headers;
+    let responseInit = {};
+
     try {
-      headers = await session.commit();
+      if (session.isPending) {
+        const sessionHeaders = await session.commit();
+        if (sessionHeaders) {
+          responseInit.headers = { 'Set-Cookie': sessionHeaders };
+        }
+      }
     } catch (sessionError) {
       console.error('Error committing session:', sessionError);
       // Continue without headers if session commit fails
@@ -182,15 +177,21 @@ export async function loader({request, context}) {
         orders: validatedOrders,
         pageInfo: data?.customer?.orders?.pageInfo || null
       },
-      { headers }
+      responseInit
     );
   } catch (error) {
     console.error('Error fetching customer orders:', error);
 
     // Try to commit the session but don't fail if it doesn't work
-    let headers;
+    let responseInit = { status: 500 };
+
     try {
-      headers = await session.commit();
+      if (session.isPending) {
+        const sessionHeaders = await session.commit();
+        if (sessionHeaders) {
+          responseInit.headers = { 'Set-Cookie': sessionHeaders };
+        }
+      }
     } catch (sessionError) {
       console.error('Error committing session after error:', sessionError);
     }
@@ -205,7 +206,7 @@ export async function loader({request, context}) {
           details: process.env.NODE_ENV === 'development' ? error.stack : null
         }
       },
-      { headers, status: 500 }
+      responseInit
     );
   }
 }
@@ -341,6 +342,14 @@ function OrderCard({ order }) {
     }
   };
 
+  // Get fulfillment status from fulfillments array
+  const getFulfillmentStatus = () => {
+    if (!order.fulfillments || !order.fulfillments.nodes || order.fulfillments.nodes.length === 0) {
+      return 'UNFULFILLED';
+    }
+    return order.fulfillments.nodes[0].status || 'UNFULFILLED';
+  };
+
   // Safely get line items
   const lineItems = order.lineItems?.nodes || [];
 
@@ -348,12 +357,12 @@ function OrderCard({ order }) {
     <div className="order-card">
       <div className="order-header">
         <div className="order-number">
-          <h3>Order #{order.orderNumber || 'Unknown'}</h3>
+          <h3>Order {order.name || 'Unknown'}</h3>
           <span className="order-date">{orderDate}</span>
         </div>
         <div className="order-status">
-          <span className={`status-badge ${getStatusBadgeClass(order.fulfillmentStatus)}`}>
-            {order.fulfillmentStatus || 'Processing'}
+          <span className={`status-badge ${getStatusBadgeClass(getFulfillmentStatus())}`}>
+            {getFulfillmentStatus() || 'Processing'}
           </span>
         </div>
       </div>
@@ -366,10 +375,10 @@ function OrderCard({ order }) {
 
               return (
                 <div key={index} className="order-item">
-                  {item.variant?.image?.url ? (
+                  {item.image?.url ? (
                     <img
-                      src={item.variant.image.url}
-                      alt={item.variant.image.altText || item.title || 'Product image'}
+                      src={item.image.url}
+                      alt={item.image.altText || item.title || 'Product image'}
                       className="order-item-image"
                       width="60"
                       height="60"
@@ -381,14 +390,11 @@ function OrderCard({ order }) {
                   )}
                   <div className="order-item-details">
                     <p className="order-item-title">{item.title || 'Product'}</p>
-                    {item.variant && item.variant.title && item.variant.title !== 'Default Title' && (
-                      <p className="order-item-variant">{item.variant.title}</p>
-                    )}
                     <p className="order-item-quantity">Qty: {item.quantity || 1}</p>
                   </div>
                   <div className="order-item-price">
-                    {item.originalTotalPrice ? (
-                      <Money data={item.originalTotalPrice} />
+                    {item.price ? (
+                      <Money data={item.price} />
                     ) : (
                       'N/A'
                     )}
@@ -411,8 +417,8 @@ function OrderCard({ order }) {
           <div className="order-total-row">
             <span>Subtotal:</span>
             <span>
-              {order.subtotalPrice ? (
-                <Money data={order.subtotalPrice} />
+              {order.subtotal ? (
+                <Money data={order.subtotal} />
               ) : (
                 'N/A'
               )}
@@ -421,8 +427,8 @@ function OrderCard({ order }) {
           <div className="order-total-row">
             <span>Shipping:</span>
             <span>
-              {order.totalShippingPrice ? (
-                <Money data={order.totalShippingPrice} />
+              {order.totalShipping ? (
+                <Money data={order.totalShipping} />
               ) : (
                 'N/A'
               )}
@@ -441,8 +447,8 @@ function OrderCard({ order }) {
         </div>
 
         <div className="order-actions">
-          {order.statusUrl && (
-            <a href={order.statusUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
+          {order.statusPageUrl && (
+            <a href={order.statusPageUrl} target="_blank" rel="noopener noreferrer" className="track-order-btn">
               Track Order
             </a>
           )}

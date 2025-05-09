@@ -12,8 +12,9 @@ export const ORDER_ITEM_FRAGMENT = `#graphql
       }
     }
     id
-    number
+    name
     processedAt
+    statusPageUrl
   }
 `;
 

@@ -9,6 +9,7 @@ import {
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {CollectionFilters} from '~/components/CollectionFilters';
+import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -324,12 +325,21 @@ function ProductItem({product, loading}) {
         </small>
 
         <div className="product-quick-add">
-          <button
-            className="quick-add-btn"
-            onClick={handleQuickAdd}
-          >
-            <i className="fas fa-shopping-cart"></i> Add to Cart
-          </button>
+          {product.variants?.nodes?.[0] && product.variants.nodes[0].availableForSale && (
+            <SimpleAddToCartButton
+              merchandiseId={product.variants.nodes[0].id}
+              quantity={1}
+            />
+          )}
+          {(!product.variants?.nodes?.[0] || !product.variants.nodes[0].availableForSale) && (
+            <button
+              className="add-to-cart-button"
+              disabled={true}
+            >
+              <span className="add-to-cart-text">Sold out</span>
+              <i className="fas fa-shopping-cart"></i>
+            </button>
+          )}
         </div>
       </Link>
     </div>
@@ -358,6 +368,18 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
       }
       maxVariantPrice {
         ...MoneyProductItem
+      }
+    }
+    variants(first: 1) {
+      nodes {
+        id
+        availableForSale
+        compareAtPrice {
+          ...MoneyProductItem
+        }
+        price {
+          ...MoneyProductItem
+        }
       }
     }
   }

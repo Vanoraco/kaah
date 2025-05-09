@@ -58,7 +58,11 @@ export function Aside({children, heading, type}) {
 
 const AsideContext = createContext(null);
 
-Aside.Provider = function AsideProvider({children}) {
+/**
+ * Provider component for the Aside context
+ * @param {{children: React.ReactNode}} props
+ */
+export function AsideProvider({children}) {
   const [type, setType] = useState('closed');
 
   return (
@@ -72,7 +76,10 @@ Aside.Provider = function AsideProvider({children}) {
       {children}
     </AsideContext.Provider>
   );
-};
+}
+
+// Keep the old API for backward compatibility
+Aside.Provider = AsideProvider;
 
 export function useAside() {
   const aside = useContext(AsideContext);

@@ -42,6 +42,15 @@ export default async function handleRequest(
     connectSrc: [
       "'self'",
       "https://cdnjs.cloudflare.com",
+      "https://doe-social-seriously.ngrok-free.app",
+      "https://suitably-valued-panda.ngrok-free.app",
+      "https://*.myshopify.com",
+      "https://*.shopify.com",
+      "https://monorail-edge.shopifysvc.com",
+      "https://kaah.co.za",
+      "https://kaah-2bae1e568b55e5345ee6.o2.myshopify.dev",
+      "https://*.o2.myshopify.dev",
+      "*"
     ],
   });
 

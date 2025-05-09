@@ -10,30 +10,77 @@ import {CartSummary} from './CartSummary';
  * @param {CartMainProps}
  */
 export function CartMain({layout, cart: originalCart}) {
+  // Ensure originalCart is not null or undefined
+  const safeOriginalCart = originalCart || {
+    lines: { nodes: [] },
+    totalQuantity: 0,
+    cost: { totalAmount: { amount: '0', currencyCode: 'ZAR' } }
+  };
+
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
-  const cart = useOptimisticCart(originalCart);
+  const cart = useOptimisticCart(safeOriginalCart);
 
-  const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
+  // Ensure lines and nodes are always defined
+  if (!cart.lines) {
+    cart.lines = { nodes: [] };
+  }
+
+  if (!cart.lines.nodes) {
+    cart.lines.nodes = [];
+  }
+
+  // Filter out items with quantity 0 and null/undefined lines
+  const validLines = cart.lines.nodes
+    .filter(line => line && line.merchandise && line.quantity > 0) || [];
+
+  // Ensure cart and lines are properly defined
+  const hasLines = validLines.length > 0;
+  const linesCount = hasLines;
+
+  // Check for applicable discount codes
   const withDiscount =
     cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
+    cart.discountCodes &&
+    Array.isArray(cart.discountCodes) &&
+    cart.discountCodes.filter((code) => code?.applicable).length > 0;
+
   const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
-  const cartHasItems = cart?.totalQuantity && cart?.totalQuantity > 0;
+
+  // Check if cart has items - use our filtered lines to determine this
+  const cartHasItems = validLines.length > 0;
+
+  // Only log in development environment
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CartMain rendering with:', {
+      originalLineCount: cart?.lines?.nodes?.length || 0,
+      validLineCount: validLines.length,
+      hasLines,
+      linesCount,
+      cartHasItems,
+      totalQuantity: cart?.totalQuantity
+    });
+  }
 
   return (
     <div className={className}>
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
-        <div aria-labelledby="cart-lines">
-          <ul>
-            {(cart?.lines?.nodes ?? []).map((line) => (
-              <CartLineItem key={line.id} line={line} layout={layout} />
-            ))}
-          </ul>
+      {linesCount && (
+        <div className="cart-details">
+          <div className="cart-lines-container" aria-labelledby="cart-lines">
+            <ul>
+              {validLines.map((line, index) => (
+                <CartLineItem key={line.id || `line-${index}`} line={line} layout={layout} />
+              ))}
+            </ul>
+          </div>
+          {cartHasItems && (
+            <div className="cart-summary-container">
+              <CartSummary cart={cart} layout={layout} />
+            </div>
+          )}
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
-      </div>
+      )}
     </div>
   );
 }
@@ -46,8 +93,14 @@ export function CartMain({layout, cart: originalCart}) {
  */
 function CartEmpty({hidden = false, layout}) {
   const {close} = useAside();
+
+  // Only log in development environment
+  if (process.env.NODE_ENV === 'development') {
+    console.log('CartEmpty component with hidden:', hidden);
+  }
+
   return (
-    <div className="cart-empty" hidden={hidden}>
+    <div className="cart-empty" style={{ display: hidden ? 'none' : 'block' }}>
       <div className="cart-empty-illustration">
         <div className="empty-cart-image">
           <i className="fas fa-shopping-cart"></i>

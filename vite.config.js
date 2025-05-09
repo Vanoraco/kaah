@@ -41,4 +41,8 @@ export default defineConfig({
       include: [],
     },
   },
+  server: {
+    allowedHosts: ['doe-social-seriously.ngrok-free.app', 'suitably-valued-panda.ngrok-free.app'],
+
+  },
 });
