@@ -162,8 +162,97 @@
 }
 
 @media (max-width: 768px) {
+  /* Base container adjustments */
+  .hamper-detail-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .hamper-detail-container {
+    padding: 25px 20px;
+  }
+
+  /* Header adjustments */
+  .hamper-detail-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .hamper-title-decoration.left {
+    margin-right: 10px;
+  }
+
+  .hamper-title-decoration.right {
+    margin-left: 10px;
+  }
+
+  .hamper-badge-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Content layout adjustment */
   .hamper-detail-content {
     grid-template-columns: 1fr;
+    gap: 1.8rem;
+    margin-bottom: 2.5rem;
+  }
+
+  /* Image container adjustments */
+  .hamper-detail-image-container {
+    height: 350px;
+  }
+
+  .hamper-detail-price-tag {
+    bottom: 15px;
+    right: 15px;
+    padding: 8px 16px;
+  }
+
+  .price-tag-label {
+    font-size: 12px;
+  }
+
+  .price-tag-value {
+    font-size: 20px;
+  }
+
+  /* Price container adjustments */
+  .hamper-detail-price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .price-value {
+    font-size: 22px;
+    padding: 6px 14px;
+  }
+
+  /* Benefits section adjustments */
+  .add-all-benefits {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .benefit-item {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  /* Products list section adjustments */
+  .hamper-products-list h2 {
+    font-size: 1.8rem;
+  }
+
+  .header-line.left {
+    margin-right: 15px;
+  }
+
+  .header-line.right {
+    margin-left: 15px;
+  }
+
+  .products-list-subheader p {
+    font-size: 15px;
   }
 }
 
@@ -778,8 +867,307 @@
 }
 
 @media (max-width: 576px) {
+  /* Base container adjustments */
+  .hamper-detail-page {
+    padding: 1rem 0.8rem;
+  }
+
+  .hamper-detail-container {
+    padding: 20px 15px;
+    border-radius: var(--border-radius-md);
+  }
+
+  /* Header adjustments */
+  .back-link {
+    font-size: 14px;
+    padding: 6px 12px;
+    margin-bottom: 1rem;
+  }
+
+  .hamper-detail-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .hamper-title-decoration {
+    display: none;
+  }
+
+  .hamper-badge-container {
+    gap: 10px;
+    margin: 0.8rem 0;
+  }
+
+  .hamper-special-badge, .hamper-count-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Image container adjustments */
+  .hamper-detail-image-container {
+    height: 280px;
+  }
+
+  .hamper-detail-price-tag {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    transform: rotate(-2deg);
+  }
+
+  .price-tag-label {
+    font-size: 11px;
+  }
+
+  .price-tag-value {
+    font-size: 18px;
+  }
+
+  /* Price container adjustments */
+  .hamper-detail-price-container,
+  .hamper-detail-description,
+  .add-all-container {
+    padding: 20px 15px;
+    border-radius: var(--border-radius-sm);
+  }
+
+  .price-label {
+    font-size: 14px;
+  }
+
+  .price-value {
+    font-size: 20px;
+    padding: 5px 12px;
+  }
+
+  .savings-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .savings-value {
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+
+  /* Description adjustments */
+  .description-header i {
+    font-size: 18px;
+  }
+
+  .hamper-detail-description h2 {
+    font-size: 1.3rem;
+  }
+
+  .hamper-detail-description p {
+    font-size: 14px;
+  }
+
+  /* Contents summary adjustments */
+  .hamper-contents-summary {
+    padding: 15px;
+  }
+
+  .contents-summary-header {
+    font-size: 14px;
+  }
+
+  .hamper-quick-list li {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  /* Benefits section adjustments */
+  .add-all-benefits {
+    justify-content: center;
+  }
+
+  .benefit-item {
+    padding: 8px;
+    min-width: 80px;
+    flex: 0 0 calc(33.33% - 10px);
+  }
+
+  .benefit-item i {
+    font-size: 16px;
+  }
+
+  .benefit-item span {
+    font-size: 12px;
+  }
+
+  /* Add to cart button adjustments */
+  .add-all-button {
+    padding: 15px 20px;
+    font-size: 14px;
+  }
+
+  .add-all-button i {
+    font-size: 16px;
+  }
+
+  /* Products list section adjustments */
+  .hamper-products-list {
+    margin-top: 2.5rem;
+  }
+
+  .hamper-products-list h2 {
+    font-size: 1.5rem;
+  }
+
+  .hamper-products-list h2 i {
+    font-size: 1.5rem;
+  }
+
+  .products-list-subheader p {
+    font-size: 14px;
+  }
+
+  /* Products grid adjustments */
   .hamper-products-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* No products message adjustments */
+  .no-products-message {
+    padding: 30px 20px;
+  }
+
+  .no-products-icon {
+    font-size: 3rem;
+  }
+
+  .no-products-message p {
+    font-size: 16px;
+  }
+
+  .no-products-message .loading-message {
+    font-size: 14px;
+  }
+
+  .browse-products-button,
+  .browse-hampers-button {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  /* Base container adjustments */
+  .hamper-detail-page {
+    padding: 0.8rem 0.5rem;
+  }
+
+  .hamper-detail-container {
+    padding: 15px 12px;
+    border-radius: var(--border-radius-sm);
+  }
+
+  /* Header adjustments */
+  .hamper-detail-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .back-link {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .back-link i {
+    margin-right: 6px;
+  }
+
+  .hamper-detail-header h1 {
+    font-size: 1.5rem;
+    padding: 0 5px;
+  }
+
+  /* Image container adjustments */
+  .hamper-detail-image-container {
+    height: 220px;
+  }
+
+  /* Price container adjustments */
+  .hamper-detail-price-container,
+  .hamper-detail-description,
+  .add-all-container {
+    padding: 15px 12px;
+  }
+
+  .price-label {
+    font-size: 13px;
+  }
+
+  .price-value {
+    font-size: 18px;
+    padding: 4px 10px;
+  }
+
+  /* Benefits section adjustments */
+  .add-all-benefits {
+    margin-bottom: 15px;
+  }
+
+  .benefit-item {
+    padding: 6px;
+    min-width: 70px;
+  }
+
+  .benefit-item i {
+    font-size: 14px;
+  }
+
+  .benefit-item span {
+    font-size: 11px;
+  }
+
+  /* Add to cart button adjustments */
+  .add-all-button {
+    padding: 12px 15px;
+    font-size: 13px;
+    border-radius: 20px;
+  }
+
+  /* Products list section adjustments */
+  .hamper-products-list {
+    margin-top: 2rem;
+  }
+
+  .hamper-products-list h2 {
+    font-size: 1.3rem;
+  }
+
+  .products-list-subheader p {
+    font-size: 13px;
+  }
+
+  /* Product item adjustments */
+  .product-image-container {
+    height: 160px;
+  }
+
+  .product-title {
+    font-size: 14px;
+  }
+
+  .product-price {
+    font-size: 16px;
+    padding: 6px 12px;
+  }
+
+  /* Cart message adjustments */
+  .cart-message {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .cart-message i {
+    font-size: 16px;
   }
 }
 
@@ -1112,6 +1500,26 @@
   align-items: center;
   gap: 10px;
   margin-top: 15px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+@media (max-width: 576px) {
+  .product-actions {
+    top: 8px;
+    right: 8px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-actions {
+    top: 5px;
+    right: 5px;
+    gap: 5px;
+  }
 }
 
 .view-product-button {
@@ -1139,6 +1547,60 @@
   box-shadow:
     5px 5px 10px var(--shadow-dark),
     -5px -5px 10px var(--shadow-light);
+}
+
+.product-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition-medium);
+  box-shadow:
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px var(--shadow-light),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+}
+
+.product-action-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+  background: var(--primary-color);
+  color: white;
+  box-shadow:
+    5px 5px 10px var(--shadow-dark),
+    -5px -5px 10px var(--shadow-light),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.product-action-btn:active {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow:
+    3px 3px 6px var(--shadow-dark),
+    -3px -3px 6px var(--shadow-light),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 576px) {
+  .product-action-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-action-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
 }
 
 .add-single-button {
