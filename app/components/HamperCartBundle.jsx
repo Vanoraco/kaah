@@ -38,7 +38,7 @@ export function HamperCartBundle({layout, lines, hamperName}) {
       }
     : merchandise.image;
 
-  // Calculate total price of all items in the hamper
+  // Calculate the total price of the hamper
   const totalPrice = {
     amount: lines.reduce((sum, line) => {
       const hamperPrice = line.attributes?.find(attr => attr.key === '_internal_hamper_price')?.value;
@@ -68,6 +68,8 @@ export function HamperCartBundle({layout, lines, hamperName}) {
 
   // Get all line IDs for removal
   const allLineIds = lines.map(line => line.id);
+
+  // Quantity control functions removed as requested
 
   return (
     <li className="cart-line hamper-bundle">
@@ -99,15 +101,17 @@ export function HamperCartBundle({layout, lines, hamperName}) {
             </div>
           </div>
 
-          <button
-            className="hamper-bundle-toggle"
-            onClick={() => setIsExpanded(!isExpanded)}
-            aria-expanded={isExpanded}
-            aria-controls="hamper-items-list"
-          >
-            {isExpanded ? 'Hide items' : 'Show items'}
-            <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
-          </button>
+          <div className="hamper-bundle-controls">
+            <button
+              className="hamper-bundle-toggle"
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-expanded={isExpanded}
+              aria-controls="hamper-items-list"
+            >
+              {isExpanded ? 'Hide items' : 'Show items'}
+              <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+            </button>
+          </div>
 
           <div className="hamper-bundle-actions">
             <CartLineRemoveButton lineIds={allLineIds} />
