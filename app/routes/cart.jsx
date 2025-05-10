@@ -3,6 +3,7 @@ import {CartForm} from '@shopify/hydrogen';
 import {data, json} from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
 import {CartDebugger} from '~/components/CartDebugger';
+import {applyCustomPriceToVariant} from '~/lib/hamperMetafields';
 
 /**
  * @type {MetaFunction}
@@ -80,7 +81,7 @@ export async function action({request, context}) {
       if (fromMegaSaver === 'true') {
         //
 
-        
+
         for (const [key, value] of formData.entries()) {
           console.log(`${key}: ${value}`);
         }
@@ -253,7 +254,7 @@ export async function action({request, context}) {
           const fromMegaSaver = String(inputs.from_mega_saver).toLowerCase();
           const isMegaSaverProduct = fromMegaSaver === 'true';
 
-          
+
 
           // Check if this mega saver product already exists in the cart
           let existingLine = null;
@@ -431,6 +432,42 @@ export async function action({request, context}) {
 
           console.log('Formatted lines:', JSON.stringify(formattedLines, null, 2));
 
+          // Check if this is a hamper product with metafields
+          const useMetafields = formData?.get('useMetafields') === 'true';
+          const hamperName = formData?.get('hamperName');
+          const hamperId = formData?.get('hamperId');
+          const hamperPrice = parseFloat(formData?.get('hamperPrice') || '0');
+          const isSingleProduct = formData?.get('singleProduct') === 'true';
+
+          console.log('Hamper metafields information:', {
+            useMetafields,
+            hamperName,
+            hamperId,
+            hamperPrice,
+            isSingleProduct
+          });
+
+          // If using metafields, apply custom prices to variants before adding to cart
+          if (useMetafields) {
+            console.log('Using metafields for hamper pricing');
+
+            // Process each line to apply custom pricing via metafields
+            for (const line of formattedLines) {
+              const hamperPrice = line.attributes?.find(attr => attr.key === 'hamper_price')?.value;
+
+              if (hamperPrice) {
+                console.log(`Applying custom price ${hamperPrice} to variant ${line.merchandiseId}`);
+
+                try {
+                  // Apply custom price to variant using metafields
+                  await applyCustomPriceToVariant(context, line.merchandiseId, parseFloat(hamperPrice));
+                } catch (error) {
+                  console.error('Error applying custom price to variant:', error);
+                }
+              }
+            }
+          }
+
           // Add the lines to the cart
           result = await cart.addLines(formattedLines);
           console.log('Add lines result:', result);
@@ -525,9 +562,23 @@ export async function action({request, context}) {
     headers.set('Location', finalRedirect);
   }
 
+  // Clean up the cart data to remove any debug information
+  const cleanCartResult = cartResult ? {
+    ...cartResult,
+    // Only include essential data needed for checkout
+    id: cartResult.id,
+    checkoutUrl: cartResult.checkoutUrl,
+    totalQuantity: cartResult.totalQuantity,
+    cost: cartResult.cost,
+    lines: cartResult.lines,
+    attributes: cartResult.attributes,
+    discountCodes: cartResult.discountCodes,
+    buyerIdentity: cartResult.buyerIdentity
+  } : null;
+
   return data(
     {
-      cart: cartResult,
+      cart: cleanCartResult,
       errors,
       warnings,
       analytics: {
@@ -551,10 +602,19 @@ export async function action({request, context}) {
 /**
  * @param {LoaderFunctionArgs}
  */
-export async function loader({context}) {
+export async function loader({context, request}) {
   const {cart} = context;
 
   try {
+    // Import the checkout return handler
+    const { handleCheckoutReturn } = await import('~/lib/checkoutRedirect');
+
+    // Check if user is returning from checkout and handle cart synchronization
+    const checkoutReturnResult = await handleCheckoutReturn(context, request);
+    if (checkoutReturnResult.success && checkoutReturnResult.cartSynced) {
+      console.log('Cart synchronized after returning from checkout');
+    }
+
     console.log('Cart loader: Fetching cart data');
     let cartData = await cart.get();
 
@@ -663,9 +723,6 @@ export default function Cart() {
     <div className="cart cart-page-container">
       <h1>Your Shopping Cart</h1>
       <CartMain layout="page" cart={cart} />
-
-      {/* Only show debugger in development environment */}
-      {process.env.NODE_ENV === 'development' && <CartDebugger cart={cart} />}
 
       {/* Add a spacer div to push the footer down */}
       <div className="cart-footer-spacer"></div>

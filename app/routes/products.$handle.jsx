@@ -85,20 +85,99 @@ export default function Product() {
   /** @type {LoaderReturnData} */
   const {product} = useLoaderData();
 
+  // Find the "Original Price" variant if it exists
+  const findOriginalPriceVariant = (product) => {
+    // Check if the product has variants
+    if (product.options && product.options.some(option => option.name === 'Price')) {
+      // Find the Price option
+      const priceOption = product.options.find(option => option.name === 'Price');
+
+      // Find the Original Price option value
+      const originalPriceOptionValue = priceOption?.optionValues?.find(
+        value => value.name === 'Original Price'
+      );
+
+      // If we found an Original Price option value, use its variant
+      if (originalPriceOptionValue?.firstSelectableVariant) {
+        console.log('Found Original Price variant, using it as default');
+        return originalPriceOptionValue.firstSelectableVariant;
+      }
+    }
+
+    // If no Original Price variant found, return null to use the default selection
+    return null;
+  };
+
+  // Get the Original Price variant if it exists
+  const originalPriceVariant = findOriginalPriceVariant(product);
+
   // Optimistically selects a variant with given available variant information
+  // Use the Original Price variant if found, otherwise use the default selection
   const selectedVariant = useOptimisticVariant(
-    product.selectedOrFirstAvailableVariant,
+    originalPriceVariant || product.selectedOrFirstAvailableVariant,
     getAdjacentAndFirstAvailableVariants(product),
   );
+
+
 
   // Sets the search param to the selected variant without navigation
   // only when no search params are set in the url
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
-  // Get the product options array
+  // If we have an Original Price variant and it's not already selected, update the URL
+  useEffect(() => {
+    if (originalPriceVariant && selectedVariant.id !== originalPriceVariant.id) {
+      // Check if the selected variant is a Hamper Price variant
+      const isHamperPrice = selectedVariant.selectedOptions?.some(
+        option => option.name === 'Price' && option.value === 'Hamper Price'
+      );
+
+      // If it's a Hamper Price variant, update the URL to use the Original Price variant
+      if (isHamperPrice && originalPriceVariant.selectedOptions) {
+        console.log('Redirecting from Hamper Price to Original Price variant');
+
+        // Create the URL search params
+        const searchParams = new URLSearchParams();
+        originalPriceVariant.selectedOptions.forEach(option => {
+          searchParams.set(option.name, option.value);
+        });
+
+        // Update the URL without reloading the page
+        window.history.replaceState(
+          null,
+          '',
+          `${window.location.pathname}`
+        );
+      }
+    }
+  }, [selectedVariant, originalPriceVariant]);
+
+  // Clean up URL parameters when component mounts
+  useEffect(() => {
+    // Import the URL utilities and clean up URL parameters
+    import('~/lib/urlUtils').then(({ cleanupUrlParameters }) => {
+      // Clean up URL parameters (remove Price=Original+Price)
+      cleanupUrlParameters([]);
+    }).catch(error => {
+      console.error('Error importing URL utilities:', error);
+    });
+  }, []);
+
+  // Get the product options array and filter out Hamper Price variants
   const productOptions = getProductOptions({
     ...product,
     selectedOrFirstAvailableVariant: selectedVariant,
+  }).map(option => {
+    // If this is the Price option, filter out Hamper Price variants
+    if (option.name === 'Price') {
+      return {
+        ...option,
+        optionValues: option.optionValues.filter(value =>
+          value.name !== 'Hamper Price'
+        )
+      };
+    }
+    return option;
   });
 
   const {title, descriptionHtml, vendor, tags} = product;
@@ -124,6 +203,31 @@ export default function Product() {
     }
   };
 
+  // Log variant information for debugging
+  console.log('Selected variant:', {
+    id: selectedVariant?.id,
+    title: selectedVariant?.title,
+    price: selectedVariant?.price,
+    availableForSale: selectedVariant?.availableForSale,
+    selectedOptions: selectedVariant?.selectedOptions
+  });
+
+  // Log Original Price variant if found
+  if (originalPriceVariant) {
+    console.log('Original Price variant found:', {
+      id: originalPriceVariant?.id,
+      title: originalPriceVariant?.title,
+      price: originalPriceVariant?.price,
+      availableForSale: originalPriceVariant?.availableForSale,
+      selectedOptions: originalPriceVariant?.selectedOptions
+    });
+  } else {
+    console.log('No Original Price variant found for this product');
+  }
+
+  // Log product options after filtering
+  console.log('Product options after filtering:', productOptions);
+
   return (
     <div className="product-detail-container">
       <div className="product-detail">
@@ -141,14 +245,14 @@ export default function Product() {
                     loading="eager"
                     id="main-product-image"
                   />
-                  
+
                 </div>
               </div>
             )}
           </div>
 
           <div className="product-thumbnails-container">
-            
+
             <div className="product-thumbnails">
               {product.images?.nodes?.map((image, index) => (
                 <div

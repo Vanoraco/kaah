@@ -1,8 +1,10 @@
 import {useOptimisticCart} from '@shopify/hydrogen';
-import {Link} from '@remix-run/react';
+import {Link, useFetcher} from '@remix-run/react';
 import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
+import {HamperCartBundle} from '~/components/HamperCartBundle';
 import {CartSummary} from './CartSummary';
+import {useEffect} from 'react';
 
 /**
  * The main cart component that displays the cart items and summary.
@@ -10,6 +12,9 @@ import {CartSummary} from './CartSummary';
  * @param {CartMainProps}
  */
 export function CartMain({layout, cart: originalCart}) {
+  // Create a fetcher to refresh the cart
+  const cartFetcher = useFetcher();
+
   // Ensure originalCart is not null or undefined
   const safeOriginalCart = originalCart || {
     lines: { nodes: [] },
@@ -20,6 +25,43 @@ export function CartMain({layout, cart: originalCart}) {
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(safeOriginalCart);
+
+  // Refresh the cart when the component mounts to ensure it's in sync
+  // and clean up URL parameters
+  useEffect(() => {
+    // Only refresh if we're on the cart page (not in the aside)
+    if (layout === 'page') {
+      // Import the URL utilities and clean up URL parameters
+      import('~/lib/urlUtils').then(({ cleanupUrlParameters }) => {
+        // Clean up URL parameters (remove Price=Original+Price)
+        cleanupUrlParameters(['nocache', 'refresh']);
+      }).catch(error => {
+        console.error('Error importing URL utilities:', error);
+      });
+
+      // Import the checkout return handler
+      import('~/lib/checkoutRedirect').then(({ handleCheckoutReturnClient }) => {
+        // Handle checkout return (this will redirect if needed)
+        const handled = handleCheckoutReturnClient();
+
+        // If not returning from checkout, just refresh the cart normally
+        if (!handled) {
+          console.log('CartMain: Refreshing cart data on mount');
+          cartFetcher.load('/cart');
+        }
+      }).catch(error => {
+        console.error('Error importing checkout redirect utilities:', error);
+        // Refresh the cart anyway
+        cartFetcher.load('/cart');
+      });
+    }
+  }, []);
+
+  // Add a button to force refresh the cart if needed
+  const forceRefreshCart = () => {
+    console.log('Forcing cart refresh...');
+    window.location.href = '/cart?nocache=' + Date.now();
+  };
 
   // Ensure lines and nodes are always defined
   if (!cart.lines) {
@@ -33,6 +75,41 @@ export function CartMain({layout, cart: originalCart}) {
   // Filter out items with quantity 0 and null/undefined lines
   const validLines = cart.lines.nodes
     .filter(line => line && line.merchandise && line.quantity > 0) || [];
+
+  // Group hamper items by hamper name
+  const hamperGroups = {};
+  const nonHamperLines = [];
+
+  validLines.forEach(line => {
+    // Check if this is a hamper item
+    const fromHamperAttr = line.attributes?.find(attr => attr.key === '_internal_from_hamper');
+    const isFromHamper = fromHamperAttr && String(fromHamperAttr.value).toLowerCase() === 'true';
+
+    if (isFromHamper) {
+      // Get the hamper name
+      const hamperName = line.attributes?.find(attr => attr.key === '_internal_hamper_name')?.value;
+
+      if (hamperName) {
+        // Add to hamper group
+        if (!hamperGroups[hamperName]) {
+          hamperGroups[hamperName] = [];
+        }
+        hamperGroups[hamperName].push(line);
+      } else {
+        // If no hamper name, treat as regular item
+        nonHamperLines.push(line);
+      }
+    } else {
+      // Not a hamper item
+      nonHamperLines.push(line);
+    }
+  });
+
+  // Convert hamper groups to array
+  const hamperBundles = Object.entries(hamperGroups).map(([hamperName, lines]) => ({
+    hamperName,
+    lines
+  }));
 
   // Ensure cart and lines are properly defined
   const hasLines = validLines.length > 0;
@@ -67,9 +144,21 @@ export function CartMain({layout, cart: originalCart}) {
       <CartEmpty hidden={linesCount} layout={layout} />
       {linesCount && (
         <div className="cart-details">
+
           <div className="cart-lines-container" aria-labelledby="cart-lines">
             <ul>
-              {validLines.map((line, index) => (
+              {/* Render hamper bundles */}
+              {hamperBundles.map((bundle, index) => (
+                <HamperCartBundle
+                  key={`hamper-${bundle.hamperName}-${index}`}
+                  hamperName={bundle.hamperName}
+                  lines={bundle.lines}
+                  layout={layout}
+                />
+              ))}
+
+              {/* Render non-hamper items */}
+              {nonHamperLines.map((line, index) => (
                 <CartLineItem key={line.id || `line-${index}`} line={line} layout={layout} />
               ))}
             </ul>

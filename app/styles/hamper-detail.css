@@ -1078,6 +1078,13 @@
   color: var(--text-light);
 }
 
+.product-price-display {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-left: 5px;
+}
+
 .inventory-warning {
   margin-top: 15px;
   padding: 12px 15px;

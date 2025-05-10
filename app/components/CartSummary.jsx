@@ -1,5 +1,5 @@
 import {CartForm, Money} from '@shopify/hydrogen';
-import {useRef} from 'react';
+import {useRef, useMemo} from 'react';
 
 /**
  * @param {CartSummaryProps}
@@ -11,7 +11,8 @@ export function CartSummary({cart, layout}) {
     discountCodes: [],
     appliedGiftCards: [],
     checkoutUrl: '#',
-    totalQuantity: 0
+    totalQuantity: 0,
+    lines: { nodes: [] }
   };
 
   const className =
@@ -20,14 +21,65 @@ export function CartSummary({cart, layout}) {
   // Calculate total quantity
   const totalQuantity = safeCart.totalQuantity || 0;
 
+  // Calculate custom subtotal that uses hamper_price and mega_saver_price for special items
+  const customSubtotal = useMemo(() => {
+    // If no lines, return default subtotal
+    if (!safeCart.lines?.nodes || safeCart.lines.nodes.length === 0) {
+      return safeCart.cost?.subtotalAmount;
+    }
+
+    // Calculate custom subtotal
+    let subtotalAmount = 0;
+    const currencyCode = safeCart.cost?.subtotalAmount?.currencyCode || 'ZAR';
+
+    // Process each line item
+    safeCart.lines.nodes.forEach(line => {
+      if (!line || !line.merchandise) return;
+
+      const {attributes, quantity} = line;
+
+      // Check if this is a hamper or mega saver item
+      const fromHamperAttr = attributes?.find(attr => attr.key === '_internal_from_hamper');
+      const fromMegaSaverAttr = attributes?.find(attr => attr.key === 'from_mega_saver');
+
+      const isFromHamper = fromHamperAttr && String(fromHamperAttr.value).toLowerCase() === 'true';
+      const isFromMegaSaver = fromMegaSaverAttr && String(fromMegaSaverAttr.value).toLowerCase() === 'true';
+
+      // Get special prices
+      const hamperPrice = attributes?.find(attr => attr.key === '_internal_hamper_price')?.value;
+      const megaSaverPrice = attributes?.find(attr => attr.key === 'mega_saver_price')?.value;
+
+      // Calculate line total based on item type
+      let lineTotal = 0;
+
+      if (isFromHamper && hamperPrice) {
+        // Use hamper price for hamper items
+        lineTotal = parseFloat(hamperPrice) * quantity;
+      } else if (isFromMegaSaver && megaSaverPrice) {
+        // Use mega saver price for mega saver items
+        lineTotal = parseFloat(megaSaverPrice) * quantity;
+      } else {
+        // Use regular price for normal items
+        lineTotal = parseFloat(line.cost?.totalAmount?.amount || 0);
+      }
+
+      subtotalAmount += lineTotal;
+    });
+
+    return {
+      amount: subtotalAmount.toFixed(2),
+      currencyCode
+    };
+  }, [safeCart.lines?.nodes, safeCart.cost?.subtotalAmount]);
+
   return (
     <div aria-labelledby="cart-summary" className={className}>
       <h4>Cart Summary</h4>
       <dl className="cart-subtotal">
         <dt>Subtotal ({totalQuantity} {totalQuantity === 1 ? 'item' : 'items'})</dt>
         <dd>
-          {safeCart.cost?.subtotalAmount?.amount ? (
-            <Money data={safeCart.cost.subtotalAmount} />
+          {customSubtotal?.amount ? (
+            <Money data={customSubtotal} />
           ) : (
             '-'
           )}
@@ -35,19 +87,89 @@ export function CartSummary({cart, layout}) {
       </dl>
       <CartDiscounts discountCodes={safeCart.discountCodes} />
       <CartGiftCard giftCardCodes={safeCart.appliedGiftCards} />
-      <CartCheckoutActions checkoutUrl={safeCart.checkoutUrl} />
+      <CartCheckoutActions
+        checkoutUrl={safeCart.checkoutUrl}
+        customSubtotal={customSubtotal}
+      />
     </div>
   );
 }
 /**
- * @param {{checkoutUrl?: string}}
+ * @param {{
+ *   checkoutUrl?: string;
+ *   customSubtotal?: {amount: string, currencyCode: string};
+ * }}
  */
-function CartCheckoutActions({checkoutUrl}) {
+function CartCheckoutActions({checkoutUrl, customSubtotal}) {
   if (!checkoutUrl) return null;
+
+  // Format the custom subtotal for display
+  const formattedSubtotal = customSubtotal ?
+    `${customSubtotal.currencyCode} ${parseFloat(customSubtotal.amount).toFixed(2)}` : '';
+
+  // Clean the checkout URL to remove hamper attributes
+  const cleanCheckoutUrl = useMemo(() => {
+    try {
+      if (!checkoutUrl) return '';
+
+      // Parse the URL
+      const url = new URL(checkoutUrl);
+
+      // Get the search params
+      const params = new URLSearchParams(url.search);
+
+      // Remove hamper-related attributes from the URL
+      const attributesToRemove = [
+        'hamper_id',
+        'hamper_name',
+        'original_price',
+        'from_hamper',
+        'product_title',
+        'is_hamper_variant',
+        'hamper_image_url',
+        'hamper_price'
+      ];
+
+      // Remove each attribute
+      attributesToRemove.forEach(attr => {
+        if (params.has(attr)) {
+          params.delete(attr);
+        }
+      });
+
+      // Rebuild the URL with cleaned parameters
+      url.search = params.toString();
+
+      return url.toString();
+    } catch (error) {
+      console.error('Error cleaning checkout URL:', error);
+      return checkoutUrl; // Return original URL if there's an error
+    }
+  }, [checkoutUrl]);
+
+  // Function to handle checkout click
+  const handleCheckoutClick = (event) => {
+    // Store a timestamp in localStorage to detect return from checkout
+    localStorage.setItem('checkout_started', Date.now().toString());
+
+    // Continue with normal checkout flow
+    return true;
+  };
 
   return (
     <div>
-      <a href={checkoutUrl} target="_self" className="cart-checkout-button">
+      <div className="cart-total">
+        <span className="cart-total-label">Total:</span>
+        <span className="cart-total-value">
+          {formattedSubtotal || 'Calculating...'}
+        </span>
+      </div>
+      <a
+        href={cleanCheckoutUrl || checkoutUrl}
+        target="_self"
+        className="cart-checkout-button"
+        onClick={handleCheckoutClick}
+      >
         <i className="fas fa-lock"></i>
         Proceed to Checkout
       </a>

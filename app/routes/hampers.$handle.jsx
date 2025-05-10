@@ -3,6 +3,7 @@ import {useLoaderData, Link, Form, useFetcher} from '@remix-run/react';
 import {CartForm} from '@shopify/hydrogen';
 import {Money} from '@shopify/hydrogen-react';
 import {useState, useRef, useEffect} from 'react';
+import {formatHamperCartLines} from '~/lib/hamperVariants';
 
 export async function loader({params, context, request}) {
   const {handle} = params;
@@ -154,6 +155,80 @@ export async function loader({params, context, request}) {
             ? product.availableForSale
             : true;
 
+        // Get all variants from the product
+        const allVariants = product.variants?.nodes || [];
+
+        // Log all variants to check for "Hamper Price" variants
+        console.log(`Product ${product.title} variants:`,
+          allVariants.map(v => ({
+            id: v.id,
+            title: v.title,
+            price: v.price?.amount
+          }))
+        );
+
+        // Check if there's a "Hamper Price" variant
+        const hamperVariant = allVariants.find(v =>
+          v.title && v.title.toLowerCase().includes('hamper price')
+        );
+
+        // Find the original price variant (not hamper price)
+        const originalVariant = allVariants.find(v =>
+          v.title && !v.title.toLowerCase().includes('hamper price')
+        ) || allVariants[0]; // Fallback to first variant if no explicit original price variant
+
+        // For display purposes, we want to use the original price variant
+        // This ensures that the strikethrough prices and savings calculations make logical sense
+        const displayVariant = originalVariant || {
+          id: variantId,
+          title: 'Default',
+          availableForSale: variantAvailableForSale,
+          quantityAvailable: 10,
+          price: variantPrice || {
+            amount: '49.99',
+            currencyCode: 'ZAR'
+          },
+          compareAtPrice: null
+        };
+
+        // Create a complete list of variants
+        const variantNodes = allVariants.length > 0 ?
+          // Use the actual variants if available
+          allVariants.map(v => ({
+            id: v.id,
+            title: v.title,
+            availableForSale: v.availableForSale !== undefined ? v.availableForSale : variantAvailableForSale,
+            quantityAvailable: v.quantityAvailable || 10,
+            price: v.price || variantPrice || {
+              amount: '49.99',
+              currencyCode: 'ZAR'
+            },
+            compareAtPrice: v.compareAtPrice || null
+          })) :
+          // Otherwise use the default variant
+          [{
+            id: variantId,
+            title: 'Default',
+            availableForSale: variantAvailableForSale,
+            quantityAvailable: 10,
+            price: variantPrice || {
+              amount: '49.99',
+              currencyCode: 'ZAR'
+            },
+            compareAtPrice: null
+          }];
+
+        // If we found a hamper variant, log it
+        if (hamperVariant) {
+          console.log(`Found "Hamper Price" variant for product ${product.title}:`, {
+            id: hamperVariant.id,
+            title: hamperVariant.title,
+            price: hamperVariant.price?.amount
+          });
+        }
+
+        // For display in the hamper detail page, we want to use the original price variant
+        // But we'll keep all variants for when we add to cart
         return {
           id: product.id,
           title: product.title,
@@ -163,21 +238,26 @@ export async function loader({params, context, request}) {
             url: `https://cdn.shopify.com/s/files/1/0704/0158/7222/files/product_default.jpg`,
             altText: product.title
           },
+          // For display purposes, put the original price variant first
           variants: {
-            nodes: [{
-              id: variantId,
-              title: 'Default',
-              availableForSale: variantAvailableForSale,
-              quantityAvailable: 10,
-              price: variantPrice || {
-                amount: '49.99',
-                currencyCode: 'ZAR'
+            nodes: [
+              // First node is the display variant (original price)
+              {
+                id: displayVariant.id,
+                title: displayVariant.title,
+                availableForSale: displayVariant.availableForSale,
+                quantityAvailable: displayVariant.quantityAvailable,
+                price: displayVariant.price,
+                compareAtPrice: displayVariant.compareAtPrice
               },
-              compareAtPrice: null
-            }]
+              // Then include all other variants
+              ...variantNodes.filter(v => v.id !== displayVariant.id)
+            ]
           },
           // Store the hamper quantity for use in the cart
-          hamperQuantity: quantity
+          hamperQuantity: quantity,
+          // Store the hamper variant for cart operations
+          hamperVariant: hamperVariant
         };
       });
 
@@ -281,9 +361,10 @@ const HAMPER_QUERY = `#graphql
                   currencyCode
                 }
               }
-              variants(first: 1) {
+              variants(first: 10) {
                 nodes {
                   id
+                  title
                   availableForSale
                   price {
                     amount
@@ -338,7 +419,7 @@ const PRODUCTS_BY_ID_QUERY = `#graphql
             height
           }
         }
-        variants(first: 1) {
+        variants(first: 10) {
           nodes {
             id
             title
@@ -383,10 +464,17 @@ export default function HamperDetail() {
 
   console.log('Hamper details:', { name, price, quantity });
 
-  // Calculate total price of all products
+  // Calculate total price of all products using the original price variants
+  // This ensures that the savings calculation is accurate and logical
   const totalProductsPrice = products.reduce((total, product) => {
-    const variantPrice = parseFloat(product.variants.nodes[0]?.price?.amount || 0);
-    return total + variantPrice;
+    // Find the original price variant (not hamper price)
+    const originalVariant = product.variants.nodes.find(v =>
+      v.title && !v.title.toLowerCase().includes('hamper price')
+    ) || product.variants.nodes[0];
+
+    const variantPrice = parseFloat(originalVariant?.price?.amount || 0);
+    const quantity = product.hamperQuantity || 1;
+    return total + (variantPrice * quantity);
   }, 0);
 
   // Calculate savings
@@ -630,57 +718,28 @@ export default function HamperDetail() {
                   console.log('Add all products to cart button clicked!');
 
                   try {
-                    // Calculate the total regular price of all products
-                    const totalRegularPrice = availableProducts.reduce((total, product) => {
-                      const productPrice = parseFloat(product.variants.nodes[0]?.price?.amount || 0);
-                      return total + productPrice;
-                    }, 0);
-
-                    // Get the hamper price
-                    const hamperPrice = parseFloat(price || 0);
-
-                    // Prepare the lines array for the cart
-                    const lines = availableProducts.map(product => {
-                      // Calculate the proportional price for this product
-                      const regularPrice = parseFloat(product.variants.nodes[0]?.price?.amount || 0);
-                      const priceRatio = regularPrice / totalRegularPrice;
-                      const proportionalPrice = (hamperPrice * priceRatio).toFixed(2);
-
-                      console.log(`Adding product ${product.title} with proportional price R${proportionalPrice} (original: R${regularPrice})`);
-
-                      // Get the variant ID and ensure it's in the correct format
-                      let variantId = product.variants.nodes[0]?.id || '';
-
-                      // Ensure the variant ID is in the correct format
-                      if (!variantId.startsWith('gid://shopify/ProductVariant/')) {
-                        // If it's just a numeric ID, format it properly
-                        if (/^\d+$/.test(variantId)) {
-                          variantId = `gid://shopify/ProductVariant/${variantId}`;
-                        }
-                        // If it has a different prefix, extract the numeric part
-                        else if (variantId.includes('/')) {
-                          const parts = variantId.split('/');
-                          const numericId = parts[parts.length - 1].replace(/\D/g, '');
-                          variantId = `gid://shopify/ProductVariant/${numericId}`;
-                        }
+                    // Create a hamper data object
+                    const hamperData = {
+                      id: hamper.id,
+                      name: name || 'Hamper Bundle',
+                      image: {
+                        url: image || ''
                       }
+                    };
 
-                      console.log(`Product ${product.title} - Using variant ID: ${variantId}`);
+                    // Make sure we're using the hamper variants for cart operations
+                    const productsWithHamperVariants = availableProducts.map(product => ({
+                      ...product,
+                      // Ensure the hamper variant is used for cart operations
+                      variants: {
+                        nodes: product.hamperVariant ?
+                          [product.hamperVariant, ...product.variants.nodes.filter(v => v.id !== product.hamperVariant.id)] :
+                          product.variants.nodes
+                      }
+                    }));
 
-                      // Return the line item
-                      return {
-                        merchandiseId: variantId,
-                        quantity: product.hamperQuantity || 1,
-                        attributes: [
-                          { key: 'hamper_id', value: hamper.id || '' },
-                          { key: 'hamper_name', value: name || 'Hamper Bundle' },
-                          { key: 'hamper_price', value: proportionalPrice.toString() },
-                          { key: 'original_price', value: regularPrice.toString() },
-                          { key: 'from_hamper', value: 'true' },
-                          { key: 'product_title', value: product.title || '' }
-                        ]
-                      };
-                    });
+                    // Use our utility function to format cart lines with hamper price variants
+                    const lines = formatHamperCartLines(productsWithHamperVariants, hamperData);
 
                     // Log the lines we're adding to cart
                     console.log('Lines to add to cart:', JSON.stringify(lines, null, 2));
@@ -689,7 +748,10 @@ export default function HamperDetail() {
                     fetcher.submit(
                       {
                         cartAction: CartForm.ACTIONS.LinesAdd,
-                        lines: JSON.stringify(lines)
+                        lines: JSON.stringify(lines),
+                        hamperName: name || 'Hamper Bundle',
+                        hamperId: hamper.id,
+                        useHamperVariants: 'true'
                       },
                       { method: 'post', action: '/cart' }
                     );
@@ -815,57 +877,36 @@ export default function HamperDetail() {
                                     setIsAdding(true);
                                     console.log(`Adding product ${product.title} from hamper "${name}" to cart`);
 
-                                    // Calculate the total regular price of all products
-                                    const totalRegularPrice = products.reduce((total, p) => {
-                                      if (p.availableForSale && p.variants.nodes[0]?.availableForSale) {
-                                        const productPrice = parseFloat(p.variants.nodes[0]?.price?.amount || 0);
-                                        return total + productPrice;
+                                    // Create a hamper data object
+                                    const hamperData = {
+                                      id: hamper.id,
+                                      name: name || 'Hamper Bundle',
+                                      image: {
+                                        url: image || ''
                                       }
-                                      return total;
-                                    }, 0);
-
-                                    // Get the hamper price
-                                    const hamperPrice = parseFloat(price || 0);
-
-                                    // Calculate the proportional price for this product
-                                    const regularPrice = parseFloat(product.variants.nodes[0]?.price?.amount || 0);
-                                    const priceRatio = regularPrice / totalRegularPrice;
-                                    const proportionalPrice = (hamperPrice * priceRatio).toFixed(2);
-
-                                    console.log(`Adding product with proportional price R${proportionalPrice} (original: R${regularPrice})`);
-
-                                    // Get the variant ID and ensure it's in the correct format
-                                    let variantId = product.variants.nodes[0]?.id || '';
-
-                                    // Ensure the variant ID is in the correct format
-                                    if (!variantId.startsWith('gid://shopify/ProductVariant/')) {
-                                      // If it's just a numeric ID, format it properly
-                                      if (/^\d+$/.test(variantId)) {
-                                        variantId = `gid://shopify/ProductVariant/${variantId}`;
-                                      }
-                                      // If it has a different prefix, extract the numeric part
-                                      else if (variantId.includes('/')) {
-                                        const parts = variantId.split('/');
-                                        const numericId = parts[parts.length - 1].replace(/\D/g, '');
-                                        variantId = `gid://shopify/ProductVariant/${numericId}`;
-                                      }
-                                    }
-
-                                    console.log(`Individual product - Using variant ID: ${variantId}`);
-
-                                    // Create the line item
-                                    const line = {
-                                      merchandiseId: variantId,
-                                      quantity: product.hamperQuantity || quantity || 1,
-                                      attributes: [
-                                        { key: 'hamper_id', value: hamper.id || '' },
-                                        { key: 'hamper_name', value: name || 'Hamper Bundle' },
-                                        { key: 'hamper_price', value: proportionalPrice.toString() },
-                                        { key: 'original_price', value: regularPrice.toString() },
-                                        { key: 'from_hamper', value: 'true' },
-                                        { key: 'product_title', value: product.title || '' }
-                                      ]
                                     };
+
+                                    // Create a single product array for the utility function
+                                    // Make sure we're using the hamper variant for cart operations
+                                    const singleProductArray = [{
+                                      ...product,
+                                      hamperQuantity: product.hamperQuantity || quantity || 1,
+                                      // Ensure the hamper variant is used for cart operations
+                                      variants: {
+                                        nodes: product.hamperVariant ?
+                                          [product.hamperVariant, ...product.variants.nodes.filter(v => v.id !== product.hamperVariant.id)] :
+                                          product.variants.nodes
+                                      }
+                                    }];
+
+                                    // Use our utility function to format cart lines with hamper price variants
+                                    const formattedLines = formatHamperCartLines(singleProductArray, hamperData);
+
+                                    // Get the single line item
+                                    const line = formattedLines[0];
+
+                                    console.log(`Adding individual product from hamper with hamper price variant`);
+                                    console.log(`Using variant ID: ${line.merchandiseId}`);
 
                                     // Log the line we're adding to cart
                                     console.log('Line to add to cart:', JSON.stringify(line, null, 2));
@@ -874,7 +915,11 @@ export default function HamperDetail() {
                                     productFetcher.submit(
                                       {
                                         cartAction: CartForm.ACTIONS.LinesAdd,
-                                        lines: JSON.stringify([line])
+                                        lines: JSON.stringify([line]),
+                                        hamperName: name || 'Hamper Bundle',
+                                        hamperId: hamper.id,
+                                        singleProduct: 'true',
+                                        useHamperVariants: 'true'
                                       },
                                       { method: 'post', action: '/cart' }
                                     );

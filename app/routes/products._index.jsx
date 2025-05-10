@@ -277,7 +277,27 @@ export default function AllProducts() {
  * }}
  */
 function ProductItem({product, loading}) {
-  const variantUrl = useVariantUrl(product.handle);
+  // Find the Original Price variant if it exists
+  const findOriginalPriceVariant = (product) => {
+    if (product.variants?.nodes) {
+      // Look for a variant with title "Original Price"
+      const originalPriceVariant = product.variants.nodes.find(
+        variant => variant.title === "Original Price"
+      );
+
+      if (originalPriceVariant) {
+        console.log(`Found Original Price variant for ${product.title}`);
+        return originalPriceVariant;
+      }
+    }
+    return null;
+  };
+
+  // Get the Original Price variant if it exists
+  const originalPriceVariant = findOriginalPriceVariant(product);
+
+  // Use the updated useVariantUrl function with the product object
+  const variantUrl = useVariantUrl(product.handle, originalPriceVariant?.selectedOptions, product);
 
   return (
     <div className="product-item-wrapper">
@@ -330,25 +350,38 @@ function ProductItem({product, loading}) {
 
         <h4>{product.title}</h4>
         <small>
-          <Money data={product.priceRange.minVariantPrice} />
+          {/* Use the Original Price variant price if available, otherwise use the default price */}
+          {originalPriceVariant ? (
+            <Money data={originalPriceVariant.price} />
+          ) : (
+            <Money data={product.priceRange.minVariantPrice} />
+          )}
         </small>
 
         <div className="product-quick-add">
-          {product.variants?.nodes?.[0] && product.variants.nodes[0].availableForSale && (
-            <SimpleAddToCartButton
-              merchandiseId={product.variants.nodes[0].id}
-              quantity={1}
-            />
-          )}
-          {(!product.variants?.nodes?.[0] || !product.variants.nodes[0].availableForSale) && (
-            <button
-              className="add-to-cart-button"
-              disabled={true}
-            >
-              <span className="add-to-cart-text">Sold out</span>
-              <i className="fas fa-shopping-cart"></i>
-            </button>
-          )}
+          {(() => {
+            // Use the Original Price variant if available, otherwise use the first variant
+            const variantToUse = originalPriceVariant || product.variants?.nodes?.[0];
+
+            if (variantToUse && variantToUse.availableForSale) {
+              return (
+                <SimpleAddToCartButton
+                  merchandiseId={variantToUse.id}
+                  quantity={1}
+                />
+              );
+            } else {
+              return (
+                <button
+                  className="add-to-cart-button"
+                  disabled={true}
+                >
+                  <span className="add-to-cart-text">Sold out</span>
+                  <i className="fas fa-shopping-cart"></i>
+                </button>
+              );
+            }
+          })()}
         </div>
       </Link>
     </div>
@@ -379,7 +412,7 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         ...MoneyProductItem
       }
     }
-    variants(first: 1) {
+    variants(first: 10) {
       nodes {
         id
         availableForSale
@@ -388,6 +421,28 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         }
         price {
           ...MoneyProductItem
+        }
+        selectedOptions {
+          name
+          value
+        }
+        title
+      }
+    }
+    options {
+      name
+      optionValues {
+        name
+        firstSelectableVariant {
+          id
+          availableForSale
+          price {
+            ...MoneyProductItem
+          }
+          selectedOptions {
+            name
+            value
+          }
         }
       }
     }

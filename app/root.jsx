@@ -92,6 +92,24 @@ export function links() {
  * @param {LoaderFunctionArgs} args
  */
 export async function loader(args) {
+  const {context, request} = args;
+
+  try {
+    // Check if user is returning from checkout and handle cart clearing
+    const { isReturningFromCheckout, handleCheckoutReturn } = await import('~/lib/checkoutRedirect');
+
+    if (isReturningFromCheckout(request)) {
+      console.log('Root loader: User returning from checkout, handling cart synchronization');
+      const result = await handleCheckoutReturn(context, request);
+      if (result.success && result.cartSynced) {
+        console.log('Root loader: Cart synchronized successfully');
+      }
+    }
+  } catch (error) {
+    console.error('Error handling checkout return:', error);
+    // Continue with the loader even if there's an error handling checkout return
+  }
+
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
 

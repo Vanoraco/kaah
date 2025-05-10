@@ -1,5 +1,5 @@
 import {Await, Link} from '@remix-run/react';
-import {Suspense, useId} from 'react';
+import {Suspense, useId, useEffect} from 'react';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header, HeaderMenu} from '~/components/Header';
@@ -22,6 +22,26 @@ export function PageLayout({
   publicStoreDomain,
   collections,
 }) {
+  // Handle checkout return on any page and clean up URL parameters
+  useEffect(() => {
+    // Import the URL utilities and clean up URL parameters
+    import('~/lib/urlUtils').then(({ cleanupUrlParameters }) => {
+      // Clean up URL parameters (remove Price=Original+Price)
+      // Preserve nocache, refresh, and q (search query) parameters
+      cleanupUrlParameters(['nocache', 'refresh', 'q']);
+    }).catch(error => {
+      console.error('Error importing URL utilities:', error);
+    });
+
+    // Import the checkout return handler
+    import('~/lib/checkoutRedirect').then(({ handleCheckoutReturnClient }) => {
+      // Handle checkout return (this will redirect if needed)
+      handleCheckoutReturnClient();
+    }).catch(error => {
+      console.error('Error importing checkout redirect utilities:', error);
+    });
+  }, []);
+
   return (
     <Aside.Provider>
       <CartAside cart={cart} />

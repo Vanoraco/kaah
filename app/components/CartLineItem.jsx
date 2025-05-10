@@ -33,17 +33,20 @@ export function CartLineItem({layout, line}) {
 
   // Check if this product is from a hamper or mega saver
   // Convert attribute values to strings and compare to handle different data types
-  const fromHamperAttr = attributes?.find(attr => attr.key === 'from_hamper');
+  const fromHamperAttr = attributes?.find(attr => attr.key === '_internal_from_hamper');
   const fromMegaSaverAttr = attributes?.find(attr => attr.key === 'from_mega_saver');
+  const useMetafieldsAttr = attributes?.find(attr => attr.key === 'use_metafields');
+  const isHamperVariantAttr = attributes?.find(attr => attr.key === '_internal_is_hamper_variant');
 
   const isFromHamper = fromHamperAttr && String(fromHamperAttr.value).toLowerCase() === 'true';
   const isFromMegaSaver = fromMegaSaverAttr && String(fromMegaSaverAttr.value).toLowerCase() === 'true';
+  const usesMetafields = useMetafieldsAttr && String(useMetafieldsAttr.value).toLowerCase() === 'true';
+  const isHamperVariant = isHamperVariantAttr && String(isHamperVariantAttr.value).toLowerCase() === 'true';
 
-  
 
   // Get hamper-specific attributes
-  const hamperName = attributes?.find(attr => attr.key === 'hamper_name')?.value;
-  const hamperPrice = attributes?.find(attr => attr.key === 'hamper_price')?.value;
+  const hamperName = attributes?.find(attr => attr.key === '_internal_hamper_name')?.value;
+  const hamperPrice = attributes?.find(attr => attr.key === '_internal_hamper_price')?.value;
 
   // Get mega saver-specific attributes
   const megaSaverPrice = attributes?.find(attr => attr.key === 'mega_saver_price')?.value;
@@ -51,13 +54,11 @@ export function CartLineItem({layout, line}) {
   const specialQuantity = attributes?.find(attr => attr.key === 'special_quantity')?.value;
 
   // Get common attributes
-  const originalPrice = attributes?.find(attr => attr.key === 'original_price')?.value;
+  const originalPrice = attributes?.find(attr => attr.key === '_internal_original_price')?.value;
 
   // Create a custom price object for special items
-  const customPrice = (isFromHamper && hamperPrice) ? {
-    amount: hamperPrice,
-    currencyCode: line?.cost?.totalAmount?.currencyCode || 'ZAR'
-  } : (isFromMegaSaver && megaSaverPrice) ? {
+  // For hamper products, we're now using the variant price directly, so no need to override
+  const customPrice = (isFromMegaSaver && megaSaverPrice) ? {
     amount: megaSaverPrice,
     currencyCode: line?.cost?.totalAmount?.currencyCode || 'ZAR'
   } : null;
@@ -104,20 +105,25 @@ export function CartLineItem({layout, line}) {
 
         {isFromHamper && hamperName && (
           <div className="hamper-badge">
-            <i className="fas fa-gift"></i> FROM: {hamperName}
+            <i className="fas fa-gift"></i> {hamperName}
+            {isHamperVariant && (
+              <span className="hamper-variant-badge" title="Special price">
+                <i className="fas fa-tag"></i>
+              </span>
+            )}
           </div>
         )}
 
         {isFromMegaSaver && (
           <div className="mega-saver-badge">
-            <i className="fas fa-bolt"></i> FROM: MEGA SAVER
+            <i className="fas fa-bolt"></i> MEGA SAVER
             {specialQuantity && specialQuantity !== '1' && (
               <span className="mega-saver-quantity-info"> (Qty: {specialQuantity})</span>
             )}
           </div>
         )}
 
-        
+
 
         {isLowStock && (
           <div className="inventory-status low-stock">
@@ -132,10 +138,9 @@ export function CartLineItem({layout, line}) {
         )}
 
         <div className="cart-line-price">
-          {(isFromHamper || isFromMegaSaver) && customPrice ? (
+          {isFromMegaSaver && customPrice ? (
             <>
               <ProductPrice price={customPrice} />
-              
             </>
           ) : (
             <ProductPrice price={line?.cost?.totalAmount} />
@@ -182,26 +187,26 @@ function CartLineQuantity({line}) {
 
   // Check if this product is from a hamper or mega saver
   // Convert attribute values to strings and compare to handle different data types
-  const fromHamperAttr = attributes?.find(attr => attr.key === 'from_hamper');
+  const fromHamperAttr = attributes?.find(attr => attr.key === '_internal_from_hamper');
   const fromMegaSaverAttr = attributes?.find(attr => attr.key === 'from_mega_saver');
 
   const isFromHamper = fromHamperAttr && String(fromHamperAttr.value).toLowerCase() === 'true';
   const isFromMegaSaver = fromMegaSaverAttr && String(fromMegaSaverAttr.value).toLowerCase() === 'true';
 
-  
+
 
   // Get mega saver-specific attributes
   const megaSaverPrice = attributes?.find(attr => attr.key === 'mega_saver_price')?.value;
   const productTitle = attributes?.find(attr => attr.key === 'product_title')?.value;
   const specialQuantity = attributes?.find(attr => attr.key === 'special_quantity')?.value;
-  const originalPrice = attributes?.find(attr => attr.key === 'original_price')?.value;
+  const originalPrice = attributes?.find(attr => attr.key === '_internal_original_price')?.value;
 
   // Disable quantity adjustments for hamper and mega saver products
   const isSpecialProduct = isFromHamper || isFromMegaSaver;
 
-  
 
-  
+
+
 
   // Add a visual indicator for optimistic updates
   const quantityClass = isOptimistic
@@ -212,8 +217,8 @@ function CartLineQuantity({line}) {
 
   return (
     <div className="cart-line-quantity">
-      {/* Debug info for special product */}
-     
+      {/* No debug info for special products */}
+
       <div className={`cart-line-quantity-adjust ${isSpecialProduct ? 'special-product' : ''}`}>
         {isSpecialProduct ? (
           <button
