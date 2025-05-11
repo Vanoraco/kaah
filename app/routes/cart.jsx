@@ -9,7 +9,7 @@ import {applyCustomPriceToVariant} from '~/lib/hamperMetafields';
  * @type {MetaFunction}
  */
 export const meta = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [{title: `Kaah | Cart`}];
 };
 
 /**

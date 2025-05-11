@@ -155,9 +155,7 @@ export function Header({header, isLoggedIn, cart, collections}) {
             </div>
             <ul className="main-menu">
               <li><NavLink to="/">Home</NavLink></li>
-              <li><NavLink to="/shop">Shop</NavLink></li>
-              <li><NavLink to="/pages">Pages</NavLink></li>
-              <li><NavLink to="/blog">Blog</NavLink></li>
+             
               <li><NavLink to="/about">About Us</NavLink></li>
               <li><NavLink to="/contact">Contact Us</NavLink></li>
             </ul>

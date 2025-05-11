@@ -34,6 +34,7 @@ import accountStyles from '~/styles/account.css?url';
 import cartAssociationStyles from '~/styles/cart-association.css?url';
 import hamperDetailStyles from '~/styles/hamper-detail.css?url';
 import hampersPageStyles from '~/styles/hampers-page.css?url';
+import allProductsStyles from '~/styles/all-products.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
@@ -226,6 +227,7 @@ export function Layout({children}) {
         <link rel="stylesheet" href={cartAssociationStyles}></link>
         <link rel="stylesheet" href={hamperDetailStyles}></link>
         <link rel="stylesheet" href={hampersPageStyles}></link>
+        <link rel="stylesheet" href={allProductsStyles}></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />

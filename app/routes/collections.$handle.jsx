@@ -15,7 +15,7 @@ import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
  * @type {MetaFunction<typeof loader>}
  */
 export const meta = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+  return [{title: `Kaah | ${data?.collection.title ?? ''} Collection`}];
 };
 
 /**
