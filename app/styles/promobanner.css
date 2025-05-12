@@ -149,7 +149,8 @@
   }
 
   /* Shop Now Button - Completely simplified to prevent flickering */
-  .shop-now-btn.promo-btn {
+  .promo-card .shop-now-btn.promo-btn,
+  a.shop-now-btn.promo-btn {
     /* Basic styling */
     display: inline-block !important;
     visibility: visible !important;
@@ -158,8 +159,10 @@
     margin-top: 25px;
 
     /* Appearance */
-    background-color: white;
-    color: #333;
+    background-color: white !important; /* Explicitly set to white with !important to override any other styles */
+    background-image: none !important; /* Ensure no gradient is applied */
+    background: white !important; /* Fallback */
+    color: #333 !important;
     font-weight: 600;
     font-size: 16px;
     padding: 12px 24px;
@@ -191,15 +194,21 @@
   }
 
   /* Simple hover state without animations */
-  .shop-now-btn.promo-btn:hover {
-    background-color: #f8f8f8;
-    color: #000;
+  .promo-card .shop-now-btn.promo-btn:hover,
+  a.shop-now-btn.promo-btn:hover {
+    background-color: #f8f8f8 !important; /* Light gray on hover */
+    background-image: none !important;
+    background: #f8f8f8 !important;
+    color: #000 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   /* Simple active state without animations */
-  .shop-now-btn.promo-btn:active {
-    background-color: #f0f0f0;
+  .promo-card .shop-now-btn.promo-btn:active,
+  a.shop-now-btn.promo-btn:active {
+    background-color: #f0f0f0 !important; /* Slightly darker gray when active */
+    background-image: none !important;
+    background: #f0f0f0 !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
@@ -219,44 +228,69 @@
 
   .promo-actual-image {
     position: relative;
-    max-width: 55%;
-    max-height: 75%;
-    object-fit: contain;
-    border-radius: 12px;
+    width: 100%; /* Fill the container width */
+    height: 100%; /* Fill the container height */
+    object-fit: cover; /* Fill the container completely */
+    border-radius: 16px;
     box-shadow:
-      0 10px 30px rgba(0, 0, 0, 0.2),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
-    transform: translateY(0) translateX(0) rotate(2deg);
+      0 15px 35px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.15);
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 2; /* Ensure image is above other elements */
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
-    backdrop-filter: blur(5px);
-    margin-right: 5%;
-    margin-bottom: 10%;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+    transform-origin: bottom right; /* Set transform origin for better rotation effect */
   }
 
   /* Image container for better positioning and effects */
   .promo-image-container {
-    position: relative;
-    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    right: -10%; /* Position partly outside the card for artistic effect */
     perspective: 1000px;
     transform-style: preserve-3d;
-    align-self: flex-end; /* Align to bottom */
-    margin-bottom: 0; /* Remove any bottom margin */
-    margin-right: 0; /* Remove any right margin */
+    display: flex;
+    justify-content: flex-end; /* Align to right */
+    align-items: flex-end; /* Align to bottom */
+    width: 50%;
+    height: 100%;
+    overflow: visible;
+    padding: 0; /* Remove all padding */
+    margin: 0; /* Remove all margins */
   }
 
-  /* Add a subtle glow effect to the images */
-  .promo-actual-image::after {
-    content: '';
+  /* Image wrapper for additional effects */
+  .image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    display: inline-block;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    margin: 0; /* Remove all margins */
+    transform: rotate(5deg); /* Slight rotation for artistic effect */
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out; /* Specific transitions */
+    width: 180px; /* Fixed width */
+    height: 180px; /* Fixed height for square aspect ratio */
+    max-width: 90%; /* Ensure it doesn't overflow too much */
+    max-height: 60%; /* Ensure it doesn't take up too much vertical space */
+    background-color: transparent; /* Remove background color */
+    will-change: transform, box-shadow; /* Optimize for GPU acceleration */
+    backface-visibility: hidden; /* Prevent flickering */
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Image overlay for enhanced visual effect */
+  .image-overlay {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%);
-    border-radius: 12px;
+    border-radius: 16px;
     pointer-events: none;
+    z-index: 3;
   }
 
   /* Image loading animation */
@@ -264,6 +298,10 @@
     opacity: 0;
     transform: translateY(20px) translateX(0) rotate(5deg);
     animation: fadeIn 0.5s ease-out forwards;
+    transition: filter 0.5s ease-out; /* Only transition the filter property */
+    will-change: transform, opacity, filter; /* Optimize for GPU acceleration */
+    backface-visibility: hidden; /* Prevent flickering in some browsers */
+    -webkit-backface-visibility: hidden;
   }
 
   .promo-actual-image.image-loaded {
@@ -271,23 +309,47 @@
     transform: translateY(0) translateX(0) rotate(2deg);
   }
 
+  .promo-actual-image.image-animated {
+    animation: subtle-float 6s ease-in-out infinite;
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(20px) translateX(0) rotate(5deg);
+      transform: translateY(20px) translateX(0);
     }
     to {
       opacity: 1;
+      transform: translateY(0) translateX(0);
+    }
+  }
+
+  @keyframes subtle-float {
+    0% {
+      transform: translateY(0) translateX(0) rotate(2deg);
+    }
+    50% {
+      transform: translateY(-10px) translateX(0) rotate(2deg);
+    }
+    100% {
       transform: translateY(0) translateX(0) rotate(2deg);
     }
   }
 
-  .promo-card:hover .promo-actual-image {
-    transform: translateY(-5%) translateX(0) rotate(0deg) scale(1.05);
+  /* Hover effect for the image wrapper */
+  .promo-card:hover .image-wrapper {
+    transform: rotate(0deg) translateX(-10%) scale(1.05);
     box-shadow:
-      0 15px 40px rgba(0, 0, 0, 0.3),
-      0 0 0 2px rgba(255, 255, 255, 0.2);
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.25));
+      0 20px 50px rgba(0, 0, 0, 0.35),
+      0 0 0 2px rgba(255, 255, 255, 0.25);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+  }
+
+  /* Hover effect for the actual image - simplified to prevent flickering */
+  .promo-card:hover .promo-actual-image {
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    animation-play-state: paused;
+    /* Don't change transform on hover to prevent flickering */
   }
 
   .food-emoji {
@@ -324,6 +386,25 @@
     .promotion-cards {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    /* Adjust image size for tablets */
+    .image-wrapper {
+      width: 160px; /* Slightly smaller for tablets */
+      height: 160px;
+      max-width: 90%;
+      max-height: 55%;
+    }
+
+    .promo-actual-image {
+      object-position: center; /* Center the image within its container */
+    }
+
+    .promo-image-container {
+      width: 45%;
+      right: -8%;
+      padding: 0;
+      margin: 0;
+    }
   }
 
   @media (max-width: 768px) {
@@ -359,31 +440,62 @@
     .promo-image-container {
       position: absolute;
       bottom: 0;
-      right: 0;
-      width: 100%;
-      height: 100%;
+      right: -5%; /* Less offset on mobile */
+      width: 45%;
+      height: 50%;
       display: flex;
       justify-content: flex-end; /* Align to right */
       align-items: flex-end; /* Align to bottom */
       z-index: 1;
-      opacity: 0.5; /* Make image slightly more visible on mobile */
+      opacity: 0.9; /* Better visibility on mobile */
       box-sizing: border-box;
+      overflow: visible;
+      padding: 0;
+      margin: 0;
+    }
+
+    .image-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      margin: 0;
+      transform: rotate(3deg); /* Less rotation on mobile */
+      width: 150px;
+      height: 150px;
+      max-width: 95%;
+      max-height: 95%;
+      background-color: transparent;
     }
 
     .promo-actual-image {
-      max-width: 60%;
-      max-height: 60%;
-      margin-right: 5%;
-      margin-bottom: 5%;
+      border-radius: 12px;
+      filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.2));
+      object-position: center; /* Center the image within its container */
+    }
+
+    /* Adjust hover effect for mobile */
+    .promo-card:hover .image-wrapper {
+      transform: rotate(0deg) translateX(-5%) scale(1.03);
+    }
+
+    .promo-actual-image.image-animated {
+      animation: subtle-float 4s ease-in-out infinite;
     }
 
     /* Responsive button styling - simplified for stability */
-    .shop-now-btn.promo-btn {
+    .promo-card .shop-now-btn.promo-btn,
+    a.shop-now-btn.promo-btn {
       padding: 10px 20px !important;
       font-size: 14px !important;
       width: 100% !important;
       text-align: center !important;
       margin-top: 15px !important;
       display: block !important;
+      background-color: white !important;
+      background-image: none !important;
+      background: white !important;
+      color: #333 !important;
     }
   }

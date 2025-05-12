@@ -4,7 +4,7 @@
     max-width: 1200px;
     margin: 0 auto 30px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
@@ -14,6 +14,11 @@
     position: relative;
     width: 100%;
     height: 500px;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    /* Add a dark background to prevent white flash */
+    background-color: #1A237E; /* Match the first default background color */
   }
 
   .slide {
@@ -27,14 +32,28 @@
     justify-content: space-between;
     padding: 0 80px;
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
+    /* Remove visibility:hidden to prevent flash */
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: opacity 2s ease-in-out;
     overflow: hidden;
+    /* Lower z-index for inactive slides */
+    z-index: 1;
+    pointer-events: none;
+    /* Only use will-change for opacity to reduce GPU memory usage */
+    will-change: opacity;
+    /* Force hardware acceleration */
+    transform: translateZ(0);
+    /* Ensure background is fully opaque */
+    background-color: inherit;
   }
 
   .slide.active {
     opacity: 1;
-    visibility: visible;
+    /* Higher z-index for active slide */
+    z-index: 2;
+    pointer-events: auto;
+    /* No delay for active slide to prevent gap */
+    transition-duration: 2s;
   }
 
   .slide-content {
@@ -43,13 +62,18 @@
     z-index: 2;
     padding-right: 40px;
     opacity: 0;
-    transform: translateX(-20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateX(-10px); /* Reduced movement for subtler effect */
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+    /* Ensure content doesn't disappear abruptly */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .slide.active .slide-content {
     opacity: 1;
     transform: translateX(0);
+    transition-delay: 0.2s; /* Shorter delay for smoother transition */
   }
 
   .slide-content h1 {
@@ -62,6 +86,20 @@
     position: relative;
     overflow: hidden;
     display: inline-block;
+    /* Add initial state for animation */
+    opacity: 0;
+    transform: translateY(-8px); /* Reduced movement for subtler effect */
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+    /* Ensure text doesn't disappear abruptly */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .slide.active .slide-content h1 {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s; /* Shorter delay for smoother transition */
   }
 
   .slide-content h1::after {
@@ -72,11 +110,13 @@
     width: 0;
     height: 3px;
     background-color: var(--accent-color);
-    transition: width 0.8s ease 0.3s;
+    /* Slower transition for the underline effect */
+    transition: width 1.5s ease-in-out;
   }
 
   .slide.active .slide-content h1::after {
     width: 100%;
+    transition-delay: 0.8s; /* Shorter delay for smoother transition */
   }
 
   .slide-content h2 {
@@ -84,16 +124,20 @@
     font-weight: 700;
     margin-bottom: 20px;
     color: white;
-    opacity: 0.9;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(20px);
+    transform: translateY(8px); /* Reduced movement for subtler effect */
     opacity: 0;
-    transition: transform 0.5s ease 0.2s, opacity 0.5s ease 0.2s;
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: transform 2s ease-in-out, opacity 2s ease-in-out;
+    /* Ensure text doesn't disappear abruptly */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .slide.active .slide-content h2 {
     transform: translateY(0);
     opacity: 0.9;
+    transition-delay: 0.4s; /* Shorter delay for smoother transition */
   }
 
   .discount-badge {
@@ -110,14 +154,19 @@
       -8px -8px 16px rgba(255, 255, 255, 0.1),
       inset 2px 2px 4px rgba(255, 255, 255, 0.05),
       inset -2px -2px 4px rgba(0, 0, 0, 0.05);
-    transform: translateY(20px);
+    transform: translateY(8px); /* Reduced movement for subtler effect */
     opacity: 0;
-    transition: transform 0.5s ease 0.4s, opacity 0.5s ease 0.4s, box-shadow 0.3s ease;
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: transform 2s ease-in-out, opacity 2s ease-in-out, box-shadow 0.3s ease;
+    /* Ensure content doesn't disappear abruptly */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 
   .slide.active .discount-badge {
     transform: translateY(0);
     opacity: 1;
+    transition-delay: 0.5s; /* Shorter delay for smoother transition */
   }
 
   .discount-badge:hover {
@@ -137,68 +186,71 @@
     letter-spacing: 0.5px;
   }
 
-  .shop-now-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background-color: var(--accent-color);
-    color: var(--primary-color);
-    padding: 14px 28px;
-    border-radius: 16px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  .slideshow-shop-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    background-color: #FFC107 !important;
+    color: #3240A1 !important;
+    padding: 14px 28px !important;
+    border-radius: 16px !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
     box-shadow:
-      8px 8px 16px rgba(209, 167, 0, 0.2),
+      8px 8px 16px rgba(255, 193, 7, 0.2),
       -8px -8px 16px rgba(255, 230, 128, 0.7),
       inset 2px 2px 4px rgba(255, 255, 255, 0.5),
-      inset -2px -2px 4px rgba(209, 167, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-    transform: translateY(20px);
-    opacity: 0;
-    z-index: 5;
+      inset -2px -2px 4px rgba(255, 193, 7, 0.3) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    transform: translateY(20px) !important;
+    opacity: 0 !important;
+    z-index: 5 !important;
+    min-width: auto !important;
+    text-transform: none !important;
+    border: none !important;
   }
 
-  .slide.active .shop-now-btn {
-    transform: translateY(0);
-    opacity: 1;
-    transition: transform 0.5s ease 0.6s, opacity 0.5s ease 0.6s, background-color 0.3s ease, box-shadow 0.3s ease;
+  .slideshow-shop-btn::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+    transition: left 0.7s ease !important;
   }
 
-  .shop-now-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.7s ease;
+  .slide.active .slideshow-shop-btn {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    transition: transform 0.5s ease 0.6s, opacity 0.5s ease 0.6s, background-color 0.3s ease, box-shadow 0.3s ease !important;
   }
 
-  .shop-now-btn:hover {
-    background-color: white;
-    transform: translateY(-3px);
+  .slideshow-shop-btn:hover {
+    background-color: white !important;
+    transform: translateY(-3px) !important;
     box-shadow:
-      10px 10px 20px rgba(209, 167, 0, 0.3),
+      10px 10px 20px rgba(255, 193, 7, 0.3),
       -10px -10px 20px rgba(255, 230, 128, 0.8),
       inset 1px 1px 2px rgba(255, 255, 255, 0.6),
-      inset -1px -1px 2px rgba(209, 167, 0, 0.4);
-    color: var(--accent-color);
+      inset -1px -1px 2px rgba(255, 193, 7, 0.4) !important;
+    color: #FFC107 !important;
   }
 
-  .shop-now-btn:hover::before {
-    left: 100%;
+  .slideshow-shop-btn:hover::before {
+    left: 100% !important;
   }
 
-  .shop-now-btn i {
-    transition: transform 0.3s ease;
+  .slideshow-shop-btn i {
+    transition: transform 0.3s ease !important;
   }
 
-  .shop-now-btn:hover i {
-    transform: translateX(4px);
+  .slideshow-shop-btn:hover i {
+    transform: translateX(4px) !important;
   }
 
   .slide-image {
@@ -233,69 +285,127 @@
 
   .slide-image-container {
     position: relative;
-    padding: 20px;
+    padding: 15px;
     border-radius: 24px;
     background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(0,0,0,0.05));
-    box-shadow:
-      20px 20px 60px rgba(0, 0, 0, 0.2),
-      -20px -20px 60px rgba(255, 255, 255, 0.1),
-      inset 5px 5px 10px rgba(255, 255, 255, 0.05),
-      inset -5px -5px 10px rgba(0, 0, 0, 0.05);
-    transform: scale(0.85) translateY(20px);
-    transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Simplify box-shadow for better performance */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    /* Use translateY only for better performance */
+    transform: translateY(10px); /* Reduced movement for subtler effect */
+    /* Slower transition with ease-in-out for smoother effect */
+    transition: transform 2s ease-in-out, opacity 2s ease-in-out;
     z-index: 2;
     overflow: hidden;
+    width: 400px;
+    max-width: 100%;
+    margin: 0 auto;
+    /* Only use will-change for transform to reduce GPU memory usage */
+    will-change: transform, opacity;
+    opacity: 0; /* Start with opacity 0 */
   }
 
   .slide.active .slide-image-container {
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
+    opacity: 1; /* Fade in when active */
+    /* Shorter delay to ensure container is visible during transition */
+    transition-delay: 0.3s;
   }
 
-  .slide-image img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 16px;
-    transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 2;
+  .slide-image-wrapper {
     position: relative;
-    transform: scale(0.95);
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    border-radius: 16px;
   }
 
-  .slide.active .slide-image img {
-    transform: scale(1);
+  .slide-image-element {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+    /* Much slower transition for smoother cross-fade */
+    transition: opacity 2s ease-in-out, transform 2s ease-in-out;
+    z-index: 2;
+    /* Darker background to prevent white flash */
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: scale(0.98); /* Start closer to final size for subtler effect */
+    /* Only use will-change for opacity to reduce GPU memory usage */
+    will-change: opacity, transform;
+    /* Add image rendering optimizations */
+    image-rendering: auto;
+    /* Add explicit width and height to prevent layout shifts */
+    contain: layout size;
   }
 
-  /* Add a subtle floating animation to the active slide image container */
-  @keyframes float {
+  .slide-image-element.loaded {
+    opacity: 1;
+    /* No delay to ensure image is visible during transition */
+    transition-duration: 2s;
+  }
+
+  /* Add transform for smoother appearance */
+  .slide.active .slide-image-element {
+    transform: scale(1) translateZ(0); /* Scale to full size with GPU acceleration */
+    /* Shorter delay to ensure image is visible during transition */
+    transition-delay: 0.2s;
+  }
+
+  .slide-image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    z-index: 1;
+    /* Add low-quality image placeholder */
+    background-size: cover;
+    background-position: center;
+  }
+
+  .slide-image-placeholder .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Slower, more subtle animation for better performance and visual effect */
+  @keyframes gentle-float {
     0% {
-      transform: translateY(0px) scale(1);
-      box-shadow:
-        20px 20px 60px rgba(0, 0, 0, 0.2),
-        -20px -20px 60px rgba(255, 255, 255, 0.1),
-        inset 5px 5px 10px rgba(255, 255, 255, 0.05),
-        inset -5px -5px 10px rgba(0, 0, 0, 0.05);
+      transform: translateY(0);
     }
     50% {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow:
-        25px 25px 70px rgba(0, 0, 0, 0.25),
-        -25px -25px 70px rgba(255, 255, 255, 0.15),
-        inset 7px 7px 15px rgba(255, 255, 255, 0.07),
-        inset -7px -7px 15px rgba(0, 0, 0, 0.07);
+      transform: translateY(-8px);
     }
     100% {
-      transform: translateY(0px) scale(1);
-      box-shadow:
-        20px 20px 60px rgba(0, 0, 0, 0.2),
-        -20px -20px 60px rgba(255, 255, 255, 0.1),
-        inset 5px 5px 10px rgba(255, 255, 255, 0.05),
-        inset -5px -5px 10px rgba(0, 0, 0, 0.05);
+      transform: translateY(0);
     }
   }
 
+  /* Only animate when slide is active and image is loaded */
   .slide.active .slide-image-container {
-    animation: float 6s ease-in-out infinite;
+    animation: gentle-float 8s ease-in-out infinite;
+    animation-delay: 3s; /* Start floating animation after initial transition */
+    /* Ensure the animation doesn't interfere with the initial transition */
+    animation-fill-mode: forwards;
   }
 
   .slideshow-dots {
@@ -305,6 +415,8 @@
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
+    z-index: 20;
+    pointer-events: auto;
   }
 
   .dot {
@@ -320,6 +432,11 @@
       -3px -3px 6px rgba(255, 255, 255, 0.1),
       inset 1px 1px 2px rgba(0, 0, 0, 0.05),
       inset -1px -1px 2px rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 21;
+    pointer-events: auto;
+    margin: 0 2px;
+    padding: 0;
   }
 
   .dot:hover {
@@ -335,6 +452,92 @@
       -4px -4px 8px rgba(255, 255, 255, 0.15),
       inset 1px 1px 2px rgba(255, 255, 255, 0.1),
       inset -1px -1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Navigation Arrows */
+  .slideshow-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    z-index: 10;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    box-shadow:
+      8px 8px 16px rgba(0, 0, 0, 0.2),
+      -8px -8px 16px rgba(255, 255, 255, 0.1),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .slideshow-arrow:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow:
+      10px 10px 20px rgba(0, 0, 0, 0.25),
+      -10px -10px 20px rgba(255, 255, 255, 0.15),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.05),
+      inset -1px -1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .slideshow-arrow-prev {
+    left: 20px;
+  }
+
+  .slideshow-arrow-next {
+    right: 20px;
+  }
+
+  /* Auto-play control */
+  .slideshow-autoplay-control {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    z-index: 10;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    box-shadow:
+      6px 6px 12px rgba(0, 0, 0, 0.2),
+      -6px -6px 12px rgba(255, 255, 255, 0.1),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .slideshow-autoplay-control:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+    box-shadow:
+      8px 8px 16px rgba(0, 0, 0, 0.25),
+      -8px -8px 16px rgba(255, 255, 255, 0.15),
+      inset 1px 1px 2px rgba(255, 255, 255, 0.05),
+      inset -1px -1px 2px rgba(0, 0, 0, 0.05);
   }
 
   @media (max-width: 992px) {
@@ -365,8 +568,35 @@
       font-size: 32px;
     }
 
-    .slide-image img {
-      max-height: 200px;
+    .slide-image-container {
+      width: 300px;
+      padding: 15px;
+    }
+
+    .slide-image-wrapper {
+      padding-bottom: 100%; /* Maintain 1:1 aspect ratio */
+    }
+
+    .slideshow-arrow {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+
+    .slideshow-arrow-prev {
+      left: 10px;
+    }
+
+    .slideshow-arrow-next {
+      right: 10px;
+    }
+
+    .slideshow-autoplay-control {
+      width: 36px;
+      height: 36px;
+      font-size: 12px;
+      bottom: 15px;
+      right: 15px;
     }
   }
 
@@ -377,6 +607,11 @@
 
     .slide {
       padding: 20px;
+    }
+
+    .slide-image-container {
+      width: 220px;
+      padding: 10px;
     }
 
     .slide-content h1 {
@@ -394,5 +629,43 @@
 
     .discount-badge span {
       font-size: 14px;
+    }
+
+    .slideshow-arrow {
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .slideshow-arrow-prev {
+      left: 5px;
+    }
+
+    .slideshow-arrow-next {
+      right: 5px;
+    }
+
+    .shop-now-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+
+    .slideshow-dots {
+      bottom: 10px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+    }
+
+    .slideshow-autoplay-control {
+      width: 30px;
+      height: 30px;
+      font-size: 10px;
+      bottom: 10px;
+      right: 10px;
+      opacity: 0.5;
     }
   }

@@ -440,7 +440,7 @@ export function MegaSaverGrid({ megaSaverItems, megaSaverBanner, showViewMoreBut
               key={item.id}
               className="mega-saver-item"
               style={{
-                animationDelay: `${index * 0.1}s`,
+                animationDelay: '0s',
                 animation: isVisible ? 'fadeInUpBounce 0.6s ease forwards' : 'none'
               }}
             >

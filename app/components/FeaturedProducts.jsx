@@ -68,35 +68,47 @@ export function FeaturedProducts({products}) {
 }
 
 function ProductCard({product}) {
+  // Function to handle quick view
+  const handleQuickView = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Quick view logic would go here
+  };
+
+  // Function to handle wishlist
+  const handleWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Wishlist logic would go here
+  };
+
   return (
     <div className="product-item-wrapper">
-      <Link
-        className="product-item"
-        to={`/products/${product.handle}`}
-        prefetch="intent"
-      >
+      <div className="product-item">
         <div className="product-image-container">
           <div className="featured-badge">Featured</div>
-          {product.images.nodes[0] && (
-            <Image
-              alt={product.images.nodes[0].altText || product.title}
-              aspectRatio="1/1"
-              data={product.images.nodes[0]}
-              sizes="(min-width: 45em) 400px, 100vw"
-            />
-          )}
+          <Link
+            to={`/products/${product.handle}`}
+            prefetch="intent"
+            className="product-image-link"
+          >
+            {product.images.nodes[0] && (
+              <Image
+                alt={product.images.nodes[0].altText || product.title}
+                aspectRatio="1/1"
+                data={product.images.nodes[0]}
+                sizes="(min-width: 45em) 400px, 100vw"
+              />
+            )}
+          </Link>
 
           <div className="product-actions">
             <button
               className="product-action-btn"
               title="Quick view"
               aria-label="Quick view"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Quick view logic would go here
-               
-              }}
+              onClick={handleQuickView}
+              type="button"
             >
               <i className="fas fa-eye"></i>
             </button>
@@ -104,21 +116,24 @@ function ProductCard({product}) {
               className="product-action-btn"
               title="Add to wishlist"
               aria-label="Add to wishlist"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-              }}
+              onClick={handleWishlist}
+              type="button"
             >
               <i className="fas fa-heart"></i>
             </button>
           </div>
         </div>
 
-        <h4>{product.title}</h4>
-        <small>
-          <Money data={product.priceRange.minVariantPrice} />
-        </small>
+        <Link
+          to={`/products/${product.handle}`}
+          prefetch="intent"
+          className="product-info-link"
+        >
+          <h4>{product.title}</h4>
+          <small>
+            <Money data={product.priceRange.minVariantPrice} />
+          </small>
+        </Link>
 
         <div className="product-quick-add">
           <Link
@@ -128,7 +143,7 @@ function ProductCard({product}) {
             View Details
           </Link>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

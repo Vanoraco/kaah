@@ -231,6 +231,49 @@
   opacity: 1;
 }
 
+/* Product Disclaimer */
+.product-disclaimer {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--product-light-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--product-neuro-shadow-inset);
+  text-align: center;
+  justify-content: center;
+}
+
+.product-disclaimer i {
+  color: var(--product-primary);
+  font-size: 14px;
+}
+
+/* Hamper Image Disclaimer */
+.hamper-image-disclaimer {
+  margin-top: 15px;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--product-light-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--product-neuro-shadow-inset);
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.hamper-image-disclaimer i {
+  color: var(--product-primary);
+  font-size: 14px;
+}
+
 /* Product Info Section */
 .product-info-container {
   display: flex;

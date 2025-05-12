@@ -273,6 +273,10 @@ export default function Product() {
                 </div>
               ))}
             </div>
+            <div className="product-disclaimer">
+              <i className="fas fa-info-circle"></i>
+              <span>Pictures used for illustrative purpose only & may differ from actual product</span>
+            </div>
           </div>
         </div>
 

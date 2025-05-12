@@ -572,6 +572,11 @@ export default function HamperDetail() {
                 <span className="price-tag-value">R {price}</span>
               </div>
             </div>
+
+            <div className="hamper-image-disclaimer">
+              <i className="fas fa-info-circle"></i>
+              <span>Pictures used for illustrative purpose only & may differ from actual product</span>
+            </div>
           </div>
 
           <div className="hamper-detail-info">
