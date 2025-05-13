@@ -322,7 +322,7 @@ const LogoColumn = memo(() => {
       <p>At Kaah , we’re more than just a store—we’re your trusted partner in finding everything you need for your home, family, and lifestyle. Whether you're stocking up on everyday essentials, exploring fresh produce, or searching for exclusive deals on premium products, we’ve got you covered.</p>
       <div className="footer-contact">
         <div className="contact-item">
-          <span>013 880 1534
+          <span>013 880 1534,
           076 969 6416
 </span>
           <span className="divider">or</span>
