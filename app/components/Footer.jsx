@@ -319,12 +319,14 @@ const LogoColumn = memo(() => {
         <img src="https://cdn.shopify.com/s/files/1/0616/6446/0862/files/logo.svg?v=1745081485" alt="Kaah" />
         <span>Kaah</span>
       </Link>
-      <p>Morbi cursus porttitor enim lobortis molestie. Duis gravida turpis dui, eget bibendum magna congue nec.</p>
+      <p>At Kaah , we’re more than just a store—we’re your trusted partner in finding everything you need for your home, family, and lifestyle. Whether you're stocking up on everyday essentials, exploring fresh produce, or searching for exclusive deals on premium products, we’ve got you covered.</p>
       <div className="footer-contact">
         <div className="contact-item">
-          <span>(27) 555-0114</span>
+          <span>013 880 1534
+          076 969 6416
+</span>
           <span className="divider">or</span>
-          <a href="mailto:support@kaah.co.za">support@kaah.co.za</a>
+          <a href="mailto:admin@kaah.co.za">admin@kaah.co.za</a>
         </div>
       </div>
     </div>

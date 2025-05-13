@@ -616,13 +616,21 @@
     opacity: 0.8;
   }
 
+  /* Ensure Saturday and Sunday are visible */
+  .hours-grid p:nth-last-child(2),
+  .hours-grid p:last-child {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
   .hours-toggle-btn {
     width: 26px;
     height: 26px;
   }
 
   .hours-expanded .hours-content {
-    max-height: 350px; /* Slightly larger for mobile due to stacked layout */
+    max-height: 450px; /* Increased to ensure all days are visible */
   }
 
   .hours-collapsed .hours-header::before {
@@ -666,6 +674,26 @@
   .location-contact p,
   .hours-grid p {
     font-size: 14px;
+  }
+
+  /* Optimize hours grid for smaller screens */
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    padding-bottom: 5px;
+  }
+
+  .hours-grid p {
+    padding: 6px 0;
+    margin-bottom: 2px;
+  }
+
+  /* Ensure weekend days are visible */
+  .hours-expanded .hours-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 5px;
   }
 
   .online-store-info {
@@ -777,5 +805,24 @@
 
   .page-subheading {
     font-size: 14px;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 375px) {
+  /* Ensure all days are visible in hours grid */
+  .hours-grid {
+    padding-bottom: 10px;
+  }
+
+  .hours-expanded .hours-content {
+    max-height: 550px;
+  }
+
+  .hours-grid p:nth-last-child(2),
+  .hours-grid p:last-child {
+    margin-top: 5px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    padding-top: 8px;
   }
 }
