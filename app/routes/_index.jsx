@@ -204,7 +204,7 @@ export default function Homepage() {
       </div> */}
 
       {/* Testimonials */}
-      <div className="testimonials">
+     {/* <div className="testimonials">
         <h2 className="section-title">What our Client Says</h2>
         <div className="testimonials-grid">
           <div className="testimonial-card">
@@ -241,7 +241,7 @@ export default function Homepage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
 
     </div>
