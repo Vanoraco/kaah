@@ -91,14 +91,14 @@ function CustomerService() {
   return (
     <div className="customer-service-wrapper">
       <NavLink
-        to="tel:2195550114"
+        to="mailto:Info@kaah.co.za"
         className="header-action-item customer-service-link"
-        aria-label="Call Customer Services at (219) 555-0114"
+        aria-label="Contact Customer Services at Info@kaah.co.za"
       >
-        <i className="fas fa-phone-alt"></i>
+        <i className="fas fa-envelope"></i>
         <div className="customer-service-info">
           <span className="cart-label">Customer Services</span>
-          <span className="cart-amount">(219) 555-0114</span>
+          <span className="cart-amount">Info@kaah.co.za</span>
         </div>
       </NavLink>
     </div>

@@ -7,6 +7,7 @@ import {Await, NavLink, Link} from '@remix-run/react';
  */
 function useNewsletter() {
   const [email, setEmail] = useState('');
+  const [telephone, setTelephone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] = useState(null);
   const [validationError, setValidationError] = useState('');
@@ -16,8 +17,19 @@ function useNewsletter() {
     return emailRegex.test(email);
   }, []);
 
+  const validateTelephone = useCallback((phone) => {
+    // Basic phone validation - at least 10 digits
+    const phoneRegex = /^\d{10,}$/;
+    return phoneRegex.test(phone.replace(/\D/g, ''));
+  }, []);
+
   const handleEmailChange = useCallback((e) => {
     setEmail(e.target.value);
+    setValidationError('');
+  }, []);
+
+  const handleTelephoneChange = useCallback((e) => {
+    setTelephone(e.target.value);
     setValidationError('');
   }, []);
 
@@ -35,6 +47,17 @@ function useNewsletter() {
       return;
     }
 
+    // Validate telephone
+    if (!telephone.trim()) {
+      setValidationError('Phone number is required');
+      return;
+    }
+
+    if (!validateTelephone(telephone)) {
+      setValidationError('Please enter a valid phone number (at least 10 digits)');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -44,13 +67,14 @@ function useNewsletter() {
 
       setSubscriptionStatus('success');
       setEmail('');
+      setTelephone('');
     } catch (error) {
       setSubscriptionStatus('error');
       console.error('Error subscribing to newsletter:', error);
     } finally {
       setIsSubmitting(false);
     }
-  }, [email, validateEmail]);
+  }, [email, telephone, validateEmail, validateTelephone]);
 
   // Reset subscription status after 5 seconds
   useEffect(() => {
@@ -171,7 +195,9 @@ NewsletterIcon.displayName = 'NewsletterIcon';
  */
 const NewsletterForm = memo(({
   email,
+  telephone,
   handleEmailChange,
+  handleTelephoneChange,
   handleSubmit,
   isSubmitting,
   subscriptionStatus,
@@ -179,18 +205,33 @@ const NewsletterForm = memo(({
 }) => {
   return (
     <form className="newsletter-form" onSubmit={handleSubmit} noValidate>
-      <div className="newsletter-input-wrapper" style={{ width: '100%' }}>
-        <input
-          type="email"
-          placeholder="Your email address"
-          value={email}
-          onChange={handleEmailChange}
-          disabled={isSubmitting}
-          aria-label="Email address for newsletter"
-          aria-invalid={!!validationError}
-          aria-describedby={validationError ? "newsletter-error" : undefined}
-          required
-        />
+      <div className="newsletter-inputs">
+        <div className="newsletter-input-wrapper">
+          <input
+            type="email"
+            placeholder="Your email address"
+            value={email}
+            onChange={handleEmailChange}
+            disabled={isSubmitting}
+            aria-label="Email address for newsletter"
+            aria-invalid={!!validationError}
+            aria-describedby={validationError ? "newsletter-error" : undefined}
+            required
+          />
+        </div>
+        <div className="newsletter-input-wrapper">
+          <input
+            type="tel"
+            placeholder="Your phone number"
+            value={telephone}
+            onChange={handleTelephoneChange}
+            disabled={isSubmitting}
+            aria-label="Phone number for newsletter"
+            aria-invalid={!!validationError}
+            aria-describedby={validationError ? "newsletter-error" : undefined}
+            required
+          />
+        </div>
         {validationError && (
           <div id="newsletter-error" className="newsletter-error" role="alert">
             {validationError}
@@ -253,10 +294,12 @@ SocialIcons.displayName = 'SocialIcons';
 const NewsletterSection = memo(() => {
   const {
     email,
+    telephone,
     isSubmitting,
     subscriptionStatus,
     validationError,
     handleEmailChange,
+    handleTelephoneChange,
     handleSubmit
   } = useNewsletter();
 
@@ -266,12 +309,14 @@ const NewsletterSection = memo(() => {
         <NewsletterIcon />
         <div className="newsletter-text">
           <h3>Subscribe our Newsletter</h3>
-          <p>Pellentesque eu nibh eget mauris congue mattis matti.</p>
+          <p>Be the first to access exclusive deals and giveaways! Join our VIP list today. Simply drop your email and phone number below.</p>
         </div>
       </div>
       <NewsletterForm
         email={email}
+        telephone={telephone}
         handleEmailChange={handleEmailChange}
+        handleTelephoneChange={handleTelephoneChange}
         handleSubmit={handleSubmit}
         isSubmitting={isSubmitting}
         subscriptionStatus={subscriptionStatus}
