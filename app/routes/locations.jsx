@@ -185,11 +185,6 @@ export async function loader({context}) {
  */
 function LocationCard({location}) {
   const {branch_name, address, contact, hours} = location;
-  const [showHours, setShowHours] = React.useState(false);
-
-  const toggleHours = () => {
-    setShowHours(!showHours);
-  };
 
   return (
     <div className="location-card">
@@ -206,6 +201,11 @@ function LocationCard({location}) {
           <p>{address.city}, {address.province}</p>
           <p>{address.postal_code}</p>
           <p>{address.country}</p>
+          <p className="store-opening-hours">
+            <i className="fas fa-clock" style={{marginRight: '8px', fontSize: '12px'}}></i>
+            <strong>Store Opening Hours</strong><br />
+            Monday to Sunday: 7 AM - 7 PM
+          </p>
         </div>
 
         <div className="location-contact">
@@ -225,78 +225,7 @@ function LocationCard({location}) {
           </p>
         </div>
 
-        <div className={`location-hours ${showHours ? 'hours-expanded' : 'hours-collapsed'}`}>
-          <div className="hours-header" onClick={toggleHours}>
-            <h4>
-              <i className="fas fa-clock"></i>
-              Opening Hours
-            </h4>
-            <button
-              className="hours-toggle-btn"
-              aria-label={showHours ? "Hide opening hours" : "Show opening hours"}
-              title={showHours ? "Hide opening hours" : "Show opening hours"}
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent double triggering with parent onClick
-                toggleHours();
-              }}
-            >
-              <i className={`fas ${showHours ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-            </button>
-          </div>
-          <div className="hours-content">
-            <div className="hours-grid">
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Monday:
-                </span>
-                {hours.monday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Tuesday:
-                </span>
-                {hours.tuesday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Wednesday:
-                </span>
-                {hours.wednesday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Thursday:
-                </span>
-                {hours.thursday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Friday:
-                </span>
-                {hours.friday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Saturday:
-                </span>
-                {hours.saturday}
-              </p>
-              <p>
-                <span>
-                  <i className="fas fa-calendar-day" style={{marginRight: '5px', fontSize: '12px'}}></i>
-                  Sunday:
-                </span>
-                {hours.sunday}
-              </p>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );

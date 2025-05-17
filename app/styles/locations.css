@@ -198,6 +198,23 @@
   line-height: 1.5;
 }
 
+.store-opening-hours {
+  margin-top: 15px !important;
+  padding-top: 15px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.9),
+              inset -1px -1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.store-opening-hours strong {
+  color: var(--primary-color);
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
 .location-contact a {
   color: var(--primary-color);
   text-decoration: none;
@@ -674,6 +691,16 @@
   .location-contact p,
   .hours-grid p {
     font-size: 14px;
+  }
+
+  .store-opening-hours {
+    margin-top: 12px !important;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .store-opening-hours strong {
+    margin-bottom: 3px;
   }
 
   /* Optimize hours grid for smaller screens */
