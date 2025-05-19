@@ -277,6 +277,12 @@ function Slide({ slide, isActive, onMouseEnter, onMouseLeave, aspectRatio = '1:1
       aria-roledescription="slide"
       aria-label={slide.title}
     >
+      {/* NOW OPEN announcement ribbon */}
+      <div className="now-open-banner">
+        <i className="fas fa-store"></i>
+        <span>NOW OPEN</span>
+      </div>
+
       <SlideContent slide={slide} />
       <SlideImage slide={{ ...slide, isActive }} aspectRatio={aspectRatio} />
     </div>
@@ -319,17 +325,25 @@ function SlideContent({ slide }) {
     <div className="slide-content">
       <h1>{slide.title}</h1>
       <h2>{slide.subtitle}</h2>
+
+      {/* SPECIAL PROMOTIONS badge */}
+      <div className="special-promotions-badge">
+        <i className="fas fa-tags"></i>
+        <span>SPECIAL PROMOTIONS</span>
+      </div>
+
       <div className="discount-badge">
         <span>{slide.discount}</span>
       </div>
+
       <Link
         to={slide.link}
-        className="slideshow-yellow-button"
+        className="slideshow-yellow-button slideshow-shop-btn"
         style={buttonStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        Shop now <i className="fas fa-arrow-right" style={iconStyle}></i>
+        <span style={{ whiteSpace: 'nowrap' }}>Shop now <i className="fas fa-arrow-right" style={iconStyle}></i></span>
       </Link>
     </div>
   );

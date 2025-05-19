@@ -13,7 +13,8 @@
   .slideshow-container {
     position: relative;
     width: 100%;
-    height: 500px;
+    height: auto; /* Changed from fixed height to auto */
+    min-height: 550px;
     z-index: 1;
     overflow: hidden;
     border-radius: 8px;
@@ -27,15 +28,16 @@
     left: 0;
     width: 100%;
     height: 100%;
+    min-height: 550px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 80px;
+    padding: 60px 80px;
     opacity: 0;
     /* Remove visibility:hidden to prevent flash */
     /* Slower transition with ease-in-out for smoother effect */
     transition: opacity 2s ease-in-out;
-    overflow: hidden;
+    overflow: visible;
     /* Lower z-index for inactive slides */
     z-index: 1;
     pointer-events: none;
@@ -54,6 +56,78 @@
     pointer-events: auto;
     /* No delay for active slide to prevent gap */
     transition-duration: 2s;
+  }
+
+  /* NOW OPEN banner with neuromorphic styling */
+  .now-open-banner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #ecf0f3; /* Light base color for neuromorphic effect */
+    color: #2ecc71; /* Green text for "open" status */
+    padding: 12px 24px;
+    border-radius: 16px; /* Reduced border radius for neuromorphic look */
+    font-weight: 700;
+    font-size: 18px;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    /* Neuromorphic shadow effect */
+    box-shadow:
+      8px 8px 16px rgba(174, 174, 192, 0.4),
+      -8px -8px 16px rgba(255, 255, 255, 0.8),
+      inset 1px 1px 1px rgba(255, 255, 255, 0.8),
+      inset -1px -1px 1px rgba(174, 174, 192, 0.4);
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none; /* Remove border for clean neuromorphic look */
+  }
+
+  .now-open-banner i {
+    font-size: 16px;
+    color: #2ecc71; /* Match text color */
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .slide.active .now-open-banner {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.5s;
+  }
+
+  .now-open-banner:hover {
+    transform: translateY(-2px);
+    /* Pressed effect on hover */
+    box-shadow:
+      6px 6px 12px rgba(174, 174, 192, 0.3),
+      -6px -6px 12px rgba(255, 255, 255, 0.7),
+      inset 2px 2px 4px rgba(174, 174, 192, 0.3),
+      inset -2px -2px 4px rgba(255, 255, 255, 0.7);
+  }
+
+  /* Active/pressed state */
+  .now-open-banner:active {
+    transform: translateY(0);
+    box-shadow:
+      inset 4px 4px 8px rgba(174, 174, 192, 0.4),
+      inset -4px -4px 8px rgba(255, 255, 255, 0.8);
   }
 
   .slide-content {
@@ -141,6 +215,38 @@
     transition-delay: 0.4s; /* Shorter delay for smoother transition */
   }
 
+  /* SPECIAL PROMOTIONS badge */
+  .special-promotions-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #ffc107;
+    color: #1a237e;
+    padding: 8px 16px;
+    border-radius: 30px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(8px);
+    opacity: 0;
+    transition: transform 2s ease-in-out, opacity 2s ease-in-out;
+  }
+
+  .slide.active .special-promotions-badge {
+    transform: translateY(0);
+    opacity: 1;
+    transition-delay: 0.45s;
+  }
+
+  .special-promotions-badge i {
+    margin-right: 8px;
+    font-size: 16px;
+  }
+
+  .special-promotions-badge span {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
   .discount-badge {
     display: inline-block;
     background: rgba(255, 255, 255, 0.15);
@@ -212,6 +318,7 @@
     min-width: auto !important;
     text-transform: none !important;
     border: none !important;
+    white-space: nowrap !important; /* Prevent text wrapping */
   }
 
   .slideshow-shop-btn::before {
@@ -569,6 +676,40 @@
       font-size: 32px;
     }
 
+    /* Responsive styles for NOW OPEN banner - Tablet */
+    .now-open-banner {
+      top: 15px;
+      right: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 14px; /* Slightly reduced for tablet */
+      gap: 8px;
+      /* Adjusted neuromorphic shadow for tablet */
+      box-shadow:
+        6px 6px 12px rgba(174, 174, 192, 0.4),
+        -6px -6px 12px rgba(255, 255, 255, 0.8),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.8),
+        inset -1px -1px 1px rgba(174, 174, 192, 0.4);
+    }
+
+    .now-open-banner i {
+      font-size: 15px;
+    }
+
+    /* Responsive styles for SPECIAL PROMOTIONS badge */
+    .special-promotions-badge {
+      padding: 6px 14px;
+      margin-bottom: 12px;
+    }
+
+    .special-promotions-badge i {
+      font-size: 14px;
+    }
+
+    .special-promotions-badge span {
+      font-size: 14px;
+    }
+
     .slide-image-container {
       width: 300px;
       padding: 15px;
@@ -603,33 +744,157 @@
 
   @media (max-width: 576px) {
     .slideshow-container {
-      height: 500px;
+      height: auto; /* Changed from fixed height to auto */
+      min-height: 550px; /* Further reduced from 600px */
+      max-height: none; /* Remove any max-height constraints */
     }
 
     .slide {
-      padding: 20px;
+      padding: 15px 15px 20px; /* Added more bottom padding */
+      min-height: 550px; /* Match container min-height */
+      display: flex;
+      flex-direction: column; /* Stack elements vertically */
+      justify-content: flex-start; /* Changed from space-between to flex-start */
+      align-items: center; /* Center horizontally */
+      overflow: visible; /* Ensure content isn't cut off */
     }
 
     .slide-image-container {
-      width: 220px;
-      padding: 10px;
+      width: 80%; /* Keep the same */
+      max-width: 260px; /* Keep the same */
+      min-height: 160px; /* Keep the same */
+      padding: 5px; /* Keep padding the same */
+      margin: 10px 0 15px 0; /* Increased bottom margin from 8px to 15px */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Improve image visibility on mobile */
+    .slide-image {
+      order: 1; /* Ensure image appears first */
+      margin-top: 35px; /* Keep the same */
+      width: 100%; /* Full width */
+      height: auto; /* Maintain aspect ratio */
+      object-fit: contain; /* Ensure image is fully visible */
+      max-height: 180px; /* Further reduced from 200px */
+    }
+
+    .slide-content {
+      order: 2; /* Content appears after image */
+      margin-top: 12px; /* Increased from 0 to add more space between image and title */
+      padding: 0 10px; /* Keep horizontal padding the same */
+      width: 100%; /* Full width */
+      max-height: 320px; /* Keep the same */
+      overflow-y: auto; /* Allow scrolling if content is too long */
     }
 
     .slide-content h1 {
-      font-size: 28px;
+      font-size: 20px; /* Keep the same */
+      margin-top: 0; /* Removed top margin since we added space to the content container */
+      margin-bottom: 8px; /* Keep the same */
+      text-align: center; /* Center text */
+      line-height: 1.2; /* Keep the same */
+      width: 100%; /* Full width */
+      max-height: 50px; /* Keep the same */
+      overflow: hidden; /* Hide overflow */
+      text-overflow: ellipsis; /* Add ellipsis for overflow */
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Limit to 2 lines */
+      line-clamp: 2; /* Standard property for compatibility */
+      -webkit-box-orient: vertical;
     }
 
     .slide-content h2 {
-      font-size: 24px;
+      font-size: 16px; /* Keep the same */
+      margin-top: 0; /* Keep the same */
+      margin-bottom: 10px; /* Increased from 6px */
+      text-align: center; /* Center text */
+      line-height: 1.2; /* Keep the same */
+      width: 100%; /* Full width */
+      max-height: 60px; /* Keep the same */
+      overflow: hidden; /* Hide overflow */
+      text-overflow: ellipsis; /* Add ellipsis for overflow */
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Limit to 3 lines */
+      line-clamp: 3; /* Standard property for compatibility */
+      -webkit-box-orient: vertical;
     }
 
     .discount-badge {
-      padding: 8px 16px;
-      margin-bottom: 20px;
+      padding: 5px 10px; /* Keep the same */
+      margin-bottom: 12px; /* Increased from 8px */
+      width: 85%; /* Reduced from 90% */
+      max-width: 240px; /* Reduced from 260px */
+      box-sizing: border-box; /* Include padding in width */
+      align-self: center; /* Center horizontally */
     }
 
     .discount-badge span {
+      font-size: 13px; /* Reduced font size */
+      line-height: 1.4; /* Improved line height */
+      text-align: center; /* Center text */
+      max-height: 55px; /* Limit height */
+      overflow: hidden; /* Hide overflow */
+      text-overflow: ellipsis; /* Add ellipsis for overflow */
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Limit to 3 lines */
+      line-clamp: 3; /* Standard property for compatibility */
+      -webkit-box-orient: vertical;
+    }
+
+    /* Mobile styles for NOW OPEN banner - Neuromorphic */
+    .now-open-banner {
+      top: 10px;
+      right: 10px;
+      padding: 8px 15px;
       font-size: 14px;
+      letter-spacing: 1px;
+      border-radius: 12px; /* Further reduced for mobile */
+      gap: 6px;
+      /* Scaled down neuromorphic shadow for mobile */
+      box-shadow:
+        4px 4px 8px rgba(174, 174, 192, 0.4),
+        -4px -4px 8px rgba(255, 255, 255, 0.8),
+        inset 1px 1px 1px rgba(255, 255, 255, 0.8),
+        inset -1px -1px 1px rgba(174, 174, 192, 0.4);
+    }
+
+    .now-open-banner i {
+      font-size: 14px;
+    }
+
+    /* Mobile pressed state */
+    .now-open-banner:active {
+      box-shadow:
+        inset 3px 3px 6px rgba(174, 174, 192, 0.4),
+        inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Mobile styles for SPECIAL PROMOTIONS badge */
+    .special-promotions-badge {
+      padding: 4px 8px; /* Increased slightly from 3px 7px */
+      margin-bottom: 8px; /* Increased from 5px */
+      border-radius: 14px; /* Keep the same */
+      width: auto; /* Auto width */
+      max-width: 170px; /* Reduced from 180px */
+      justify-content: center; /* Center content */
+      align-self: center; /* Center horizontally */
+      transform: scale(0.95); /* Keep the same */
+    }
+
+    .special-promotions-badge i {
+      font-size: 11px; /* Reduced font size */
+      margin-right: 4px; /* Reduced margin */
+    }
+
+    .special-promotions-badge span {
+      font-size: 11px; /* Reduced font size */
+      letter-spacing: 0.5px;
+      text-align: center; /* Center text */
+      white-space: nowrap; /* Prevent text wrapping */
+      overflow: hidden; /* Hide overflow */
+      text-overflow: ellipsis; /* Add ellipsis for overflow */
     }
 
     .slideshow-arrow {
@@ -647,9 +912,25 @@
       right: 5px;
     }
 
-    .shop-now-btn {
-      padding: 10px 20px;
-      font-size: 14px;
+    /* Mobile styles for Shop Now button */
+    .slideshow-yellow-button {
+      padding: 6px 12px !important; /* Keep the same */
+      font-size: 13px !important; /* Keep the same */
+      margin-top: 15px !important; /* Increased from 10px */
+      margin-bottom: 15px !important; /* Increased from 10px */
+      width: auto !important;
+      min-width: 110px !important; /* Keep the same */
+      max-width: 140px !important; /* Keep the same */
+      border-radius: 10px !important; /* Keep the same */
+      align-self: center !important;
+      white-space: nowrap !important; /* Prevent text wrapping */
+      justify-content: center !important; /* Center content */
+      transform: scale(0.95) !important; /* Keep the same */
+    }
+
+    .slideshow-yellow-button i {
+      font-size: 11px !important; /* Reduced font size */
+      margin-left: 4px !important; /* Reduced spacing */
     }
 
     .slideshow-dots {
