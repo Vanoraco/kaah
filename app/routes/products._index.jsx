@@ -1,6 +1,7 @@
 import {useLoaderData, useSearchParams, Link, useNavigation} from '@remix-run/react';
 import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
+import {createSeoMeta} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductFilters} from '~/components/ProductFilters';
 import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
@@ -8,8 +9,23 @@ import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = () => {
-  return [{title: `Kaah | All Products`}];
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: `Kaah | All Products`},
+      {description: 'Browse our complete catalog of high-quality products at Kaah.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: `Kaah | All Products`,
+    description: 'Browse our complete catalog of high-quality products at Kaah.',
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**

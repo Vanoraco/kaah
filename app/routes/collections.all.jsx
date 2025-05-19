@@ -1,6 +1,7 @@
 import {useLoaderData, Link, useSearchParams} from '@remix-run/react';
 import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
+import {createSeoMeta} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {AllProductsFilters} from '~/components/AllProductsFilters';
 import {CustomSelect} from '~/components/CustomSelect';
@@ -9,11 +10,23 @@ import '~/styles/all-products.css';
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = () => {
-  return [
-    {title: `All Products | Kaah`},
-    {description: 'Discover our complete range of products at Kaah. Browse through our collection of high-quality items.'}
-  ];
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: `All Products | Kaah`},
+      {description: 'Discover our complete range of products at Kaah. Browse through our collection of high-quality items.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: `All Products | Kaah`,
+    description: 'Discover our complete range of products at Kaah. Browse through our collection of high-quality items.',
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**

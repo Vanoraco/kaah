@@ -1,6 +1,29 @@
 import {useLoaderData, Link} from '@remix-run/react';
 import {getPaginationVariables, Image} from '@shopify/hydrogen';
+import {createSeoMeta} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+
+/**
+ * @type {MetaFunction<typeof loader>}
+ */
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: `Collections | Kaah`},
+      {description: 'Browse our carefully curated collections of high-quality products at Kaah.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: `Collections | Kaah`,
+    description: 'Browse our carefully curated collections of high-quality products at Kaah.',
+    pathname,
+    searchParams: url.searchParams
+  });
+};
 
 /**
  * @param {LoaderFunctionArgs} args

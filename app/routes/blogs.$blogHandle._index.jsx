@@ -1,12 +1,25 @@
 import {Link, useLoaderData} from '@remix-run/react';
 import {Image, getPaginationVariables} from '@shopify/hydrogen';
+import {createSeoMeta} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [{title: `Kaah | ${data?.blog.title ?? ''} blog`}];
+export const meta = ({data, request}) => {
+  if (!request) {
+    return [{title: `Kaah | ${data?.blog.title ?? ''} blog`}];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: `Kaah | ${data?.blog.title ?? ''} blog`,
+    description: data?.blog.seo?.description || `Read the latest articles from our ${data?.blog.title} blog.`,
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**

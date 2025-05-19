@@ -7,6 +7,7 @@ import {
   Analytics,
 } from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
+import {createSeoMeta} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {CollectionFilters} from '~/components/CollectionFilters';
 import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
@@ -14,8 +15,20 @@ import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [{title: `Kaah | ${data?.collection.title ?? ''} Collection`}];
+export const meta = ({data, request}) => {
+  if (!request) {
+    return [{title: `Kaah | ${data?.collection.title ?? ''} Collection`}];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: `Kaah | ${data?.collection.title ?? ''} Collection`,
+    description: data?.collection.description,
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**

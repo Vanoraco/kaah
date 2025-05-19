@@ -1,5 +1,6 @@
 import {useLoaderData} from '@remix-run/react';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
+import {createSeoMeta} from '~/lib/seo';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
 import {getEmptyPredictiveSearchResult} from '~/lib/search';
@@ -7,8 +8,21 @@ import {getEmptyPredictiveSearchResult} from '~/lib/search';
 /**
  * @type {MetaFunction}
  */
-export const meta = () => {
-  return [{title: `Kaah | Search`}];
+export const meta = ({request}) => {
+  if (!request) {
+    return [{title: `Kaah | Search`}];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+  const term = url.searchParams.get('q');
+
+  return createSeoMeta({
+    title: term ? `Kaah | Search results for "${term}"` : `Kaah | Search`,
+    description: 'Search for products, articles, and pages on Kaah Supermarket.',
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**
@@ -41,7 +55,7 @@ export default function SearchPage() {
     <div className="search-page">
       <div className="search-page-header">
         <div className="search-page-title-container">
-          
+
           {term && (
             <p className="search-page-subtitle">
               <span className="search-term-label">Results for</span>
