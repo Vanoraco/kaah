@@ -136,7 +136,9 @@ export function PosterOverlay({isOpen, onClose, poster}) {
                   src={poster.posterImage}
                   alt={poster.posterImageAlt || poster.title}
                   className="poster-overlay-image"
-                  sizes="50vw"
+                  sizes="100vw"
+                  width={500}
+                  height={500}
                   loading="eager"
                   ref={imageRef}
                 />

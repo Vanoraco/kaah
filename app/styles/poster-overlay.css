@@ -23,11 +23,14 @@
 .poster-overlay-content {
   width: 90%;
   max-width: 800px;
+  max-height: 90vh; /* Increased height to ensure it fits on screen */
   position: relative;
   background-color: white;
   border-radius: 4px;
-  overflow: hidden;
+  overflow: auto; /* Changed to auto to allow scrolling if needed */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
 }
 
 .poster-overlay-close {
@@ -55,6 +58,8 @@
 .poster-overlay-split {
   display: flex;
   flex-direction: row;
+  flex: 1;
+  overflow: hidden; /* Prevent overflow at the split container level */
 }
 
 .poster-overlay-image-container {
@@ -71,6 +76,7 @@
 .poster-overlay-image {
   width: 100%;
   height: auto;
+  max-height: 100%;
   object-fit: contain;
   display: block;
 }
@@ -78,8 +84,10 @@
 .poster-overlay-image-wrapper {
   position: relative;
   width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .zoom-container {
@@ -248,6 +256,11 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
+  .poster-overlay-content {
+    max-height: 90vh;
+    overflow-y: auto; /* Enable scrolling for the content */
+  }
+
   .poster-overlay-split {
     flex-direction: column;
   }
@@ -260,6 +273,8 @@
   .poster-overlay-image-container {
     height: auto;
     padding: 20px;
+    max-height: none; /* Remove height limitation */
+    min-height: 300px; /* Ensure minimum height for visibility */
   }
 
   .zoom-container {
@@ -270,7 +285,8 @@
   }
 
   .poster-overlay-details {
-    padding: 25px 20px;
+    padding: 25px 20px 30px; /* Increased bottom padding */
+    overflow-y: auto; /* Enable scrolling for the details section */
   }
 
   .poster-overlay-title {
@@ -286,22 +302,34 @@
   .poster-overlay-description {
     font-size: 14px;
     margin-bottom: 15px;
+    max-height: none; /* Allow description to expand */
+    white-space: normal; /* Allow text to wrap */
+    overflow: visible; /* Show all content */
   }
 
   .poster-overlay-promo-code {
     font-size: 15px;
+    margin-bottom: 15px;
+  }
+
+  .poster-overlay-social {
+    margin-top: 15px;
+    margin-bottom: 5px;
   }
 }
 
 @media (max-width: 480px) {
   .poster-overlay-content {
     width: 95%;
-    max-height: 95vh;
+    max-height: 90vh;
+    overflow-y: auto; /* Enable scrolling for the content */
   }
 
   .poster-overlay-image-container {
     height: auto;
     padding: 15px;
+    max-height: none; /* Remove height limitation */
+    min-height: 250px; /* Ensure minimum height for visibility */
   }
 
   .zoom-container {
@@ -312,7 +340,8 @@
   }
 
   .poster-overlay-details {
-    padding: 20px 15px;
+    padding: 20px 15px 30px; /* Increased bottom padding */
+    overflow-y: auto; /* Enable scrolling for the details section */
   }
 
   .poster-overlay-title {
@@ -328,9 +357,21 @@
   .poster-overlay-description {
     font-size: 13px;
     margin-bottom: 12px;
+    max-height: none; /* Allow description to expand */
+    white-space: normal; /* Allow text to wrap */
+    overflow: visible; /* Show all content */
   }
 
   .poster-overlay-promo-code {
     font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .poster-overlay-social {
+    display: flex;
+    flex-wrap: wrap; /* Allow icons to wrap on small screens */
+    gap: 12px;
+    margin-top: 15px;
+    margin-bottom: 5px;
   }
 }
