@@ -37,6 +37,10 @@ import hampersPageStyles from '~/styles/hampers-page.css?url';
 import allProductsStyles from '~/styles/all-products.css?url';
 import asideStyles from '~/styles/aside.css?url';
 import locationsStyles from '~/styles/locations.css?url';
+import productPosterStyles from '~/styles/product-poster.css?url';
+import posterOverlayStyles from '~/styles/poster-overlay.css?url';
+import compactPosterStyles from '~/styles/compact-poster.css?url';
+import promotionalPosterStyles from '~/styles/promotional-poster.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
@@ -232,6 +236,10 @@ export function Layout({children}) {
         <link rel="stylesheet" href={allProductsStyles}></link>
         <link rel="stylesheet" href={asideStyles}></link>
         <link rel="stylesheet" href={locationsStyles}></link>
+        <link rel="stylesheet" href={productPosterStyles}></link>
+        <link rel="stylesheet" href={posterOverlayStyles}></link>
+        <link rel="stylesheet" href={compactPosterStyles}></link>
+        <link rel="stylesheet" href={promotionalPosterStyles}></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />

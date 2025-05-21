@@ -6,7 +6,9 @@ import {ShopByCategories} from '~/components/ShopByCategories';
 import {FeaturedProducts} from '~/components/FeaturedProducts';
 import {HamperCards} from '~/components/HamperCards';
 import {MegaSaverClean} from '~/components/MegaSaverClean';
+import {PromotionalPosterCarousel} from '~/components/PromotionalPosterCarousel';
 import {HAMPER_METAOBJECTS_QUERY} from '~/lib/hamper-queries';
+import {PROMOTIONAL_POSTERS_QUERY, processPromotionalPosterData} from '~/lib/promotional-poster-queries';
 import {
   BANNER_COLLECTIONS_QUERY,
   BANNER_METAOBJECTS_QUERY,
@@ -42,6 +44,7 @@ async function loadCriticalData({context}) {
     hamperMetaobjectsData,
     megaSaverItemsData,
     megaSaverBannerData,
+    promotionalPostersData,
   ] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
     context.storefront.query(BANNER_COLLECTIONS_QUERY),
@@ -63,7 +66,14 @@ async function loadCriticalData({context}) {
     context.storefront.query(MEGA_SAVER_METAOBJECTS_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
     // Try to fetch mega saver banner metaobject
     context.storefront.query(MEGA_SAVER_BANNER_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
+    // Try to fetch promotional poster metaobjects
+    context.storefront.query(PROMOTIONAL_POSTERS_QUERY).catch(() => ({ metaobjects: { nodes: [] } })),
   ]);
+
+  // Process promotional posters data
+  const promotionalPosters = promotionalPostersData.metaobjects.nodes.map(node =>
+    processPromotionalPosterData(node)
+  );
 
   return {
     featuredCollection: collections.nodes[0],
@@ -77,6 +87,7 @@ async function loadCriticalData({context}) {
     hamperMetaobjects: hamperMetaobjectsData.metaobjects,
     megaSaverItems: megaSaverItemsData.metaobjects,
     megaSaverBanner: megaSaverBannerData.metaobjects,
+    promotionalPosters,
   };
 }
 
@@ -115,6 +126,8 @@ export default function Homepage() {
         bannerProducts={data.bannerProducts}
       />
 
+      {/* Promotional Poster Carousel */}
+      <PromotionalPosterCarousel posters={data.promotionalPosters} />
 
 
       {/* Promotion Cards */}

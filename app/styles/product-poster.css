@@ -1,0 +1,258 @@
+/*
+* --------------------------------------------------
+* Product Poster Component Styles
+* --------------------------------------------------
+*/
+
+/* Main container */
+.product-poster {
+  margin: 40px 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  font-family: 'Poppins', sans-serif;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.product-poster.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Poster Header */
+.product-poster-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.product-poster-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
+}
+
+.product-poster-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, #e53935, #ff9f43);
+  border-radius: 2px;
+}
+
+.product-poster-dates {
+  font-size: 16px;
+  color: #666;
+  margin-top: 20px;
+}
+
+.product-poster-print-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.product-poster-print-button:hover {
+  background: #555;
+}
+
+/* Grid Layout */
+.product-poster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Freestyle Layout */
+.product-poster-freestyle {
+  position: relative;
+  min-height: 600px;
+}
+
+.product-poster-freestyle .product-poster-item {
+  position: absolute;
+  transform-origin: center;
+}
+
+/* Poster Item */
+.product-poster-item {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.product-poster-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.product-poster-item.highlight {
+  border: 3px solid #e53935;
+}
+
+/* Item Label */
+.product-poster-item-label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e53935;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 14px;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Item Image */
+.product-poster-item-image-container {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f8f9fa;
+  position: relative;
+}
+
+.product-poster-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+
+.product-poster-item:hover .product-poster-item-image {
+  transform: scale(1.05);
+}
+
+.product-poster-item-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 48px;
+}
+
+/* Item Info */
+.product-poster-item-info {
+  padding: 15px;
+  text-align: center;
+}
+
+.product-poster-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #333;
+  line-height: 1.4;
+  height: 44px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-poster-item-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #e53935;
+}
+
+/* Empty State */
+.product-poster-empty {
+  text-align: center;
+  padding: 50px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin: 40px 0;
+}
+
+.product-poster-empty h2 {
+  color: #666;
+  font-weight: 500;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .product-poster {
+    padding: 20px;
+  }
+  
+  .product-poster-title {
+    font-size: 30px;
+  }
+  
+  .product-poster-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-poster {
+    padding: 15px;
+  }
+  
+  .product-poster-title {
+    font-size: 24px;
+  }
+  
+  .product-poster-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-poster-print-button {
+    position: relative;
+    margin-top: 15px;
+    display: inline-flex;
+  }
+}
