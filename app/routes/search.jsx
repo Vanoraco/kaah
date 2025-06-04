@@ -1,6 +1,6 @@
 import {useLoaderData} from '@remix-run/react';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
-import {createSeoMeta} from '~/lib/seo';
+import {createSearchSeoMeta} from '~/lib/seo';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
 import {getEmptyPredictiveSearchResult} from '~/lib/search';
@@ -8,18 +8,27 @@ import {getEmptyPredictiveSearchResult} from '~/lib/search';
 /**
  * @type {MetaFunction}
  */
-export const meta = ({request}) => {
+export const meta = ({data, request}) => {
   if (!request) {
-    return [{title: `Kaah | Search`}];
+    return [
+      {title: `Kaah | Search`},
+      {name: 'description', content: 'Search for products, collections, and more at Kaah Supermarket.'}
+    ];
   }
 
   const url = new URL(request.url);
   const pathname = url.pathname;
   const term = url.searchParams.get('q');
 
-  return createSeoMeta({
-    title: term ? `Kaah | Search results for "${term}"` : `Kaah | Search`,
-    description: 'Search for products, articles, and pages on Kaah Supermarket.',
+  // Calculate result count from data
+  const resultCount = data?.result ?
+    (data.result.products?.nodes?.length || 0) +
+    (data.result.articles?.nodes?.length || 0) +
+    (data.result.pages?.nodes?.length || 0) : 0;
+
+  return createSearchSeoMeta({
+    searchTerm: term,
+    resultCount,
     pathname,
     searchParams: url.searchParams
   });

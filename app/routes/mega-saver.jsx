@@ -2,6 +2,7 @@ import {useLoaderData} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
 import {MEGA_SAVER_METAOBJECTS_QUERY, MEGA_SAVER_BANNER_QUERY} from '~/lib/banner-queries';
 import {MegaSaverGrid} from '~/components/MegaSaverGrid';
+import {createSeoMeta} from '~/lib/seo';
 
 /**
  * Loader function to fetch all mega saver items
@@ -32,11 +33,24 @@ export async function loader({context}) {
 /**
  * Meta function for SEO
  */
-export const meta = () => {
-  return [
-    {title: 'Mega Saver Deals | Kaah'},
-    {description: 'Explore all our Mega Saver deals with special offers and discounts on your favorite products.'},
-  ];
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: 'Mega Saver Deals | Kaah Supermarket'},
+      {name: 'description', content: 'Explore all our Mega Saver deals with special offers and discounts on your favorite products.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: 'Mega Saver Deals & Special Offers',
+    description: 'Discover incredible Mega Saver deals and special offers at Kaah Supermarket. Save big on quality groceries, fresh produce, and household essentials with our exclusive discounts.',
+    pathname,
+    searchParams: url.searchParams,
+    keywords: ['mega saver', 'deals', 'special offers', 'discounts', 'savings', 'promotions', 'bulk deals']
+  });
 };
 
 /**

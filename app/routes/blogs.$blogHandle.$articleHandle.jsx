@@ -1,11 +1,27 @@
 import {useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
+import {createArticleSeoMeta} from '~/lib/seo';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [{title: `Kaah | ${data?.article.title ?? ''} article`}];
+export const meta = ({data, request}) => {
+  if (!request) {
+    return [
+      {title: `Kaah | ${data?.article?.title ?? 'Article'}`},
+      {name: 'description', content: 'Read our latest articles and blog posts at Kaah Supermarket.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createArticleSeoMeta({
+    article: data?.article,
+    blog: data?.blog,
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**

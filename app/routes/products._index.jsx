@@ -12,8 +12,8 @@ import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
 export const meta = ({request}) => {
   if (!request) {
     return [
-      {title: `Kaah | All Products`},
-      {description: 'Browse our complete catalog of high-quality products at Kaah.'}
+      {title: `All Products | Kaah Supermarket`},
+      {name: 'description', content: 'Browse our complete catalog of high-quality products at Kaah Supermarket.'}
     ];
   }
 
@@ -21,10 +21,11 @@ export const meta = ({request}) => {
   const pathname = url.pathname;
 
   return createSeoMeta({
-    title: `Kaah | All Products`,
-    description: 'Browse our complete catalog of high-quality products at Kaah.',
+    title: 'All Products & Complete Catalog',
+    description: 'Browse our complete catalog of high-quality groceries, fresh produce, household essentials, and more at Kaah Supermarket. Find everything you need with fast delivery and competitive prices.',
     pathname,
-    searchParams: url.searchParams
+    searchParams: url.searchParams,
+    keywords: ['all products', 'complete catalog', 'browse products', 'grocery catalog', 'product directory', 'shop all']
   });
 };
 
