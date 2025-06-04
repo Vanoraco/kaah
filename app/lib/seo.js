@@ -187,7 +187,7 @@ export function createSeoMeta({
  * @param {boolean} [options.includeStructuredData=true] - Whether to include JSON-LD
  * @returns {Array} Array of meta tag objects
  */
-export function createProductSeoMeta({ product, pathname, searchParams, includeStructuredData = true }) {
+export function createProductSeoMeta({ product, pathname, searchParams, includeStructuredData = false }) {
   if (!product) {
     return createSeoMeta({
       title: 'Product Not Found',
@@ -254,7 +254,7 @@ export function createProductSeoMeta({ product, pathname, searchParams, includeS
  * @param {boolean} [options.includeStructuredData=true] - Whether to include JSON-LD
  * @returns {Array} Array of meta tag objects
  */
-export function createCollectionSeoMeta({ collection, pathname, searchParams, includeStructuredData = true }) {
+export function createCollectionSeoMeta({ collection, pathname, searchParams, includeStructuredData = false }) {
   if (!collection) {
     return createSeoMeta({
       title: 'Collection Not Found',
@@ -339,7 +339,7 @@ export function createCollectionSeoMeta({ collection, pathname, searchParams, in
  * @param {boolean} [options.includeStructuredData=true] - Whether to include JSON-LD
  * @returns {Array} Array of meta tag objects
  */
-export function createArticleSeoMeta({ article, blog, pathname, searchParams, includeStructuredData = true }) {
+export function createArticleSeoMeta({ article, blog, pathname, searchParams, includeStructuredData = false }) {
   if (!article) {
     return createSeoMeta({
       title: 'Article Not Found',
@@ -636,11 +636,11 @@ function createInlineArticleSchema(article, blog) {
 }
 
 /**
- * Creates structured data script tag for JSON-LD
+ * Generates JSON-LD string for structured data
  * @param {Object|Array} schema - Schema object or array of schemas
- * @returns {Object|null} Script tag object for Remix meta
+ * @returns {string|null} JSON-LD string
  */
-export function createStructuredDataMeta(schema) {
+export function generateJsonLdString(schema) {
   if (!schema) return null;
 
   const schemaArray = Array.isArray(schema) ? schema : [schema];
@@ -648,12 +648,22 @@ export function createStructuredDataMeta(schema) {
 
   if (validSchemas.length === 0) return null;
 
-  const jsonLd = JSON.stringify(validSchemas.length === 1 ? validSchemas[0] : validSchemas, null, 0);
+  return JSON.stringify(validSchemas.length === 1 ? validSchemas[0] : validSchemas, null, 0);
+}
 
+/**
+ * Creates structured data script tag for JSON-LD (for use in components)
+ * @param {Object|Array} schema - Schema object or array of schemas
+ * @returns {Object|null} Script tag object for Remix meta
+ */
+export function createStructuredDataMeta(schema) {
+  const jsonLd = generateJsonLdString(schema);
+  if (!jsonLd) return null;
+
+  // Return as a special meta tag that we can handle in the root layout
   return {
-    tagName: 'script',
-    type: 'application/ld+json',
-    children: jsonLd
+    name: 'structured-data',
+    content: jsonLd
   };
 }
 

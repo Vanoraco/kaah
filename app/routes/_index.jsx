@@ -10,6 +10,7 @@ import {PromotionalPosterCarousel} from '~/components/PromotionalPosterCarousel'
 import {HAMPER_METAOBJECTS_QUERY} from '~/lib/hamper-queries';
 import {PROMOTIONAL_POSTERS_QUERY, processPromotionalPosterData} from '~/lib/promotional-poster-queries';
 import {createSeoMeta} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 import {
   BANNER_COLLECTIONS_QUERY,
   BANNER_METAOBJECTS_QUERY,
@@ -36,7 +37,7 @@ export const meta = ({request}) => {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  const metaTags = createSeoMeta({
+  return createSeoMeta({
     title: 'Premium Groceries & Fresh Produce',
     description: 'Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service in South Africa.',
     pathname,
@@ -44,63 +45,6 @@ export const meta = ({request}) => {
     keywords: ['groceries online', 'fresh produce', 'supermarket delivery', 'South Africa', 'premium quality', 'household essentials', 'fast delivery'],
     type: 'website'
   });
-
-  // Add organization and website structured data for the home page
-  try {
-    const schemas = [
-      // Organization schema
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Kaah Supermarket",
-        "url": "https://kaah.co.za",
-        "logo": "https://kaah.co.za/logo.svg",
-        "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressCountry": "ZA",
-          "addressRegion": "South Africa"
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "customer service",
-          "availableLanguage": "English"
-        }
-      },
-      // Website schema
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Kaah Supermarket",
-        "url": "https://kaah.co.za",
-        "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Kaah Supermarket"
-        },
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "https://kaah.co.za/search?q={search_term_string}"
-          },
-          "query-input": "required name=search_term_string"
-        }
-      }
-    ];
-
-    const structuredDataScript = {
-      tagName: 'script',
-      type: 'application/ld+json',
-      children: JSON.stringify(schemas, null, 0)
-    };
-
-    metaTags.push(structuredDataScript);
-  } catch (error) {
-    console.warn('Failed to create home page structured data:', error);
-  }
-
-  return metaTags;
 };
 
 export async function loader(args) {
@@ -194,8 +138,54 @@ export default function Homepage() {
   const rootData = useRouteLoaderData('root');
   const collections = rootData?.collections;
 
+  // Create structured data for the home page
+  const homePageSchemas = [
+    // Organization schema
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Kaah Supermarket",
+      "url": "https://kaah.co.za",
+      "logo": "https://kaah.co.za/logo.svg",
+      "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA",
+        "addressRegion": "South Africa"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "English"
+      }
+    },
+    // Website schema
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Kaah Supermarket",
+      "url": "https://kaah.co.za",
+      "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kaah Supermarket"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://kaah.co.za/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ];
+
   return (
     <div className="home">
+      {/* Structured Data */}
+      <StructuredData schema={homePageSchemas} />
+
       {/* Slideshow Banner */}
       <SlideshowBanner
         bannerCollections={data.bannerCollections}

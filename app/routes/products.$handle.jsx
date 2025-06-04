@@ -12,7 +12,8 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {AddToCartButton} from '~/components/AddToCartButton';
-import {createProductSeoMeta} from '~/lib/seo';
+import {createProductSeoMeta, createInlineProductSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -237,8 +238,14 @@ export default function Product() {
   // Log product options after filtering
   console.log('Product options after filtering:', productOptions);
 
+  // Create structured data for the product
+  const productSchema = createInlineProductSchema(product);
+
   return (
     <div className="product-detail-container">
+      {/* Structured Data */}
+      {productSchema && <StructuredData schema={productSchema} />}
+
       <div className="product-detail">
         {/* Product Images Gallery Section */}
         <div className="product-gallery">
