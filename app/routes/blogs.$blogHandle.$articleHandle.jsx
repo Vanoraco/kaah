@@ -1,6 +1,7 @@
 import {useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
-import {createArticleSeoMeta} from '~/lib/seo';
+import {createArticleSeoMeta, createInlineArticleSchema, createInlineBreadcrumbSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -62,7 +63,7 @@ async function loadCriticalData({context, params}) {
 
   const article = blog.articleByHandle;
 
-  return {article};
+  return {article, blog};
 }
 
 /**
@@ -77,7 +78,7 @@ function loadDeferredData({context}) {
 
 export default function Article() {
   /** @type {LoaderReturnData} */
-  const {article} = useLoaderData();
+  const {article, blog} = useLoaderData();
   const {title, image, contentHtml, author} = article;
 
   const publishedDate = new Intl.DateTimeFormat('en-US', {
@@ -86,8 +87,20 @@ export default function Article() {
     day: 'numeric',
   }).format(new Date(article.publishedAt));
 
+  // Create structured data for the article
+  const articleSchema = createInlineArticleSchema(article, blog);
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Blog', url: `/blogs/${blog?.handle || 'blog'}` },
+    { name: article.title, url: `/blogs/${blog?.handle || 'blog'}/${article.handle}` }
+  ];
+  const breadcrumbSchema = createInlineBreadcrumbSchema(breadcrumbs);
+
   return (
     <div className="article">
+      {/* Structured Data */}
+      {articleSchema && <StructuredData schema={articleSchema} />}
+      {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
       <h1>
         {title}
         <div>
@@ -113,6 +126,8 @@ const ARTICLE_QUERY = `#graphql
     $language: LanguageCode
   ) @inContext(language: $language, country: $country) {
     blog(handle: $blogHandle) {
+      handle
+      title
       articleByHandle(handle: $articleHandle) {
         title
         contentHtml

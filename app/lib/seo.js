@@ -469,7 +469,7 @@ export function truncateText(text, maxLength = 160) {
  * @param {Object} product - Product data from Shopify
  * @returns {Object|null} Product schema object
  */
-function createInlineProductSchema(product) {
+export function createInlineProductSchema(product) {
   if (!product) return null;
 
   const variant = product.variants?.nodes?.[0] || product.selectedVariant;
@@ -540,7 +540,7 @@ function createInlineProductSchema(product) {
  * @param {Object} collection - Collection data from Shopify
  * @returns {Object|null} Collection schema object
  */
-function createInlineCollectionSchema(collection) {
+export function createInlineCollectionSchema(collection) {
   if (!collection) return null;
 
   const collectionSchema = {
@@ -569,7 +569,7 @@ function createInlineCollectionSchema(collection) {
  * @param {Array} breadcrumbs - Array of breadcrumb items {name, url}
  * @returns {Object|null} Breadcrumb schema object
  */
-function createInlineBreadcrumbSchema(breadcrumbs) {
+export function createInlineBreadcrumbSchema(breadcrumbs) {
   if (!breadcrumbs || breadcrumbs.length === 0) return null;
 
   return {
@@ -590,7 +590,7 @@ function createInlineBreadcrumbSchema(breadcrumbs) {
  * @param {Object} blog - Blog data from Shopify
  * @returns {Object|null} Article schema object
  */
-function createInlineArticleSchema(article, blog) {
+export function createInlineArticleSchema(article, blog) {
   if (!article) return null;
 
   const articleSchema = {
@@ -664,6 +664,66 @@ export function createStructuredDataMeta(schema) {
   return {
     name: 'structured-data',
     content: jsonLd
+  };
+}
+
+/**
+ * Creates organization schema for the site
+ * @returns {Object} Organization schema object
+ */
+export function createOrganizationSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": SITE_CONFIG.siteName,
+    "url": SITE_CONFIG.baseUrl,
+    "logo": `${SITE_CONFIG.baseUrl}/logo.svg`,
+    "description": SITE_CONFIG.defaultDescription,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+27-11-123-4567", // Update with actual phone number
+      "contactType": "customer service",
+      "availableLanguage": ["English", "Afrikaans"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "123 Main Street", // Update with actual address
+      "addressLocality": "Johannesburg",
+      "addressRegion": "Gauteng",
+      "postalCode": "2000",
+      "addressCountry": "ZA"
+    },
+    "sameAs": [
+      "https://www.facebook.com/kaahsupermarket", // Update with actual social media URLs
+      "https://www.instagram.com/kaahsupermarket",
+      "https://twitter.com/kaahsupermarket"
+    ]
+  };
+}
+
+/**
+ * Creates website schema for the site
+ * @returns {Object} Website schema object
+ */
+export function createWebsiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": SITE_CONFIG.siteName,
+    "url": SITE_CONFIG.baseUrl,
+    "description": SITE_CONFIG.defaultDescription,
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_CONFIG.siteName
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": `${SITE_CONFIG.baseUrl}/search?q={search_term_string}`
+      },
+      "query-input": "required name=search_term_string"
+    }
   };
 }
 

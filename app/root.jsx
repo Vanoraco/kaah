@@ -44,6 +44,8 @@ import promotionalPosterStyles from '~/styles/promotional-poster.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
+import {createOrganizationSchema, createWebsiteSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -205,6 +207,10 @@ export function Layout({children}) {
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
 
+  // Create site-wide structured data
+  const organizationSchema = createOrganizationSchema();
+  const websiteSchema = createWebsiteSchema();
+
   return (
     <html lang="en">
       <head>
@@ -249,6 +255,9 @@ export function Layout({children}) {
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />
         <Links />
+        {/* Site-wide structured data */}
+        <StructuredData schema={organizationSchema} />
+        <StructuredData schema={websiteSchema} />
       </head>
       <body>
         {data ? (
