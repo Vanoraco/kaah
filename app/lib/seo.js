@@ -228,49 +228,13 @@ export function createProductSeoMeta({ product, pathname, searchParams, includeS
   // Add structured data if requested
   if (includeStructuredData) {
     try {
-      // Create product schema inline to avoid import issues
-      const variant = product.variants?.nodes?.[0] || product.selectedVariant;
-      const productImage = product.featuredImage || product.images?.nodes?.[0];
+      const productSchema = createInlineProductSchema(product);
 
-      const price = variant?.price?.amount || product.priceRange?.minVariantPrice?.amount;
-      const currency = variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode || 'ZAR';
-
-      const productSchema = {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": product.title,
-        "description": product.description || `${product.title} available at ${SITE_CONFIG.siteName}`,
-        "url": `${SITE_CONFIG.baseUrl}/products/${product.handle}`,
-        "sku": variant?.sku || product.id,
-        "brand": {
-          "@type": "Brand",
-          "name": product.vendor || SITE_CONFIG.siteName
-        },
-        "offers": {
-          "@type": "Offer",
-          "url": `${SITE_CONFIG.baseUrl}/products/${product.handle}`,
-          "priceCurrency": currency,
-          "price": price,
-          "availability": product.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-          "seller": {
-            "@type": "Organization",
-            "name": SITE_CONFIG.siteName
-          }
+      if (productSchema) {
+        const structuredDataMeta = createStructuredDataMeta(productSchema);
+        if (structuredDataMeta) {
+          metaTags.push(structuredDataMeta);
         }
-      };
-
-      if (productImage?.url) {
-        productSchema.image = productImage.url;
-      }
-
-      if (product.productType) {
-        productSchema.category = product.productType;
-      }
-
-      const structuredDataMeta = createStructuredDataMeta(productSchema);
-
-      if (structuredDataMeta) {
-        metaTags.push(structuredDataMeta);
       }
     } catch (error) {
       console.warn('Failed to create product structured data:', error);
@@ -334,53 +298,21 @@ export function createCollectionSeoMeta({ collection, pathname, searchParams, in
       const schemas = [];
 
       // Add collection schema
-      const collectionSchema = {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": collection.title,
-        "description": collection.description || `Shop ${collection.title} at ${SITE_CONFIG.siteName}`,
-        "url": `${SITE_CONFIG.baseUrl}/collections/${collection.handle}`,
-        "mainEntity": {
-          "@type": "ItemList",
-          "name": collection.title,
-          "description": collection.description,
-          "numberOfItems": collection.products?.nodes?.length || 0
-        }
-      };
-
-      if (collection.image?.url) {
-        collectionSchema.image = collection.image.url;
+      const collectionSchema = createInlineCollectionSchema(collection);
+      if (collectionSchema) {
+        schemas.push(collectionSchema);
       }
 
-      schemas.push(collectionSchema);
-
       // Add breadcrumb schema
-      const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": SITE_CONFIG.baseUrl
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Collections",
-            "item": `${SITE_CONFIG.baseUrl}/collections`
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": collection.title,
-            "item": `${SITE_CONFIG.baseUrl}/collections/${collection.handle}`
-          }
-        ]
-      };
-
-      schemas.push(breadcrumbSchema);
+      const breadcrumbs = [
+        { name: 'Home', url: '/' },
+        { name: 'Collections', url: '/collections' },
+        { name: collection.title, url: `/collections/${collection.handle}` }
+      ];
+      const breadcrumbSchema = createInlineBreadcrumbSchema(breadcrumbs);
+      if (breadcrumbSchema) {
+        schemas.push(breadcrumbSchema);
+      }
 
       if (schemas.length > 0) {
         const structuredDataMeta = createStructuredDataMeta(schemas);
@@ -451,74 +383,21 @@ export function createArticleSeoMeta({ article, blog, pathname, searchParams, in
       const schemas = [];
 
       // Add article schema
-      const articleSchema = {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": article.title,
-        "description": article.excerpt || article.summary,
-        "url": `${SITE_CONFIG.baseUrl}/blogs/${blog?.handle || 'blog'}/${article.handle}`,
-        "datePublished": article.publishedAt,
-        "dateModified": article.updatedAt || article.publishedAt,
-        "author": {
-          "@type": "Person",
-          "name": article.author || SITE_CONFIG.siteName
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": SITE_CONFIG.siteName,
-          "logo": {
-            "@type": "ImageObject",
-            "url": `${SITE_CONFIG.baseUrl}/logo.svg`
-          }
-        }
-      };
-
-      if (article.image?.url) {
-        articleSchema.image = {
-          "@type": "ImageObject",
-          "url": article.image.url,
-          "width": article.image.width,
-          "height": article.image.height
-        };
+      const articleSchema = createInlineArticleSchema(article, blog);
+      if (articleSchema) {
+        schemas.push(articleSchema);
       }
-
-      if (blog?.title) {
-        articleSchema.articleSection = blog.title;
-      }
-
-      if (article.tags && article.tags.length > 0) {
-        articleSchema.keywords = article.tags.join(', ');
-      }
-
-      schemas.push(articleSchema);
 
       // Add breadcrumb schema
-      const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": SITE_CONFIG.baseUrl
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Blog",
-            "item": `${SITE_CONFIG.baseUrl}/blogs/${blog?.handle || 'blog'}`
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": article.title,
-            "item": `${SITE_CONFIG.baseUrl}/blogs/${blog?.handle || 'blog'}/${article.handle}`
-          }
-        ]
-      };
-
-      schemas.push(breadcrumbSchema);
+      const breadcrumbs = [
+        { name: 'Home', url: '/' },
+        { name: 'Blog', url: `/blogs/${blog?.handle || 'blog'}` },
+        { name: article.title, url: `/blogs/${blog?.handle || 'blog'}/${article.handle}` }
+      ];
+      const breadcrumbSchema = createInlineBreadcrumbSchema(breadcrumbs);
+      if (breadcrumbSchema) {
+        schemas.push(breadcrumbSchema);
+      }
 
       if (schemas.length > 0) {
         const structuredDataMeta = createStructuredDataMeta(schemas);
@@ -586,27 +465,184 @@ export function truncateText(text, maxLength = 160) {
 }
 
 /**
+ * Creates a product schema object inline
+ * @param {Object} product - Product data from Shopify
+ * @returns {Object|null} Product schema object
+ */
+function createInlineProductSchema(product) {
+  if (!product) return null;
+
+  const variant = product.variants?.nodes?.[0] || product.selectedVariant;
+  const productImage = product.featuredImage || product.images?.nodes?.[0];
+  const price = variant?.price?.amount || product.priceRange?.minVariantPrice?.amount;
+  const compareAtPrice = variant?.compareAtPrice?.amount;
+  const currency = variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode || 'ZAR';
+
+  // Skip schema creation if no price available
+  if (!price) {
+    console.warn(`Product ${product.handle} missing price information for schema`);
+    return null;
+  }
+
+  // Build offers with proper price validation
+  const offers = {
+    "@type": "Offer",
+    "url": `${SITE_CONFIG.baseUrl}/products/${product.handle}`,
+    "priceCurrency": currency,
+    "price": parseFloat(price).toFixed(2),
+    "availability": product.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    "seller": {
+      "@type": "Organization",
+      "name": SITE_CONFIG.siteName
+    }
+  };
+
+  // Add compare at price logic with proper validation
+  if (compareAtPrice) {
+    const currentPrice = parseFloat(price);
+    const originalPrice = parseFloat(compareAtPrice);
+
+    if (!isNaN(originalPrice) && !isNaN(currentPrice) && originalPrice > currentPrice) {
+      const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      offers.priceValidUntil = validUntil.toISOString().split('T')[0];
+      offers.highPrice = originalPrice.toFixed(2);
+      offers.lowPrice = currentPrice.toFixed(2);
+    }
+  }
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "description": product.description || `${product.title} available at ${SITE_CONFIG.siteName}`,
+    "url": `${SITE_CONFIG.baseUrl}/products/${product.handle}`,
+    "sku": variant?.sku || product.id,
+    "brand": {
+      "@type": "Brand",
+      "name": product.vendor || SITE_CONFIG.siteName
+    },
+    "offers": offers
+  };
+
+  if (productImage?.url) {
+    productSchema.image = productImage.url;
+  }
+
+  if (product.productType) {
+    productSchema.category = product.productType;
+  }
+
+  return productSchema;
+}
+
+/**
+ * Creates a collection schema object inline
+ * @param {Object} collection - Collection data from Shopify
+ * @returns {Object|null} Collection schema object
+ */
+function createInlineCollectionSchema(collection) {
+  if (!collection) return null;
+
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": collection.title,
+    "description": collection.description || `Shop ${collection.title} at ${SITE_CONFIG.siteName}`,
+    "url": `${SITE_CONFIG.baseUrl}/collections/${collection.handle}`,
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": collection.title,
+      "description": collection.description,
+      "numberOfItems": collection.products?.nodes?.length || 0
+    }
+  };
+
+  if (collection.image?.url) {
+    collectionSchema.image = collection.image.url;
+  }
+
+  return collectionSchema;
+}
+
+/**
+ * Creates a breadcrumb schema object inline
+ * @param {Array} breadcrumbs - Array of breadcrumb items {name, url}
+ * @returns {Object|null} Breadcrumb schema object
+ */
+function createInlineBreadcrumbSchema(breadcrumbs) {
+  if (!breadcrumbs || breadcrumbs.length === 0) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": breadcrumbs.map((crumb, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": crumb.name,
+      "item": crumb.url.startsWith('http') ? crumb.url : `${SITE_CONFIG.baseUrl}${crumb.url}`
+    }))
+  };
+}
+
+/**
+ * Creates an article schema object inline
+ * @param {Object} article - Article data from Shopify
+ * @param {Object} blog - Blog data from Shopify
+ * @returns {Object|null} Article schema object
+ */
+function createInlineArticleSchema(article, blog) {
+  if (!article) return null;
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.title,
+    "description": article.excerpt || article.summary,
+    "url": `${SITE_CONFIG.baseUrl}/blogs/${blog?.handle || 'blog'}/${article.handle}`,
+    "datePublished": article.publishedAt,
+    "dateModified": article.updatedAt || article.publishedAt,
+    "author": {
+      "@type": "Person",
+      "name": article.author || SITE_CONFIG.siteName
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": SITE_CONFIG.siteName,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${SITE_CONFIG.baseUrl}/logo.svg`
+      }
+    }
+  };
+
+  if (article.image?.url) {
+    articleSchema.image = {
+      "@type": "ImageObject",
+      "url": article.image.url,
+      "width": article.image.width,
+      "height": article.image.height
+    };
+  }
+
+  if (blog?.title) {
+    articleSchema.articleSection = blog.title;
+  }
+
+  if (article.tags && article.tags.length > 0) {
+    articleSchema.keywords = article.tags.join(', ');
+  }
+
+  return articleSchema;
+}
+
+/**
  * Creates structured data script tag for JSON-LD
  * @param {Object|Array} schema - Schema object or array of schemas
- * @returns {Object} Script tag object for Remix meta
+ * @returns {Object|null} Script tag object for Remix meta
  */
 export function createStructuredDataMeta(schema) {
   if (!schema) return null;
 
-  // Import dynamically to avoid circular dependencies
-  import('./structured-data.js').then(({ generateJsonLd }) => {
-    const jsonLd = generateJsonLd(schema);
-
-    if (!jsonLd) return null;
-
-    return {
-      tagName: 'script',
-      type: 'application/ld+json',
-      children: jsonLd
-    };
-  }).catch(() => null);
-
-  // For now, return a simple version
   const schemaArray = Array.isArray(schema) ? schema : [schema];
   const validSchemas = schemaArray.filter(s => s !== null && s !== undefined);
 

@@ -32,6 +32,12 @@ const testProduct = {
       }
     }]
   },
+  priceRange: {
+    minVariantPrice: {
+      amount: '29.99',
+      currencyCode: 'ZAR'
+    }
+  },
   tags: ['organic', 'fresh', 'local', 'healthy']
 };
 
@@ -85,7 +91,8 @@ function validateSchema(schema, schemaType) {
     'Collection': ['@context', '@type', 'name', 'url'],
     'Article': ['@context', '@type', 'headline', 'author', 'publisher'],
     'Organization': ['@context', '@type', 'name', 'url'],
-    'WebSite': ['@context', '@type', 'name', 'url']
+    'WebSite': ['@context', '@type', 'name', 'url'],
+    'Event': ['@context', '@type', 'name', 'startDate']
   };
 
   const required = requiredProps[schemaType] || ['@context', '@type'];
@@ -121,6 +128,31 @@ function validateSchema(schema, schemaType) {
       console.error(`❌ Product schema missing currency information`);
       return false;
     }
+
+    // Validate price format
+    const price = parseFloat(schema.offers.price);
+    if (isNaN(price) || price < 0) {
+      console.error(`❌ Product schema has invalid price: ${schema.offers.price}`);
+      return false;
+    }
+
+    // Validate compare at price logic if present
+    if (schema.offers.highPrice && schema.offers.lowPrice) {
+      const highPrice = parseFloat(schema.offers.highPrice);
+      const lowPrice = parseFloat(schema.offers.lowPrice);
+
+      if (isNaN(highPrice) || isNaN(lowPrice)) {
+        console.error(`❌ Product schema has invalid price comparison values`);
+        return false;
+      }
+
+      if (highPrice <= lowPrice) {
+        console.error(`❌ Product schema: highPrice (${highPrice}) should be greater than lowPrice (${lowPrice})`);
+        return false;
+      }
+
+      console.log(`✅ Price comparison logic validated: ${lowPrice} < ${highPrice}`);
+    }
   }
 
   if (schemaType === 'Article') {
@@ -130,6 +162,37 @@ function validateSchema(schema, schemaType) {
     if (!schema.publisher || !schema.publisher.name) {
       console.error(`❌ Article schema missing publisher information`);
       return false;
+    }
+  }
+
+  if (schemaType === 'Event') {
+    if (!schema.startDate) {
+      console.error(`❌ Event schema missing startDate`);
+      return false;
+    }
+
+    // Validate date format
+    try {
+      new Date(schema.startDate);
+    } catch (error) {
+      console.error(`❌ Event schema has invalid startDate format: ${schema.startDate}`);
+      return false;
+    }
+
+    // Validate offers if present
+    if (schema.offers) {
+      if (typeof schema.offers !== 'object') {
+        console.error(`❌ Event schema offers should be an object`);
+        return false;
+      }
+
+      if (schema.offers.price !== undefined) {
+        const price = parseFloat(schema.offers.price);
+        if (isNaN(price) || price < 0) {
+          console.error(`❌ Event schema has invalid offer price: ${schema.offers.price}`);
+          return false;
+        }
+      }
     }
   }
 
@@ -150,6 +213,51 @@ function testStructuredData() {
     }
   } catch (error) {
     console.error('❌ Error creating product schema:', error.message);
+    allPassed = false;
+  }
+
+  // Test Product Schema with missing price (edge case)
+  try {
+    const productWithoutPrice = { ...testProduct };
+    delete productWithoutPrice.variants;
+    delete productWithoutPrice.priceRange;
+
+    const productSchema = createProductSchema(productWithoutPrice);
+    if (productSchema !== null) {
+      console.error('❌ Product schema should return null when price is missing');
+      allPassed = false;
+    } else {
+      console.log('✅ Product schema correctly handles missing price');
+    }
+  } catch (error) {
+    console.error('❌ Error testing product schema without price:', error.message);
+    allPassed = false;
+  }
+
+  // Test Product Schema with invalid compare at price (edge case)
+  try {
+    const productWithInvalidCompare = {
+      ...testProduct,
+      variants: {
+        nodes: [{
+          ...testProduct.variants.nodes[0],
+          compareAtPrice: {
+            amount: '25.99', // Lower than current price
+            currencyCode: 'ZAR'
+          }
+        }]
+      }
+    };
+
+    const productSchema = createProductSchema(productWithInvalidCompare);
+    if (productSchema && (productSchema.offers.highPrice || productSchema.offers.lowPrice)) {
+      console.error('❌ Product schema should not include price comparison when compareAtPrice is lower');
+      allPassed = false;
+    } else {
+      console.log('✅ Product schema correctly handles invalid compare at price');
+    }
+  } catch (error) {
+    console.error('❌ Error testing product schema with invalid compare price:', error.message);
     allPassed = false;
   }
 
@@ -194,6 +302,68 @@ function testStructuredData() {
     }
   } catch (error) {
     console.error('❌ Error creating website schema:', error.message);
+    allPassed = false;
+  }
+
+  // Test Event Schema with valid data
+  try {
+    const validEvent = {
+      name: 'Summer Sale 2024',
+      description: 'Get up to 50% off on selected items',
+      startDate: '2024-06-01T09:00:00Z',
+      endDate: '2024-06-30T23:59:59Z',
+      url: 'https://kaah.co.za/summer-sale',
+      offers: {
+        description: 'Up to 50% off',
+        price: 0,
+        currency: 'ZAR'
+      }
+    };
+
+    const eventSchema = createEventSchema(validEvent);
+    if (!validateSchema(eventSchema, 'Event')) {
+      allPassed = false;
+    }
+  } catch (error) {
+    console.error('❌ Error creating event schema:', error.message);
+    allPassed = false;
+  }
+
+  // Test Event Schema with missing required fields (edge case)
+  try {
+    const invalidEvent = {
+      description: 'Sale without name or date'
+    };
+
+    const eventSchema = createEventSchema(invalidEvent);
+    if (eventSchema !== null) {
+      console.error('❌ Event schema should return null when required fields are missing');
+      allPassed = false;
+    } else {
+      console.log('✅ Event schema correctly handles missing required fields');
+    }
+  } catch (error) {
+    console.error('❌ Error testing event schema with missing fields:', error.message);
+    allPassed = false;
+  }
+
+  // Test Event Schema with undefined offers (edge case)
+  try {
+    const eventWithUndefinedOffers = {
+      name: 'Test Event',
+      startDate: '2024-06-01T09:00:00Z',
+      offers: undefined
+    };
+
+    const eventSchema = createEventSchema(eventWithUndefinedOffers);
+    if (eventSchema && eventSchema.offers !== undefined) {
+      console.error('❌ Event schema should not include undefined offers');
+      allPassed = false;
+    } else {
+      console.log('✅ Event schema correctly handles undefined offers');
+    }
+  } catch (error) {
+    console.error('❌ Error testing event schema with undefined offers:', error.message);
     allPassed = false;
   }
 

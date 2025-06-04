@@ -74,17 +74,23 @@ export function createProductSchema(product, baseUrl = SITE_CONFIG.baseUrl) {
   const variant = product.variants?.nodes?.[0] || product.selectedVariant;
   const image = product.featuredImage || product.images?.nodes?.[0];
   
-  // Get price information
+  // Get price information with proper validation
   const price = variant?.price?.amount || product.priceRange?.minVariantPrice?.amount;
   const compareAtPrice = variant?.compareAtPrice?.amount;
   const currency = variant?.price?.currencyCode || product.priceRange?.minVariantPrice?.currencyCode || 'ZAR';
-  
-  // Build offers array
+
+  // Validate price data
+  if (!price) {
+    console.warn(`Product ${product.handle} missing price information`);
+    return null;
+  }
+
+  // Build offers object with proper price comparison logic
   const offers = {
     "@type": "Offer",
     "url": `${baseUrl}/products/${product.handle}`,
     "priceCurrency": currency,
-    "price": price,
+    "price": parseFloat(price).toFixed(2),
     "availability": product.availableForSale ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     "seller": {
       "@type": "Organization",
@@ -92,9 +98,21 @@ export function createProductSchema(product, baseUrl = SITE_CONFIG.baseUrl) {
     }
   };
 
-  // Add compare at price if available
-  if (compareAtPrice && parseFloat(compareAtPrice) > parseFloat(price)) {
-    offers.priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // 30 days from now
+  // Add compare at price logic with proper validation
+  if (compareAtPrice) {
+    const currentPrice = parseFloat(price);
+    const originalPrice = parseFloat(compareAtPrice);
+
+    // Only add compare at price if it's actually higher than current price
+    if (!isNaN(originalPrice) && !isNaN(currentPrice) && originalPrice > currentPrice) {
+      // Add price valid until (30 days from now)
+      const validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      offers.priceValidUntil = validUntil.toISOString().split('T')[0];
+
+      // Add high price for comparison
+      offers.highPrice = originalPrice.toFixed(2);
+      offers.lowPrice = currentPrice.toFixed(2);
+    }
   }
 
   const schema = {
@@ -347,15 +365,16 @@ export function createFAQSchema(faqs) {
  * @returns {Object} Event schema
  */
 export function createEventSchema(event) {
-  if (!event) return null;
+  if (!event || !event.name || !event.startDate) {
+    console.warn('Event schema requires at least name and startDate');
+    return null;
+  }
 
-  return {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": event.name,
-    "description": event.description,
     "startDate": event.startDate,
-    "endDate": event.endDate,
     "location": {
       "@type": "VirtualLocation",
       "url": event.url || SITE_CONFIG.baseUrl
@@ -364,15 +383,41 @@ export function createEventSchema(event) {
       "@type": "Organization",
       "name": SITE_CONFIG.siteName,
       "url": SITE_CONFIG.baseUrl
-    },
-    "offers": event.offers ? {
-      "@type": "Offer",
-      "description": event.offers.description,
-      "price": event.offers.price || "0",
-      "priceCurrency": event.offers.currency || "ZAR",
-      "availability": "https://schema.org/InStock"
-    } : undefined
+    }
   };
+
+  // Add optional properties only if they exist
+  if (event.description) {
+    schema.description = event.description;
+  }
+
+  if (event.endDate) {
+    schema.endDate = event.endDate;
+  }
+
+  // Add offers only if properly structured
+  if (event.offers && typeof event.offers === 'object') {
+    const offers = {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock"
+    };
+
+    if (event.offers.description) {
+      offers.description = event.offers.description;
+    }
+
+    if (event.offers.price !== undefined) {
+      offers.price = String(event.offers.price);
+      offers.priceCurrency = event.offers.currency || "ZAR";
+    } else {
+      offers.price = "0";
+      offers.priceCurrency = "ZAR";
+    }
+
+    schema.offers = offers;
+  }
+
+  return schema;
 }
 
 /**
