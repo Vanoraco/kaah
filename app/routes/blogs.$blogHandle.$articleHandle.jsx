@@ -1,11 +1,28 @@
 import {useLoaderData} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
+import {createArticleSeoMeta, createInlineArticleSchema, createInlineBreadcrumbSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [{title: `Kaah | ${data?.article.title ?? ''} article`}];
+export const meta = ({data, request}) => {
+  if (!request) {
+    return [
+      {title: `Kaah | ${data?.article?.title ?? 'Article'}`},
+      {name: 'description', content: 'Read our latest articles and blog posts at Kaah Supermarket.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createArticleSeoMeta({
+    article: data?.article,
+    blog: data?.blog,
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**
@@ -46,7 +63,7 @@ async function loadCriticalData({context, params}) {
 
   const article = blog.articleByHandle;
 
-  return {article};
+  return {article, blog};
 }
 
 /**
@@ -61,7 +78,7 @@ function loadDeferredData({context}) {
 
 export default function Article() {
   /** @type {LoaderReturnData} */
-  const {article} = useLoaderData();
+  const {article, blog} = useLoaderData();
   const {title, image, contentHtml, author} = article;
 
   const publishedDate = new Intl.DateTimeFormat('en-US', {
@@ -70,8 +87,20 @@ export default function Article() {
     day: 'numeric',
   }).format(new Date(article.publishedAt));
 
+  // Create structured data for the article
+  const articleSchema = createInlineArticleSchema(article, blog);
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Blog', url: `/blogs/${blog?.handle || 'blog'}` },
+    { name: article.title, url: `/blogs/${blog?.handle || 'blog'}/${article.handle}` }
+  ];
+  const breadcrumbSchema = createInlineBreadcrumbSchema(breadcrumbs);
+
   return (
     <div className="article">
+      {/* Structured Data */}
+      {articleSchema && <StructuredData schema={articleSchema} />}
+      {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
       <h1>
         {title}
         <div>
@@ -97,6 +126,8 @@ const ARTICLE_QUERY = `#graphql
     $language: LanguageCode
   ) @inContext(language: $language, country: $country) {
     blog(handle: $blogHandle) {
+      handle
+      title
       articleByHandle(handle: $articleHandle) {
         title
         contentHtml

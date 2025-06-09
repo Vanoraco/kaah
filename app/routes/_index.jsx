@@ -9,6 +9,8 @@ import {MegaSaverClean} from '~/components/MegaSaverClean';
 import {PromotionalPosterCarousel} from '~/components/PromotionalPosterCarousel';
 import {HAMPER_METAOBJECTS_QUERY} from '~/lib/hamper-queries';
 import {PROMOTIONAL_POSTERS_QUERY, processPromotionalPosterData} from '~/lib/promotional-poster-queries';
+import {createSeoMeta} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 import {
   BANNER_COLLECTIONS_QUERY,
   BANNER_METAOBJECTS_QUERY,
@@ -21,8 +23,28 @@ import {
   MEGA_SAVER_BANNER_QUERY
 } from '~/lib/banner-queries';
 
-export const meta = () => {
-  return [{title: 'Kaah | Home'}];
+/**
+ * @type {MetaFunction}
+ */
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: 'Kaah Supermarket | Premium Groceries & Fresh Produce'},
+      {name: 'description', content: 'Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: 'Premium Groceries & Fresh Produce',
+    description: 'Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service in South Africa.',
+    pathname,
+    searchParams: url.searchParams,
+    keywords: ['groceries online', 'fresh produce', 'supermarket delivery', 'South Africa', 'premium quality', 'household essentials', 'fast delivery'],
+    type: 'website'
+  });
 };
 
 export async function loader(args) {
@@ -116,8 +138,54 @@ export default function Homepage() {
   const rootData = useRouteLoaderData('root');
   const collections = rootData?.collections;
 
+  // Create structured data for the home page
+  const homePageSchemas = [
+    // Organization schema
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Kaah Supermarket",
+      "url": "https://kaah.co.za",
+      "logo": "https://kaah.co.za/logo.svg",
+      "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA",
+        "addressRegion": "South Africa"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "English"
+      }
+    },
+    // Website schema
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Kaah Supermarket",
+      "url": "https://kaah.co.za",
+      "description": "Shop premium quality groceries, fresh produce, and household essentials at Kaah Supermarket. Fast delivery, competitive prices, and exceptional service.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kaah Supermarket"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://kaah.co.za/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ];
+
   return (
     <div className="home">
+      {/* Structured Data */}
+      <StructuredData schema={homePageSchemas} />
+
       {/* Slideshow Banner */}
       <SlideshowBanner
         bannerCollections={data.bannerCollections}

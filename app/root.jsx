@@ -46,6 +46,8 @@ import onlineSalesBannerStyles from '~/styles/online-sales-banner.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
+import {createOrganizationSchema, createWebsiteSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 import {OnlineSalesNotificationBanner} from './components/OnlineSalesNotificationBanner';
 
 /**
@@ -216,11 +218,20 @@ export function Layout({children}) {
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
 
+  // Create site-wide structured data
+  const organizationSchema = createOrganizationSchema();
+  const websiteSchema = createWebsiteSchema();
+
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Kaah Supermarket" />
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
         <link rel="stylesheet" href={homeStyles}></link>
@@ -256,6 +267,9 @@ export function Layout({children}) {
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />
         <Links />
+        {/* Site-wide structured data */}
+        <StructuredData schema={organizationSchema} />
+        <StructuredData schema={websiteSchema} />
       </head>
       <body>
         {data ? (

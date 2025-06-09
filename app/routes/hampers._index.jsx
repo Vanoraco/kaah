@@ -2,12 +2,29 @@ import {useLoaderData} from '@remix-run/react';
 import {HamperCards} from '~/components/HamperCards';
 import {HAMPER_METAOBJECTS_QUERY} from '~/lib/hamper-queries';
 import {PageHeader} from '~/components/PageHeader';
+import {createSeoMeta} from '~/lib/seo';
 
 /**
  * @type {import('@remix-run/node').MetaFunction}
  */
-export const meta = () => {
-  return [{title: 'Special Hampers | Kaah'}];
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: 'Special Hampers | Kaah Supermarket'},
+      {name: 'description', content: 'Explore our exclusive hamper collections at Kaah Supermarket.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: 'Special Hampers & Gift Collections',
+    description: 'Discover our exclusive hamper collections at Kaah Supermarket. Carefully curated premium products perfect for gifting or treating yourself. Exceptional value and delightful experience guaranteed.',
+    pathname,
+    searchParams: url.searchParams,
+    keywords: ['special hampers', 'gift collections', 'premium products', 'curated hampers', 'gift baskets', 'exclusive offers']
+  });
 };
 
 /**

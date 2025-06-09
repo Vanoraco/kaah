@@ -160,7 +160,7 @@ function useFooterLinks() {
     ],
     help: [
       { id: 'contact', title: 'Contact', url: '/contact' },
-      { id: 'faqs', title: 'Faqs', url: '/faqs' },
+      { id: 'faqs', title: 'FAQ', url: '/faqs' },
       { id: 'terms', title: 'Terms & Condition', url: '/terms' },
       { id: 'privacy', title: 'Privacy Policy', url: '/privacy-policy' }
     ],

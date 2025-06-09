@@ -7,25 +7,28 @@ import {
   Analytics,
 } from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
-import {createSeoMeta} from '~/lib/seo';
+import {createCollectionSeoMeta, createInlineCollectionSchema, createInlineBreadcrumbSchema} from '~/lib/seo';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {CollectionFilters} from '~/components/CollectionFilters';
 import {SimpleAddToCartButton} from '~/components/SimpleAddToCartButton';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
 export const meta = ({data, request}) => {
   if (!request) {
-    return [{title: `Kaah | ${data?.collection.title ?? ''} Collection`}];
+    return [
+      {title: `Kaah | ${data?.collection?.title ?? 'Collection'}`},
+      {name: 'description', content: 'Shop our curated collections at Kaah Supermarket with quality products and fast delivery.'}
+    ];
   }
 
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  return createSeoMeta({
-    title: `Kaah | ${data?.collection.title ?? ''} Collection`,
-    description: data?.collection.description,
+  return createCollectionSeoMeta({
+    collection: data?.collection,
     pathname,
     searchParams: url.searchParams
   });
@@ -198,8 +201,20 @@ export default function Collection() {
   const [searchParams] = useSearchParams();
   const productCount = collection.products.nodes.length;
 
+  // Create structured data for the collection
+  const collectionSchema = createInlineCollectionSchema(collection);
+  const breadcrumbs = [
+    { name: 'Home', url: '/' },
+    { name: 'Collections', url: '/collections' },
+    { name: collection.title, url: `/collections/${collection.handle}` }
+  ];
+  const breadcrumbSchema = createInlineBreadcrumbSchema(breadcrumbs);
+
   return (
     <div className="collection">
+      {/* Structured Data */}
+      {collectionSchema && <StructuredData schema={collectionSchema} />}
+      {breadcrumbSchema && <StructuredData schema={breadcrumbSchema} />}
       <div className="collection-header">
         {collection.image && (
           <div className="collection-header-bg">

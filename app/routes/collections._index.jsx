@@ -9,8 +9,8 @@ import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 export const meta = ({request}) => {
   if (!request) {
     return [
-      {title: `Collections | Kaah`},
-      {description: 'Browse our carefully curated collections of high-quality products at Kaah.'}
+      {title: `Collections | Kaah Supermarket`},
+      {name: 'description', content: 'Browse our carefully curated collections of high-quality products at Kaah Supermarket.'}
     ];
   }
 
@@ -18,10 +18,11 @@ export const meta = ({request}) => {
   const pathname = url.pathname;
 
   return createSeoMeta({
-    title: `Collections | Kaah`,
-    description: 'Browse our carefully curated collections of high-quality products at Kaah.',
+    title: 'Product Collections',
+    description: 'Browse our carefully curated collections of high-quality groceries, fresh produce, and household essentials at Kaah Supermarket. Find exactly what you need.',
     pathname,
-    searchParams: url.searchParams
+    searchParams: url.searchParams,
+    keywords: ['product collections', 'categories', 'browse products', 'grocery collections', 'shop by category']
   });
 };
 

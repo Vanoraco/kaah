@@ -4,12 +4,30 @@ import {data, json} from '@shopify/remix-oxygen';
 import {CartMain} from '~/components/CartMain';
 import {CartDebugger} from '~/components/CartDebugger';
 import {applyCustomPriceToVariant} from '~/lib/hamperMetafields';
+import {createSeoMeta} from '~/lib/seo';
 
 /**
  * @type {MetaFunction}
  */
-export const meta = () => {
-  return [{title: `Kaah | Cart`}];
+export const meta = ({request}) => {
+  if (!request) {
+    return [
+      {title: `Kaah | Shopping Cart`},
+      {name: 'description', content: 'Review your shopping cart and proceed to checkout at Kaah Supermarket.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createSeoMeta({
+    title: 'Shopping Cart',
+    description: 'Review your shopping cart items and proceed to secure checkout at Kaah Supermarket. Fast delivery and quality products guaranteed.',
+    pathname,
+    searchParams: url.searchParams,
+    keywords: ['shopping cart', 'checkout', 'secure payment'],
+    noIndex: true // Cart pages should not be indexed
+  });
 };
 
 /**

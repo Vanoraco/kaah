@@ -12,18 +12,28 @@ import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 import {AddToCartButton} from '~/components/AddToCartButton';
+import {createProductSeoMeta, createInlineProductSchema} from '~/lib/seo';
+import {StructuredData} from '~/components/StructuredData';
 
 /**
  * @type {MetaFunction<typeof loader>}
  */
-export const meta = ({data}) => {
-  return [
-    {title: `Kaah | ${data?.product.title ?? ''}`},
-    {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
-    },
-  ];
+export const meta = ({data, request}) => {
+  if (!request) {
+    return [
+      {title: `Kaah | ${data?.product?.title ?? 'Product'}`},
+      {name: 'description', content: 'Shop quality products at Kaah Supermarket with fast delivery and competitive prices.'}
+    ];
+  }
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  return createProductSeoMeta({
+    product: data?.product,
+    pathname,
+    searchParams: url.searchParams
+  });
 };
 
 /**
@@ -228,8 +238,14 @@ export default function Product() {
   // Log product options after filtering
   console.log('Product options after filtering:', productOptions);
 
+  // Create structured data for the product
+  const productSchema = createInlineProductSchema(product);
+
   return (
     <div className="product-detail-container">
+      {/* Structured Data */}
+      {productSchema && <StructuredData schema={productSchema} />}
+
       <div className="product-detail">
         {/* Product Images Gallery Section */}
         <div className="product-gallery">
