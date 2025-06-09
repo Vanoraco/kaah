@@ -12,6 +12,7 @@ import {
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import {COLLECTIONS_QUERY} from '~/lib/queries';
+import {ONLINE_SALES_CONTROL_QUERY} from '~/lib/banner-queries';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import homeStyles from '~/styles/home.css?url';
@@ -41,9 +42,11 @@ import productPosterStyles from '~/styles/product-poster.css?url';
 import posterOverlayStyles from '~/styles/poster-overlay.css?url';
 import compactPosterStyles from '~/styles/compact-poster.css?url';
 import promotionalPosterStyles from '~/styles/promotional-poster.css?url';
+import onlineSalesBannerStyles from '~/styles/online-sales-banner.css?url';
 import {PageLayout} from './components/PageLayout';
 import variablesStyles from '~/styles/variables.css?url';
 import {NotFound} from './components/NotFound';
+import {OnlineSalesNotificationBanner} from './components/OnlineSalesNotificationBanner';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -152,7 +155,7 @@ export async function loader(args) {
 async function loadCriticalData({context}) {
   const {storefront} = context;
 
-  const [header, collectionsData] = await Promise.all([
+  const [header, collectionsData, onlineSalesControlData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
@@ -162,10 +165,18 @@ async function loadCriticalData({context}) {
     storefront.query(COLLECTIONS_QUERY, {
       cache: storefront.CacheNone(),
     }),
+    // Fetch online sales control settings
+    storefront.query(ONLINE_SALES_CONTROL_QUERY, {
+      cache: storefront.CacheShort(), // Cache for a short time since this controls site functionality
+    }).catch(() => ({ metaobjects: { nodes: [] } })), // Graceful fallback if metaobject doesn't exist
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header, collections: collectionsData.collections};
+  return {
+    header,
+    collections: collectionsData.collections,
+    onlineSalesControl: onlineSalesControlData
+  };
 }
 
 /**
@@ -240,6 +251,7 @@ export function Layout({children}) {
         <link rel="stylesheet" href={posterOverlayStyles}></link>
         <link rel="stylesheet" href={compactPosterStyles}></link>
         <link rel="stylesheet" href={promotionalPosterStyles}></link>
+        <link rel="stylesheet" href={onlineSalesBannerStyles}></link>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         <Meta />
@@ -252,6 +264,7 @@ export function Layout({children}) {
             shop={data.shop}
             consent={data.consent}
           >
+            <OnlineSalesNotificationBanner />
             <PageLayout {...data}>{children}</PageLayout>
           </Analytics.Provider>
         ) : (

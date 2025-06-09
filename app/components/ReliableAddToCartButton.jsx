@@ -1,5 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
-import {Form, useNavigate, useNavigation} from '@remix-run/react';
+import {Form, useNavigate, useNavigation, useRouteLoaderData} from '@remix-run/react';
+import {useOnlineSalesStatus, getDisabledButtonProps} from '~/lib/onlineSalesControl';
 
 /**
  * A reliable Add to Cart button component that uses standard HTML forms
@@ -24,6 +25,16 @@ export function ReliableAddToCartButton({
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const navigation = useNavigation();
+
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
+
+  // Get disabled button props based on online sales status
+  const disabledProps = getDisabledButtonProps(isOnlineSalesEnabled, true);
+
+  // Combine disabled states
+  const isDisabled = disabled || disabledProps.disabled;
 
   // Check if we're in the process of submitting the form
   const isAdding = navigation.state === 'submitting' &&
@@ -68,6 +79,12 @@ export function ReliableAddToCartButton({
 
   // Handle form submission
   const handleSubmit = (event) => {
+    // Don't proceed if online sales are disabled
+    if (!isOnlineSalesEnabled) {
+      event.preventDefault();
+      return;
+    }
+
     // Don't prevent default - we want the form to submit normally
     console.log('Add to cart form submitted');
     console.log('MerchandiseId:', merchandiseId);
@@ -138,12 +155,13 @@ export function ReliableAddToCartButton({
 
         <button
           type="submit"
-          disabled={isAdding || disabled}
-          className={`add-to-cart-button ${className}`}
-          aria-label="Add to cart"
+          disabled={isAdding || isDisabled}
+          className={`add-to-cart-button ${className} ${disabledProps.className}`}
+          aria-label={disabledProps.disabled ? disabledProps.title : "Add to cart"}
+          title={disabledProps.title}
         >
           <span className="add-to-cart-text">
-            {isAdding ? 'Adding...' : 'Add to Cart'}
+            {isAdding ? 'Adding...' : (disabledProps.text || 'Add to Cart')}
           </span>
           <i className="fas fa-shopping-cart"></i>
         </button>

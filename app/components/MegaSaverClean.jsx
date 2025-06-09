@@ -1,5 +1,6 @@
-import { Link, useFetcher } from '@remix-run/react';
+import { Link, useFetcher, useRouteLoaderData } from '@remix-run/react';
 import { useEffect, useState, useRef } from 'react';
+import {useOnlineSalesStatus, getDisabledButtonProps} from '~/lib/onlineSalesControl';
 
 // Enhanced color scheme for the mega saver component
 const DEFAULT_BANNER_BG_COLOR = "#e50019"; // Richer red color
@@ -21,6 +22,10 @@ function AddToCartButton({ item, quantity = 1 }) {
   const [isAdded, setIsAdded] = useState(false);
   const [addedCount, setAddedCount] = useState(0);
   const fetcher = useFetcher();
+
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
 
   // Handle special offers (e.g., "BUY 2 FOR")
   const specialQuantity = item.quantity || quantity;
@@ -51,9 +56,12 @@ function AddToCartButton({ item, quantity = 1 }) {
     }
   }, [fetcher.state, isAdding, specialQuantity]);
 
+  // Get disabled button props based on online sales status and stock
+  const disabledProps = getDisabledButtonProps(isOnlineSalesEnabled, isInStock);
+
   // Handle the add to cart action
   const handleAddToCart = () => {
-    if (!item.variantId || isAdding || !isInStock) return;
+    if (!item.variantId || isAdding || !isInStock || !isOnlineSalesEnabled) return;
 
 
 
@@ -89,13 +97,14 @@ function AddToCartButton({ item, quantity = 1 }) {
       )}
 
       <button
-        className={`mega-saver-add-to-cart ${isInStock ? '' : 'out-of-stock'}`}
+        className={`mega-saver-add-to-cart ${isInStock ? '' : 'out-of-stock'} ${disabledProps.className}`}
         onClick={handleAddToCart}
-        disabled={isAdding || !item.variantId || !isInStock}
+        disabled={isAdding || !item.variantId || !isInStock || disabledProps.disabled}
+        title={disabledProps.title || (isInStock ? '' : 'Out of stock')}
         style={{
           backgroundColor: isAdded ? DEFAULT_HIGHLIGHT_COLOR :
-                          !isInStock ? '#999999' : DEFAULT_BUTTON_COLOR,
-          opacity: !item.variantId || !isInStock ? 0.7 : 1
+                          (!isInStock || disabledProps.disabled) ? '#999999' : DEFAULT_BUTTON_COLOR,
+          opacity: !item.variantId || !isInStock || disabledProps.disabled ? 0.7 : 1
         }}
       >
         {isAdding ? (
@@ -112,6 +121,8 @@ function AddToCartButton({ item, quantity = 1 }) {
           </div>
         ) : !isInStock ? (
           <span>Out of Stock</span>
+        ) : disabledProps.disabled ? (
+          <span>{disabledProps.text}</span>
         ) : (
           <div className="mega-saver-button-content">
             {item.specialText ? (

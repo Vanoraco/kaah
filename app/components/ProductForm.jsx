@@ -1,7 +1,8 @@
-import {Link, useNavigate} from '@remix-run/react';
+import {Link, useNavigate, useRouteLoaderData} from '@remix-run/react';
 import {AddToCartButton} from './AddToCartButton';
 import {SimpleAddToCartButton} from './SimpleAddToCartButton';
 import {useAside} from './Aside';
+import {useOnlineSalesStatus, getDisabledButtonProps} from '~/lib/onlineSalesControl';
 
 /**
  * @param {{
@@ -13,6 +14,14 @@ import {useAside} from './Aside';
 export function ProductForm({productOptions, selectedVariant, analytics}) {
   const navigate = useNavigate();
   const {open} = useAside();
+
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
+
+  // Get disabled button props based on online sales status and stock
+  const isInStock = selectedVariant && selectedVariant.availableForSale;
+  const disabledProps = getDisabledButtonProps(isOnlineSalesEnabled, isInStock);
   return (
     <div className="product-form">
       {productOptions.map((option) => {
@@ -107,13 +116,19 @@ export function ProductForm({productOptions, selectedVariant, analytics}) {
             />
 
             <button
-              className="buy-now-button"
+              className={`buy-now-button ${disabledProps.className}`}
               onClick={() => {
+                // Don't proceed if online sales are disabled
+                if (!isOnlineSalesEnabled) {
+                  return;
+                }
                 // Redirect to cart page for checkout
                 window.location.href = '/cart';
               }}
+              disabled={disabledProps.disabled}
+              title={disabledProps.title}
             >
-              <span>Buy Now</span>
+              <span>{disabledProps.text || 'Buy Now'}</span>
               <i className="fas fa-bolt"></i>
             </button>
           </>

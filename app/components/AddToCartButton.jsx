@@ -1,6 +1,7 @@
 import {CartForm} from '@shopify/hydrogen';
 import {useState, useEffect, useRef} from 'react';
-import {useNavigate} from '@remix-run/react';
+import {useNavigate, useRouteLoaderData} from '@remix-run/react';
+import {useOnlineSalesStatus, getDisabledButtonProps} from '~/lib/onlineSalesControl';
 
 /**
  * @param {{
@@ -25,6 +26,16 @@ export function AddToCartButton({
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
+
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
+
+  // Get disabled button props based on online sales status
+  const disabledProps = getDisabledButtonProps(isOnlineSalesEnabled, true);
+
+  // Combine disabled states
+  const isDisabled = disabled || disabledProps.disabled;
 
   // Reference to track if component is mounted
   const isMounted = useRef(true);
@@ -68,7 +79,11 @@ export function AddToCartButton({
   }, [isAdding]);
 
   const handleAddToCart = (e) => {
-    
+    // Don't proceed if online sales are disabled
+    if (!isOnlineSalesEnabled) {
+      e.preventDefault();
+      return;
+    }
 
     // Reset any previous errors and states
     setError(null);
@@ -189,10 +204,12 @@ export function AddToCartButton({
               <button
                 type="submit"
                 onClick={handleAddToCart}
-                disabled={disabled ?? isAdding ?? fetcher.state !== 'idle'}
-                className={className || 'add-to-cart-button'}
+                disabled={isDisabled ?? isAdding ?? fetcher.state !== 'idle'}
+                className={`${className || 'add-to-cart-button'} ${disabledProps.className}`}
+                title={disabledProps.title}
+                aria-label={disabledProps.disabled ? disabledProps.title : "Add to cart"}
               >
-                {isAdding ? 'Adding...' : children}
+                {isAdding ? 'Adding...' : (disabledProps.text || children)}
               </button>
             </>
           );

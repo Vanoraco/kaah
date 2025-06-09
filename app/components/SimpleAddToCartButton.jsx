@@ -1,6 +1,7 @@
 import {CartForm} from '@shopify/hydrogen';
 import {useState, useEffect, useRef} from 'react';
-import {useNavigate, Form, useFetcher} from '@remix-run/react';
+import {useNavigate, Form, useFetcher, useRouteLoaderData} from '@remix-run/react';
+import {useOnlineSalesStatus, getDisabledButtonProps} from '~/lib/onlineSalesControl';
 
 /**
  * A simplified version of the AddToCartButton component
@@ -16,6 +17,13 @@ export function SimpleAddToCartButton({merchandiseId, quantity = 1}) {
   const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
   const fetcher = useFetcher();
+
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
+
+  // Get disabled button props based on online sales status
+  const disabledProps = getDisabledButtonProps(isOnlineSalesEnabled, true);
 
   // Reference to track if component is mounted
   const isMounted = useRef(true);
@@ -90,6 +98,11 @@ export function SimpleAddToCartButton({merchandiseId, quantity = 1}) {
   const handleAddToCart = (e) => {
     // Prevent default to use our fetcher instead
     e.preventDefault();
+
+    // Don't proceed if online sales are disabled
+    if (!isOnlineSalesEnabled) {
+      return;
+    }
 
     console.log('Add to cart button clicked');
     console.log('MerchandiseId:', merchandiseId);
@@ -181,12 +194,13 @@ export function SimpleAddToCartButton({merchandiseId, quantity = 1}) {
 
         <button
           type="submit"
-          disabled={isAdding}
-          className="add-to-cart-button"
-          aria-label="Add to cart"
+          disabled={isAdding || disabledProps.disabled}
+          className={`add-to-cart-button ${disabledProps.className}`}
+          aria-label={disabledProps.disabled ? disabledProps.title : "Add to cart"}
+          title={disabledProps.title}
         >
           <span className="add-to-cart-text">
-            {isAdding ? 'Adding...' : 'Add to Cart'}
+            {isAdding ? 'Adding...' : (disabledProps.text || 'Add to Cart')}
           </span>
           <i className="fas fa-shopping-cart"></i>
         </button>

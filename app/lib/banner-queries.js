@@ -304,3 +304,24 @@ export const MEGA_SAVER_BANNER_QUERY = `#graphql
     }
   }
 `;
+
+/**
+ * Query to fetch online sales control settings from Shopify metaobjects
+ * This assumes you have created a metaobject definition called 'online_sales_control'
+ * with a boolean field: enabled
+ */
+export const ONLINE_SALES_CONTROL_QUERY = `#graphql
+  query OnlineSalesControl($country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    metaobjects(type: "online_sales_control", first: 1) {
+      nodes {
+        id
+        handle
+        fields {
+          key
+          value
+        }
+      }
+    }
+  }
+`;

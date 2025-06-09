@@ -1,0 +1,318 @@
+/* Online Sales Notification Banner Styles */
+
+.online-sales-notification-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: white;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  transform: translateY(-100%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.online-sales-notification-banner.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  position: relative;
+  z-index: 2;
+  gap: 20px;
+  height: 100%;
+}
+
+.banner-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  backdrop-filter: blur(10px);
+}
+
+.banner-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.banner-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.banner-subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.9;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.banner-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: 12px;
+}
+
+.banner-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.banner-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-decoration: none;
+}
+
+.banner-dismiss {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.banner-dismiss:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Decorative elements */
+.banner-decoration {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+.banner-decoration-1 {
+  width: 120px;
+  height: 120px;
+  top: -60px;
+  left: -30px;
+}
+
+.banner-decoration-2 {
+  width: 80px;
+  height: 80px;
+  bottom: -40px;
+  right: 10%;
+}
+
+/* Small spacer to give content breathing room */
+.banner-spacer {
+  height: 0;
+  transition: height 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.banner-spacer.active {
+  height: 0px;
+}
+
+
+
+/* Alternative color schemes - uncomment to use */
+
+/* Warning/Amber theme */
+/*
+.online-sales-notification-banner {
+  background: linear-gradient(135deg, #f57c00 0%, #ef6c00 100%);
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+}
+*/
+
+/* Info/Teal theme */
+/*
+.online-sales-notification-banner {
+  background: linear-gradient(135deg, #00796b 0%, #00695c 100%);
+  box-shadow: 0 4px 12px rgba(0, 121, 107, 0.3);
+}
+*/
+
+/* Success/Green theme */
+/*
+.online-sales-notification-banner {
+  background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.3);
+}
+*/
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .banner-content {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  .banner-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .banner-title {
+    font-size: 14px;
+  }
+
+  .banner-subtitle {
+    font-size: 12px;
+  }
+
+  .banner-link {
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .banner-dismiss {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .online-sales-notification-banner {
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-content {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 8px 12px;
+    align-items: center;
+  }
+
+  .banner-message {
+    flex: 1;
+    text-align: left;
+  }
+
+  .banner-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .banner-actions {
+    flex-shrink: 0;
+  }
+
+  .banner-dismiss {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .banner-title {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .banner-subtitle {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .banner-link {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .online-sales-notification-banner {
+    height: 45px;
+  }
+
+  .banner-decoration-1 {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+    left: -15px;
+  }
+
+  .banner-decoration-2 {
+    width: 40px;
+    height: 40px;
+    bottom: -20px;
+    right: 5%;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .online-sales-notification-banner,
+  .banner-spacer,
+  .banner-link,
+  .banner-dismiss {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .online-sales-notification-banner {
+    background: #000;
+    border-bottom: 2px solid #fff;
+  }
+  
+  .banner-icon,
+  .banner-link,
+  .banner-dismiss {
+    background: #fff;
+    color: #000;
+    border: 1px solid #fff;
+  }
+}

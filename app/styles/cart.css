@@ -220,6 +220,58 @@
   font-weight: 500;
 }
 
+/* Online Sales Message Styles */
+.cart-online-sales-message {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 2px solid #2196f3;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+  position: relative;
+  z-index: 3;
+}
+
+.cart-online-sales-message.info {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-color: #2196f3;
+}
+
+.cart-message-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  background: #2196f3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+}
+
+.cart-message-content {
+  flex: 1;
+  text-align: left;
+}
+
+.cart-message-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.cart-message-content p {
+  margin: 0;
+  font-size: 16px;
+  color: #424242;
+  line-height: 1.5;
+}
+
 .cart-empty-actions {
   display: flex;
   gap: 15px;
@@ -1472,6 +1524,26 @@
   .cart-empty-button {
     width: 100%;
   }
+
+  /* Responsive online sales message */
+  .cart-online-sales-message {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .cart-message-content {
+    text-align: center;
+  }
+
+  .cart-message-content h3 {
+    font-size: 18px;
+  }
+
+  .cart-message-content p {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1558,6 +1630,26 @@
 
   .cart-empty-message {
     font-size: 14px;
+  }
+
+  /* Mobile responsive online sales message */
+  .cart-online-sales-message {
+    padding: 16px;
+    margin-bottom: 30px;
+  }
+
+  .cart-message-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .cart-message-content h3 {
+    font-size: 16px;
+  }
+
+  .cart-message-content p {
+    font-size: 13px;
   }
 
   .cart-line-quantity {

@@ -1,10 +1,11 @@
 import {useOptimisticCart} from '@shopify/hydrogen';
-import {Link, useFetcher} from '@remix-run/react';
+import {Link, useFetcher, useRouteLoaderData} from '@remix-run/react';
 import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
 import {HamperCartBundle} from '~/components/HamperCartBundle';
 import {CartSummary} from './CartSummary';
 import {useEffect} from 'react';
+import {useOnlineSalesStatus, getCartMessaging} from '~/lib/onlineSalesControl';
 
 /**
  * The main cart component that displays the cart items and summary.
@@ -183,6 +184,11 @@ export function CartMain({layout, cart: originalCart}) {
 function CartEmpty({hidden = false, layout}) {
   const {close} = useAside();
 
+  // Get root data for online sales status
+  const rootData = useRouteLoaderData('root');
+  const isOnlineSalesEnabled = useOnlineSalesStatus(rootData);
+  const cartMessaging = getCartMessaging(isOnlineSalesEnabled);
+
   // Only log in development environment
   if (process.env.NODE_ENV === 'development') {
     console.log('CartEmpty component with hidden:', hidden);
@@ -190,6 +196,19 @@ function CartEmpty({hidden = false, layout}) {
 
   return (
     <div className="cart-empty" style={{ display: hidden ? 'none' : 'block' }}>
+      {/* Show online sales messaging if applicable */}
+      {cartMessaging.showMessage && (
+        <div className={`cart-online-sales-message ${cartMessaging.type}`}>
+          <div className="cart-message-icon">
+            <i className={cartMessaging.icon}></i>
+          </div>
+          <div className="cart-message-content">
+            <h3>{cartMessaging.title}</h3>
+            <p>{cartMessaging.message}</p>
+          </div>
+        </div>
+      )}
+
       <div className="cart-empty-illustration">
         <div className="empty-cart-image">
           <i className="fas fa-shopping-cart"></i>
@@ -199,10 +218,15 @@ function CartEmpty({hidden = false, layout}) {
         </div>
       </div>
 
-      <h2 className="cart-empty-title">Your Cart is Empty</h2>
+      <h2 className="cart-empty-title">
+        {cartMessaging.showMessage ? 'Browse Our Products' : 'Your Cart is Empty'}
+      </h2>
 
       <p className="cart-empty-message">
-        Looks like you haven&rsquo;t added anything yet. Explore our collections and discover amazing products that match your style!
+        {cartMessaging.showMessage
+          ? 'Discover amazing products and visit us in-store for immediate purchase.'
+          : 'Looks like you haven\'t added anything yet. Explore our collections and discover amazing products that match your style!'
+        }
       </p>
 
       <div className="cart-empty-actions">

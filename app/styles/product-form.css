@@ -189,3 +189,25 @@
 .buy-now-button:disabled::before {
   display: none;
 }
+
+/* Online Sales Disabled Styles */
+.disabled-online-sales {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+  color: white !important;
+  cursor: not-allowed !important;
+  opacity: 0.8 !important;
+}
+
+.disabled-online-sales:hover {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.buy-now-button.disabled-online-sales {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%) !important;
+}
+
+.mega-saver-add-to-cart.disabled-online-sales {
+  background-color: #6c757d !important;
+}
