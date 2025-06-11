@@ -13,6 +13,7 @@ import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import {COLLECTIONS_QUERY} from '~/lib/queries';
 import {ONLINE_SALES_CONTROL_QUERY} from '~/lib/banner-queries';
+import {SOCIAL_MEDIA_QUERY} from '~/lib/social-media-queries';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import homeStyles from '~/styles/home.css?url';
@@ -157,7 +158,7 @@ export async function loader(args) {
 async function loadCriticalData({context}) {
   const {storefront} = context;
 
-  const [header, collectionsData, onlineSalesControlData] = await Promise.all([
+  const [header, collectionsData, onlineSalesControlData, socialMediaData] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
@@ -171,13 +172,18 @@ async function loadCriticalData({context}) {
     storefront.query(ONLINE_SALES_CONTROL_QUERY, {
       cache: storefront.CacheShort(), // Cache for a short time since this controls site functionality
     }).catch(() => ({ metaobjects: { nodes: [] } })), // Graceful fallback if metaobject doesn't exist
+    // Fetch social media links
+    storefront.query(SOCIAL_MEDIA_QUERY, {
+      cache: storefront.CacheLong(), // Cache for a long time since social media links don't change often
+    }).catch(() => ({ metaobjects: { nodes: [] } })), // Graceful fallback if metaobject doesn't exist
     // Add other queries here, so that they are loaded in parallel
   ]);
 
   return {
     header,
     collections: collectionsData.collections,
-    onlineSalesControl: onlineSalesControlData
+    onlineSalesControl: onlineSalesControlData,
+    socialMedia: socialMediaData
   };
 }
 
