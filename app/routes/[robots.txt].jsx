@@ -28,6 +28,11 @@ function robotsTxtData({url, shopId}) {
   const sitemapUrl = url ? `${url}/sitemap.xml` : undefined;
 
   return `
+
+# Allow ChatGPT search crawler
+User-agent: OAI-SearchBot
+Allow: /
+  
 User-agent: *
 ${generalDisallowRules({sitemapUrl, shopId})}
 
